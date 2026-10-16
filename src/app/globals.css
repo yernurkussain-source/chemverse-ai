@@ -1,0 +1,270 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Қараңғы режим: <html class="dark"> (ауыстырғыш — theme-toggle.tsx) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * CHEMVERSE «Neon Lab» дизайн токендері — design/prototype.html-ден көшірілген.
+ * Ескерту: прототиптегі --muted мұнда --text-muted деп аталады,
+ * өйткені shadcn/ui-да --muted — фон түсі.
+ */
+:root {
+  /* Ашық режим (әдепкі) */
+  --ink: #f4f7fb;
+  --panel: #ffffff;
+  --panel-2: #edf2f9;
+  --line: #d9e2ef;
+  --text: #0b1530;
+  --text-2: #33405f;
+  --text-muted: #5a6789;
+  --cyan: #0a8ea6;
+  --cyan-dim: #93d4e0;
+  --pink: #d93378;
+  --amber: #b97f00;
+  --good: #0f9a66;
+  --on-accent: #ffffff;
+  --glow: rgba(10, 142, 166, 0.35);
+  --glow-soft: rgba(10, 142, 166, 0.12);
+  --overlay: rgba(255, 255, 255, 0.9);
+  --stage-a: #ffffff;
+  --stage-b: #dce6f3;
+  --glass: #f3f8fc;
+  --task-a: #e2f5f9;
+  --task-b: #eceffb;
+  --phone-frame: #1a2238;
+  --shadow: rgba(20, 40, 80, 0.16);
+  color-scheme: light;
+
+  /* shadcn/ui айнымалылары → бренд токендері */
+  --background: var(--ink);
+  --foreground: var(--text);
+  --card: var(--panel);
+  --card-foreground: var(--text);
+  --popover: var(--panel);
+  --popover-foreground: var(--text);
+  --primary: var(--cyan);
+  --primary-foreground: var(--on-accent);
+  --secondary: var(--panel-2);
+  --secondary-foreground: var(--text);
+  --muted: var(--panel-2);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--panel-2);
+  --accent-foreground: var(--text);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--cyan);
+  --chart-1: var(--cyan);
+  --chart-2: var(--pink);
+  --chart-3: var(--amber);
+  --chart-4: var(--good);
+  --chart-5: var(--cyan-dim);
+  --radius: 0.75rem;
+  --sidebar: var(--panel);
+  --sidebar-foreground: var(--text);
+  --sidebar-primary: var(--cyan);
+  --sidebar-primary-foreground: var(--on-accent);
+  --sidebar-accent: var(--panel-2);
+  --sidebar-accent-foreground: var(--text);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--cyan);
+}
+
+.dark {
+  /* Қараңғы режим */
+  --ink: #070b1a;
+  --panel: #0d1430;
+  --panel-2: #121b3d;
+  --line: #1f2b57;
+  --text: #e7ecff;
+  --text-2: #c2cbef;
+  --text-muted: #8e9ac6;
+  --cyan: #3fe0f0;
+  --cyan-dim: #1c8fa0;
+  --pink: #ff5fa2;
+  --amber: #ffc857;
+  --good: #46e3a0;
+  --on-accent: #04121a;
+  --glow: rgba(63, 224, 240, 0.35);
+  --glow-soft: rgba(63, 224, 240, 0.16);
+  --overlay: rgba(9, 14, 34, 0.88);
+  --stage-a: #13204a;
+  --stage-b: #0a1028;
+  --glass: #0a1230;
+  --task-a: #123a55;
+  --task-b: #0f1d44;
+  --phone-frame: #02040c;
+  --shadow: rgba(0, 0, 0, 0.5);
+  --destructive: oklch(0.704 0.191 22.216);
+  color-scheme: dark;
+}
+
+@theme inline {
+  /*
+   * Қаріптер (next/font арқылы layout.tsx-те жүктеледі).
+   * Прототиптегі Unbounded / Manrope / JetBrains Mono-да қазақ әріптері жоқ болғандықтан,
+   * оларға ұқсас әрі қазақ әріптерін толық қолдайтын қаріптер алынды.
+   */
+  --font-sans: var(--font-onest), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-montserrat), var(--font-onest), system-ui, sans-serif;
+  --font-heading: var(--font-montserrat), var(--font-onest), system-ui, sans-serif;
+  --font-mono: var(--font-fira-code), ui-monospace, Consolas, monospace;
+  /* Логотип «CHEMVERSE AI» — Unbounded (тек латын әріптері) */
+  --font-logo: var(--font-unbounded), var(--font-montserrat), system-ui, sans-serif;
+
+  /* Бренд түстері: bg-ink, bg-panel, border-line, text-cyan, text-foreground-2 ... */
+  --color-ink: var(--ink);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-line: var(--line);
+  --color-foreground-2: var(--text-2);
+  --color-cyan: var(--cyan);
+  --color-cyan-dim: var(--cyan-dim);
+  --color-pink: var(--pink);
+  --color-amber: var(--amber);
+  --color-good: var(--good);
+  --color-on-accent: var(--on-accent);
+  --color-glow: var(--glow);
+  --color-glow-soft: var(--glow-soft);
+  --color-overlay: var(--overlay);
+  --color-stage-a: var(--stage-a);
+  --color-stage-b: var(--stage-b);
+  --color-glass: var(--glass);
+  --color-task-a: var(--task-a);
+  --color-task-b: var(--task-b);
+  --color-phone-frame: var(--phone-frame);
+  --color-shadow: var(--shadow);
+
+  /* shadcn/ui түстері */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Анимациялар */
+  --animate-drop: cv-drop 0.45s ease-in forwards;
+  --animate-blink: cv-blink 1s infinite;
+  --animate-orbit: spin 24s linear infinite;
+
+  @keyframes cv-drop {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(128px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes cv-blink {
+    0%,
+    100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
+
+/* Беттің ортақ контейнері (прототиптегі .wrap) */
+@utility page-wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  /* Жабысқақ мәзір астында бөлім тақырыбы жасырылмауы үшін */
+  section[id] {
+    scroll-margin-top: 72px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
