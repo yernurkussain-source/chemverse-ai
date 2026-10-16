@@ -27,8 +27,10 @@
     "label": "Язык интерфейса",
     "kk": "ҚАЗ",
     "ru": "РУС",
+    "en": "ENG",
     "kkFull": "Қазақша",
-    "ruFull": "Русский"
+    "ruFull": "Русский",
+    "enFull": "English"
   },
   "BottomNav": {
     "label": "Основные разделы",
@@ -47,7 +49,7 @@
     "ctaLab": "Войти в лабораторию",
     "ctaTeacher": "Для учителя",
     "tags": {
-      "languages": "ҚАЗ · РУС",
+      "languages": "ҚАЗ · РУС · ENG",
       "platforms": "ВЕБ · ТЕЛЕФОН · ОФЛАЙН",
       "ar": "QR → AR",
       "exams": "ЕНТ · МОДО · ОЛИМПИАДЫ"

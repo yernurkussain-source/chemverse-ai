@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useIsDark } from "@/hooks/use-is-dark";
 import {
@@ -24,6 +24,8 @@ const STATE_COLOR: Record<MediumState, string> = {
 
 export function TitrationLab() {
   const t = useTranslations("Lab");
+  // Сандар тілге сай: kk/ru — 1,79; en — 1.79
+  const locale = useLocale();
   const [volume, setVolume] = useState(18);
   const [dropKey, setDropKey] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -107,8 +109,8 @@ export function TitrationLab() {
         </svg>
 
         <dl className="m-0 grid w-full grid-cols-2 gap-2.5">
-          <Readout label={t("volume")} value={formatDecimal(volume)} />
-          <Readout label={t("ph")} value={formatDecimal(pH)} />
+          <Readout label={t("volume")} value={formatDecimal(volume, locale)} />
+          <Readout label={t("ph")} value={formatDecimal(pH, locale)} />
         </dl>
         <p className={cn("text-center text-[0.92rem] font-bold", STATE_COLOR[state])} aria-live="polite">
           {t(`states.${state}`)}

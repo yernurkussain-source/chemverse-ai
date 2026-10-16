@@ -1,8 +1,8 @@
 import { defineRouting } from "next-intl/routing";
 
 export const routing = defineRouting({
-  locales: ["kk", "ru"],
-  // Қазақша — әдепкі тіл: "/" → "/kk" (қазақша), "/ru" — орысша.
+  locales: ["kk", "ru", "en"],
+  // Қазақша — әдепкі тіл: "/" → "/kk" (қазақша), "/ru" — орысша, "/en" — ағылшынша.
   // Префикс әрдайым қойылады: браузер мен сервер маршрутты бірдей түсінеді
   // (Next 16-ның алдын ала жүктеуі "/learn" сияқты префикссіз жолдарда қателеседі).
   defaultLocale: "kk",

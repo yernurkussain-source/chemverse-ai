@@ -14,21 +14,21 @@ npm run lint     # код сапасын тексеру
 
 ## Технологиялар
 
-Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · shadcn/ui · next-intl (kk, ru)
+Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · shadcn/ui · next-intl (kk, ru, en)
 
 ## Құрылым
 
 | Жол | Не бар |
 | --- | --- |
-| `src/app/[locale]/` | Беттер (`/kk/...`, `/ru/...`) |
+| `src/app/[locale]/` | Беттер (`/kk/...`, `/ru/...`, `/en/...`) |
 | `src/components/landing/` | Басты беттің бөлімдері |
 | `src/components/layout/` | Жоғарғы мәзір, төменгі навигация, режим және тіл ауыстырғыштар |
 | `src/components/ui/` | shadcn/ui компоненттері |
 | `src/lib/chemistry/` | Химиялық есептеулер (pH, молярлық масса) |
 | `src/i18n/` | Тіл баптаулары (next-intl) |
-| `messages/kk.json`, `messages/ru.json` | Интерфейс мәтіндері |
+| `messages/kk.json`, `messages/ru.json`, `messages/en.json` | Интерфейс мәтіндері |
 | `src/app/globals.css` | Түстер (ашық/қараңғы режим) және қаріптер |
 
 ## Тілдер
 
-Қазақша — әдепкі тіл: `/` → `/kk`. Орысша — `/ru`. Жаңа мәтін қосқанда оны **екі** файлға да (`kk.json`, `ru.json`) жазыңыз.
+Қазақша — әдепкі тіл: `/` → `/kk`. Орысша — `/ru`, ағылшынша — `/en`. Жаңа мәтін қосқанда оны **үш** файлға да (`kk.json`, `ru.json`, `en.json`) жазыңыз.

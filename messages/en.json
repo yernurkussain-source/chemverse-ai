@@ -1,0 +1,386 @@
+{
+  "Meta": {
+    "title": "CHEMVERSE AI — an AI platform for chemistry",
+    "description": "A chemistry space for teachers and students: 3D and AR molecules, gesture control, a virtual lab, an AI tutor in Kazakh, and preparation for the UNT, MODO and olympiads."
+  },
+  "Common": {
+    "skipToContent": "Skip to main content",
+    "logoLabel": "CHEMVERSE AI — home"
+  },
+  "Header": {
+    "menuLabel": "Main menu",
+    "links": {
+      "modules": "Features",
+      "lab": "Lab",
+      "ai": "AI tutor",
+      "class": "Live lesson",
+      "teacher": "For teachers",
+      "app": "App"
+    },
+    "demo": "Watch demo"
+  },
+  "Theme": {
+    "toDark": "Switch to dark mode",
+    "toLight": "Switch to light mode"
+  },
+  "LocaleSwitcher": {
+    "label": "Interface language",
+    "kk": "ҚАЗ",
+    "ru": "РУС",
+    "en": "ENG",
+    "kkFull": "Қазақша",
+    "ruFull": "Русский",
+    "enFull": "English"
+  },
+  "BottomNav": {
+    "label": "Main sections",
+    "home": "Home",
+    "learn": "Learn",
+    "scan": "Scan",
+    "lab3d": "3D Lab",
+    "profile": "Profile"
+  },
+  "Hero": {
+    "eyebrow": "AI platform for chemistry · grades 7–11",
+    "titleLine1": "<em>See</em> the molecule.",
+    "titleLine2": "Turn it with your hand.",
+    "titleLine3": "Understand.",
+    "lead": "CHEMVERSE AI is a chemistry space for teachers and students: 3D and AR molecules, gesture control, a virtual lab, an AI tutor in Kazakh, and preparation for the UNT, MODO and olympiads — all in one place.",
+    "ctaLab": "Enter the lab",
+    "ctaTeacher": "For teachers",
+    "tags": {
+      "languages": "ҚАЗ · РУС · ENG",
+      "platforms": "WEB · PHONE · OFFLINE",
+      "ar": "QR → AR",
+      "exams": "UNT · MODO · OLYMPIADS"
+    }
+  },
+  "Viewer": {
+    "label": "Molecule viewer",
+    "placeholderTitle": "The 3D viewer will be here",
+    "placeholderNote": "Rotation, zoom and atom properties are coming soon",
+    "pickLabel": "Choose a molecule",
+    "facts": {
+      "mass": "Molar mass",
+      "shape": "Shape",
+      "angle": "Bond angle"
+    },
+    "massUnit": "g/mol"
+  },
+  "Molecules": {
+    "h2o": { "name": "Water", "shape": "Bent" },
+    "co2": { "name": "Carbon dioxide", "shape": "Linear" },
+    "ch4": { "name": "Methane", "shape": "Tetrahedral" },
+    "nh3": { "name": "Ammonia", "shape": "Trigonal pyramidal" },
+    "ethanol": { "name": "Ethanol", "shape": "Tetrahedral carbons" },
+    "benzene": { "name": "Benzene", "shape": "Planar hexagon" }
+  },
+  "Modules": {
+    "eyebrow": "Features",
+    "title": "One platform — from lesson to exam",
+    "text": "The teacher plans the lesson and runs a live quiz with the class; at home, students review with 3D and AI and prepare for the UNT. All results are stored in one place.",
+    "items": {
+      "molecules": {
+        "title": "3D molecules and AR",
+        "text": "Rotate a molecule and tap an atom to see its properties. Scan a QR code in a textbook or on a slide, and the molecule appears on the desk through the phone camera.",
+        "who": "Student · Teacher"
+      },
+      "gesture": {
+        "title": "Gesture control",
+        "text": "The camera recognizes your hand: point to rotate, pinch to zoom, make a fist for the next molecule.",
+        "who": "In class · On the projector"
+      },
+      "lab": {
+        "title": "Virtual lab",
+        "text": "Titration, pH and indicators even in a school without reagents. Dangerous experiments — done safely.",
+        "who": "Student"
+      },
+      "tutor": {
+        "title": "AI tutor in Kazakh",
+        "text": "Step-by-step explanations with sources. A guiding mode helps without giving the answer away.",
+        "who": "Student · 24/7"
+      },
+      "live": {
+        "title": "Live lesson",
+        "text": "QR on the projector → students join from their phones → answers update the chart in real time.",
+        "who": "Teacher · Class"
+      },
+      "plan": {
+        "title": "AI lesson plan",
+        "text": "Type a topic and get a short-term plan with learning objectives, assessment criteria and descriptors.",
+        "who": "Teacher"
+      },
+      "exams": {
+        "title": "UNT · MODO · Olympiad",
+        "text": "Timed tests, server-side grading, a map of weak topics and AI error analysis.",
+        "who": "Student · Teacher"
+      }
+    }
+  },
+  "Lab": {
+    "eyebrow": "Virtual lab",
+    "title": "Titrating an acid with a base",
+    "text": "The flask holds 25 mL of 0.1 M HCl with phenolphthalein. Add 0.1 M NaOH from the burette. pH is calculated with the exact formula: past the equivalence point, the solution turns raspberry pink.",
+    "flaskLabel": "Flask: HCl solution with phenolphthalein",
+    "flaskText": "HCl + phph",
+    "volume": "V(NaOH), mL",
+    "ph": "pH",
+    "states": {
+      "acid": "Acidic solution",
+      "equivalence": "Equivalence point · pH 7",
+      "weakBase": "Slightly basic solution",
+      "base": "Basic solution · indicator turned pink"
+    },
+    "curveLabel": "Titration curve: pH versus the volume of NaOH added",
+    "equivalenceMark": "equivalence · 25 mL",
+    "slider": "NaOH volume",
+    "drop": "+1 drop",
+    "reset": "Start over",
+    "conditions": "HCl + NaOH → NaCl + H₂O · c(HCl) = c(NaOH) = 0.1 mol/L · phenolphthalein: colorless to raspberry pink at pH 8.2–10"
+  },
+  "Ai": {
+    "eyebrow": "AI tutor",
+    "title": "Ask a question — get a step-by-step answer",
+    "text": "The AI relies only on verified learning materials, and the program recalculates numerical answers to check them. Every answer ends with its source.",
+    "gesturesTitle": "Camera control gestures",
+    "gestures": {
+      "point": { "name": "☝ Index finger", "action": "Rotate the molecule" },
+      "pinch": { "name": "🤏 Pinch", "action": "Zoom in / out" },
+      "fist": { "name": "✊ Fist", "action": "Next molecule" },
+      "palm": { "name": "✋ Open palm", "action": "Stop, reset the view" }
+    },
+    "privacy": "Camera frames are processed on the device and never sent to a server.",
+    "chat": {
+      "title": "Chemistry AI",
+      "language": "in English",
+      "greeting": "Hi! I’m your chemistry assistant. Pick one of the questions below and I’ll explain it step by step.",
+      "greetingNote": "Prototype: answers are pre-written",
+      "suggestionsLabel": "Suggested questions",
+      "typing": "The AI is typing",
+      "qa": {
+        "shape": {
+          "q": "Why is a water molecule bent?",
+          "a": "1) The oxygen atom has 4 electron pairs around it: 2 bonding pairs and 2 lone pairs.\n2) The four pairs point toward the corners of a tetrahedron.\n3) Lone pairs repel the bonds more strongly, so the H–O–H angle is not 109.5° but about 104.5°.\n\nPick H₂O in the 3D viewer above and take a look.",
+          "src": "Source: Chemistry, grade 8, “Spatial structure of molecules”"
+        },
+        "ph": {
+          "q": "What is the pH of a 0.1 M HCl solution?",
+          "a": "1) HCl is a strong acid and dissociates completely: HCl → H⁺ + Cl⁻.\n2) So [H⁺] = 0.1 mol/L.\n3) pH = −log[H⁺] = −log(0.1) = 1.\n\nCheck: the titration curve in the lab starts at exactly pH = 1.00 at 0 mL.",
+          "src": "Calculation re-checked by the program ✓"
+        },
+        "bonds": {
+          "q": "How do covalent and ionic bonds differ?",
+          "a": "Covalent bond: atoms share an electron pair (H₂O, CH₄, CO₂).\nIonic bond: an electron moves completely from one atom to another, and the oppositely charged ions attract each other (NaCl).\n\nRemember: if the electronegativity difference is greater than about 1.7, the bond is mostly ionic.",
+          "src": "Source: Chemistry, grade 8, “Types of chemical bonds”"
+        }
+      }
+    }
+  },
+  "Live": {
+    "eyebrow": "Live lesson",
+    "title": "The whole class answers one question — in 30 seconds",
+    "text": "The teacher puts a QR code on the projector. Students join without signing up, using just their name. The chart updates with every answer, so you instantly see who didn’t get it.",
+    "joinCode": "Join code",
+    "qrLabel": "QR code to join the live lesson",
+    "qrValue": "CHEMVERSE AI · Live lesson · code 482913",
+    "participants": "Participants: <b>{count}</b> / {total}",
+    "questionMeta": "Question 3 / 10 · Grade 8",
+    "question": "What is the shape of a methane (CH₄) molecule?",
+    "answersLabel": "Answer chart",
+    "options": {
+      "a": "Linear",
+      "b": "Tetrahedral",
+      "c": "Square planar",
+      "d": "Bent"
+    },
+    "collecting": "Collecting answers…",
+    "resultCorrect": "Correct answer: B — Tetrahedral.",
+    "resultStats": "17 of 26 students answered correctly (65%)",
+    "replay": "Replay"
+  },
+  "Studio": {
+    "eyebrow": "For teachers",
+    "title": "A short-term plan — in one minute",
+    "text": "Choose a topic and the AI suggests lesson stages, timing, tasks and platform resources: 3D, the lab, QR. The teacher makes the final call: every plan is fully editable.",
+    "grade": "Grade",
+    "topic": "Topic",
+    "length": "Duration",
+    "submit": "Create plan",
+    "grades": {
+      "g7": "Grade 7",
+      "g8": "Grade 8",
+      "g9": "Grade 9",
+      "g10": "Grade 10",
+      "g11": "Grade 11"
+    },
+    "lengths": {
+      "m40": "40 minutes",
+      "m45": "45 minutes"
+    },
+    "minutes": "{count} min",
+    "goalTitle": "Learning objective",
+    "goalNote": "Check the objective code against the current curriculum",
+    "assessment": "Assessment",
+    "criteria": "criteria",
+    "stageNames": {
+      "start": "Beginning",
+      "middle": "Middle",
+      "end": "End"
+    },
+    "topics": {
+      "bond": {
+        "title": "Types of chemical bonds",
+        "goal": "8.2.2.1 — explain how covalent (polar, nonpolar) and ionic bonds form",
+        "stages": {
+          "start": {
+            "items": {
+              "1": "Hook: “Why does table salt dissolve in water while fat doesn’t?”",
+              "2": "Live lesson: a quick 2-question poll"
+            },
+            "resources": { "1": "Live lesson · QR" }
+          },
+          "middle": {
+            "items": {
+              "1": "Pair work: explore H₂O, CO₂ and NaCl models in 3D",
+              "2": "Table: determine the bond type from the electronegativity difference",
+              "3": "Differentiation: the advanced level compares NH₃ and CH₄"
+            },
+            "resources": { "1": "3D: H₂O, CO₂, CH₄", "2": "AR cards" }
+          },
+          "end": {
+            "items": {
+              "1": "Formative assessment: 5 questions (auto-checked on the platform)",
+              "2": "Reflection: “What I understood today / what was hard”"
+            },
+            "resources": { "1": "Test · 5 questions" }
+          }
+        },
+        "criteria": "Determines the bond type from electronegativity; gives two examples; shows the shared electron pair on a model."
+      },
+      "acid": {
+        "title": "Acids and bases. pH",
+        "goal": "8.3.1.3 — determine the medium of solutions using the pH scale and indicators",
+        "stages": {
+          "start": {
+            "items": {
+              "1": "Predict the medium of household substances (lemon, soap)"
+            },
+            "resources": { "1": "Live lesson · QR" }
+          },
+          "middle": {
+            "items": {
+              "1": "Virtual lab: titrate an HCl solution with NaOH",
+              "2": "Find the equivalence point on the curve and explain the indicator color change",
+              "3": "Differentiation: pH calculation problems (0.1 M; 0.01 M)"
+            },
+            "resources": { "1": "Lab: titration", "2": "AI tutor" }
+          },
+          "end": {
+            "items": {
+              "1": "Formative assessment: 5 questions",
+              "2": "Reflection: “Which substance at home would you like to know the pH of?”"
+            },
+            "resources": { "1": "Test · 5 questions" }
+          }
+        },
+        "criteria": "Identifies the medium from the pH value; explains the color change of phenolphthalein; calculates the pH of a strong acid."
+      },
+      "mol": {
+        "title": "Spatial structure of molecules",
+        "goal": "8.2.2.4 — explain the shape of molecules by electron pair repulsion",
+        "stages": {
+          "start": {
+            "items": {
+              "1": "Problem question: “Why is CO₂ linear while H₂O is bent?”"
+            },
+            "resources": { "1": "3D: CO₂ / H₂O" }
+          },
+          "middle": {
+            "items": {
+              "1": "Camera control: a student at the board rotates a molecule by hand",
+              "2": "Group work: compare the angles in CH₄, NH₃ and H₂O",
+              "3": "AR: see the molecule on the desk via the QR code in the homework"
+            },
+            "resources": { "1": "Gestures", "2": "AR · QR" }
+          },
+          "end": {
+            "items": {
+              "1": "Live lesson: 3 questions with instant analysis of the results",
+              "2": "Reflection"
+            },
+            "resources": { "1": "Live lesson" }
+          }
+        },
+        "criteria": "Names the shape of the molecule; explains the difference in angles by lone electron pairs."
+      }
+    }
+  },
+  "AppShowcase": {
+    "eyebrow": "Mobile app",
+    "title": "Website, phone, offline — one platform",
+    "text": "One codebase powers the website, an installable PWA and an Android app. In schools with slow internet, lessons and tests are saved in advance.",
+    "features": {
+      "apk": {
+        "title": "Android APK and PWA",
+        "text": "On iPhone, install it via “Add to Home Screen”"
+      },
+      "scanner": {
+        "title": "“Scan” button in the center",
+        "text": "QR, AR and photos of problems from a notebook"
+      },
+      "xp": {
+        "title": "XP, daily streaks, badges",
+        "text": "Motivates 10 minutes of study every day"
+      }
+    },
+    "phone": {
+      "label": "App home screen (mockup)",
+      "hello": "Hi, Aigerim!",
+      "streak": "Streak",
+      "streakValue": "7 days",
+      "xp": "XP",
+      "xpValue": "1,240",
+      "taskMeta": "TEACHER’S TASK · due tomorrow",
+      "taskTitle": "Chemical bonds — 10 questions",
+      "taskStart": "Start",
+      "readiness": "UNT READINESS",
+      "topics": {
+        "atom": "Atomic structure",
+        "bond": "Chemical bonds",
+        "solutions": "Solutions, pH",
+        "organic": "Organic chemistry"
+      }
+    }
+  },
+  "Footer": {
+    "tagline": "a platform to see chemistry and explore it with your own hands",
+    "prototype": "PROTOTYPE · AI answers and the live lesson are simulated"
+  },
+  "ComingSoon": {
+    "badge": "Coming soon",
+    "back": "Back to home",
+    "pages": {
+      "learn": {
+        "title": "Learn",
+        "text": "Topics, lessons and UNT preparation modules will be here."
+      },
+      "scan": {
+        "title": "Scan",
+        "text": "QR scanning, AR molecules and ChemScan — snap a photo of a problem from your notebook and get the solution."
+      },
+      "molecules": {
+        "title": "3D Lab",
+        "text": "A 3D catalog of molecules, atom properties and an interactive periodic table."
+      },
+      "profile": {
+        "title": "Profile",
+        "text": "Your personal space: XP, daily streak, badges and learning progress."
+      }
+    }
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "text": "The link may be wrong, or this page hasn’t been created yet.",
+    "back": "Back to home"
+  }
+}

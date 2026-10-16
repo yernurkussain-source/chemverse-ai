@@ -8,7 +8,7 @@
 
 ## Тіл
 - Маған әрқашан ҚАЗАҚША жауап бер.
-- Интерфейс мәтіндері `messages/kk.json` және `messages/ru.json` файлдарында болсын (next-intl). Әдепкі тіл — қазақша.
+- Интерфейс мәтіндері `messages/kk.json`, `messages/ru.json` және `messages/en.json` файлдарында болсын (next-intl). Әдепкі тіл — қазақша. Жаңа мәтін үш файлға да қосылады.
 
 ## Технологиялар (өзгертпе, алдымен менен сұра)
 - Next.js (App Router) + TypeScript + Tailwind CSS + shadcn/ui

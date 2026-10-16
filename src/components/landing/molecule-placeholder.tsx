@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { molarMass, MOLECULES, type MoleculeId } from "@/lib/chemistry/molecules";
-import { formatDecimal } from "@/lib/format";
+import { formatDecimal, formatShort } from "@/lib/format";
 
 /**
  * 3D молекула көрінісінің орны.
@@ -13,8 +13,12 @@ import { formatDecimal } from "@/lib/format";
 export function MoleculePlaceholder() {
   const t = useTranslations("Viewer");
   const tm = useTranslations("Molecules");
+  // Сандар тілге сай: kk/ru — 18,02; en — 18.02
+  const locale = useLocale();
   const [selected, setSelected] = useState<MoleculeId>("h2o");
   const molecule = MOLECULES.find((m) => m.id === selected) ?? MOLECULES[0];
+  const mass = formatDecimal(molarMass(molecule.atoms), locale);
+  const angle = `${molecule.angle.approx ? "≈" : ""}${formatShort(molecule.angle.degrees, locale)}°`;
 
   return (
     <figure
@@ -75,9 +79,9 @@ export function MoleculePlaceholder() {
 
       {/* Молекула деректері */}
       <dl className="m-0 grid grid-cols-3 gap-px border-t border-line bg-line">
-        <Fact label={t("facts.mass")} value={`${formatDecimal(molarMass(molecule.atoms))} ${t("massUnit")}`} />
+        <Fact label={t("facts.mass")} value={`${mass} ${t("massUnit")}`} />
         <Fact label={t("facts.shape")} value={tm(`${molecule.id}.shape`)} />
-        <Fact label={t("facts.angle")} value={molecule.angle} />
+        <Fact label={t("facts.angle")} value={angle} />
       </dl>
     </figure>
   );

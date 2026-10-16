@@ -27,8 +27,10 @@
     "label": "Интерфейс тілі",
     "kk": "ҚАЗ",
     "ru": "РУС",
+    "en": "ENG",
     "kkFull": "Қазақша",
-    "ruFull": "Русский"
+    "ruFull": "Русский",
+    "enFull": "English"
   },
   "BottomNav": {
     "label": "Негізгі бөлімдер",
@@ -47,7 +49,7 @@
     "ctaLab": "Зертханаға кіру",
     "ctaTeacher": "Мұғалімге арналған",
     "tags": {
-      "languages": "ҚАЗ · РУС",
+      "languages": "ҚАЗ · РУС · ENG",
       "platforms": "ВЕБ · ТЕЛЕФОН · ОФЛАЙН",
       "ar": "QR → AR",
       "exams": "ҰБТ · ББЖМ · ОЛИМПИАДА"
