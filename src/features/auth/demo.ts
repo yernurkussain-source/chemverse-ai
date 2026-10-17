@@ -39,11 +39,29 @@ export async function ensureDemoAccounts(admin: SupabaseClient, password: string
   const studentId = await ensureUser(admin, DEMO_ACCOUNTS.student.email, DEMO_ACCOUNTS.student.fullName, password);
   const teacherId = await ensureUser(admin, DEMO_ACCOUNTS.teacher.email, DEMO_ACCOUNTS.teacher.fullName, password);
 
-  const profiles = await admin.from("profiles").upsert([
-    { id: studentId, role: "student", full_name: DEMO_ACCOUNTS.student.fullName, grade: DEMO_ACCOUNTS.student.grade, onboarded: true, is_demo: true, xp: 1240, streak_days: 7 },
-    { id: teacherId, role: "teacher", full_name: DEMO_ACCOUNTS.teacher.fullName, grade: DEMO_ACCOUNTS.teacher.grade, onboarded: true, is_demo: true },
-  ]);
-  if (profiles.error) throw profiles.error;
+  // Әр профиль бөлек сақталады: бір сұраумен бірнеше жол жіберсе, бір жолда жоқ баған
+  // (мысалы мұғалімде xp) null болып кетеді де, NOT NULL шектеуі қате береді
+  const studentProfile = await admin.from("profiles").upsert({
+    id: studentId,
+    role: "student",
+    full_name: DEMO_ACCOUNTS.student.fullName,
+    grade: DEMO_ACCOUNTS.student.grade,
+    onboarded: true,
+    is_demo: true,
+    xp: 1240,
+    streak_days: 7,
+  });
+  if (studentProfile.error) throw studentProfile.error;
+
+  const teacherProfile = await admin.from("profiles").upsert({
+    id: teacherId,
+    role: "teacher",
+    full_name: DEMO_ACCOUNTS.teacher.fullName,
+    grade: DEMO_ACCOUNTS.teacher.grade,
+    onboarded: true,
+    is_demo: true,
+  });
+  if (teacherProfile.error) throw teacherProfile.error;
 
   // Мұғалімнің демо сыныбы (бір рет жасалады)
   const existing = await admin.from("classes").select("id").eq("teacher_id", teacherId).limit(1).maybeSingle();
