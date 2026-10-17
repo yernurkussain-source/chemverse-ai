@@ -59,8 +59,6 @@
   },
   "Viewer": {
     "label": "Molecule viewer",
-    "placeholderTitle": "The 3D viewer will be here",
-    "placeholderNote": "Rotation, zoom and atom properties are coming soon",
     "pickLabel": "Choose a molecule",
     "facts": {
       "mass": "Molar mass",
@@ -72,27 +70,53 @@
   "Molecules": {
     "h2o": {
       "name": "Water",
-      "shape": "Bent"
+      "shape": "Bent",
+      "description": "The basis of life. Two lone pairs on oxygen bend the molecule, which makes water a polar solvent."
     },
     "co2": {
       "name": "Carbon dioxide",
-      "shape": "Linear"
+      "shape": "Linear",
+      "description": "A product of breathing and burning. Its two double bonds lie on one line, so the molecule is nonpolar."
     },
     "ch4": {
       "name": "Methane",
-      "shape": "Tetrahedral"
+      "shape": "Tetrahedral",
+      "description": "The main component of natural gas. Four C–H bonds point to the corners of a tetrahedron."
     },
     "nh3": {
       "name": "Ammonia",
-      "shape": "Trigonal pyramidal"
+      "shape": "Trigonal pyramidal",
+      "description": "A pungent gas and raw material for fertilizers. The lone pair on nitrogen gives the molecule a pyramid shape."
     },
     "ethanol": {
       "name": "Ethanol",
-      "shape": "Tetrahedral carbons"
+      "shape": "Tetrahedral carbons",
+      "description": "A typical alcohol. Its –OH group forms hydrogen bonds with water molecules."
     },
     "benzene": {
       "name": "Benzene",
-      "shape": "Planar hexagon"
+      "shape": "Planar hexagon",
+      "description": "An aromatic hydrocarbon. The electrons of its six carbon atoms are spread evenly around the ring."
+    },
+    "nacl": {
+      "name": "Sodium chloride (table salt)",
+      "shape": "Cubic crystal lattice",
+      "description": "An ionic compound: not a molecule but a crystal lattice of Na⁺ and Cl⁻ ions. Each ion is surrounded by 6 counter-ions."
+    },
+    "h2so4": {
+      "name": "Sulfuric acid",
+      "shape": "Tetrahedral (around S)",
+      "description": "A strong diprotic acid and the key product of the chemical industry. Sulfur has an oxidation state of +6."
+    },
+    "glucose": {
+      "name": "Glucose",
+      "shape": "Six-membered ring",
+      "description": "A product of photosynthesis and the cell’s main energy source. In solution it exists mostly as a ring."
+    },
+    "caffeine": {
+      "name": "Caffeine",
+      "shape": "Planar fused rings",
+      "description": "An alkaloid found in tea and coffee. A flat structure of two fused rings with four nitrogen atoms."
     }
   },
   "Modules": {
@@ -420,14 +444,6 @@
       "scan": {
         "title": "Scan",
         "text": "QR scanning, AR molecules and ChemScan — snap a photo of a problem from your notebook and get the solution."
-      },
-      "molecules": {
-        "title": "3D Lab",
-        "text": "A 3D catalog of molecules, atom properties and an interactive periodic table."
-      },
-      "profile": {
-        "title": "Profile",
-        "text": "Your personal space: XP, daily streak, badges and learning progress."
       }
     }
   },
@@ -520,5 +536,63 @@
     "completeOnboarding": "Complete profile",
     "edit": "Edit",
     "signOut": "Log out"
+  },
+  "MoleculeViewer": {
+    "label": "3D molecule viewer. Drag to rotate; tap an atom.",
+    "loading": "Loading 3D…",
+    "error": "Could not load the 3D viewer.",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "reset": "Reset view",
+    "spin": "Start/stop rotation",
+    "styleLabel": "Display style",
+    "styles": {
+      "ballStick": "Ball-and-stick",
+      "spaceFill": "Space-filling",
+      "line": "Lines"
+    },
+    "atomHint": "Tap an atom to see its properties",
+    "atomMass": "Atomic mass",
+    "electronegativity": "Electronegativity",
+    "closeAtom": "Close"
+  },
+  "MoleculesPage": {
+    "title": "3D Lab: molecules",
+    "subtitle": "10 molecules and a crystal: rotate, zoom and tap atoms to see their properties.",
+    "open": "Open 3D",
+    "back": "All molecules",
+    "source": "Structure source: PubChem (CID {cid})",
+    "sourceGenerated": "Structure: a fragment of the NaCl crystal lattice (Na–Cl = 2.82 Å)",
+    "periodicLink": "Periodic table",
+    "composition": "Composition"
+  },
+  "PeriodicTable": {
+    "title": "Periodic table",
+    "subtitle": "Tap an element to see its name, mass, electronegativity and position.",
+    "scrollHint": "Scroll the table left and right",
+    "selectHint": "Choose an element in the table",
+    "atomicNumber": "Atomic number",
+    "atomicMass": "Atomic mass",
+    "electronegativity": "Electronegativity (Pauling)",
+    "period": "Period",
+    "group": "Group",
+    "category": "Type",
+    "unknown": "unknown",
+    "radioactive": "No stable isotopes — mass number of the most stable isotope",
+    "lanthanides": "Lanthanides",
+    "actinides": "Actinides",
+    "legend": "Element types",
+    "categories": {
+      "alkali": "Alkali metals",
+      "alkaline-earth": "Alkaline earth metals",
+      "transition": "Transition metals",
+      "post-transition": "Post-transition metals",
+      "metalloid": "Metalloids",
+      "nonmetal": "Nonmetals",
+      "halogen": "Halogens",
+      "noble-gas": "Noble gases",
+      "lanthanide": "Lanthanides",
+      "actinide": "Actinides"
+    }
   }
 }

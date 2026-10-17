@@ -5,7 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 
-type PageKey = "learn" | "scan" | "molecules" | "profile";
+type PageKey = "learn" | "scan";
 
 /** Әлі жасалмаған бөлімдерге арналған уақытша бет (навигацияда бос батырма болмауы үшін) */
 export function ComingSoon({ page, icon }: { page: PageKey; icon: ReactNode }) {

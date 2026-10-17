@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { Eyebrow } from "./section";
-import { MoleculePlaceholder } from "./molecule-placeholder";
+import { MoleculeShowcase } from "./molecule-showcase";
 
 const TAGS = ["languages", "platforms", "ar", "exams"] as const;
 
@@ -56,7 +56,7 @@ export function Hero() {
           </div>
         </div>
 
-        <MoleculePlaceholder />
+        <MoleculeShowcase />
       </div>
     </section>
   );

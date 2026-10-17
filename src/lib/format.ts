@@ -12,6 +12,11 @@ export function formatDecimal(value: number, locale: Locale, digits = 2): string
   return value.toFixed(digits).replace(".", DECIMAL_SEPARATOR[locale]);
 }
 
+/** Санды өзгертпей, тек ондық бөлгішін ауыстырып жазу: 12.011 → "12,011" */
+export function formatPlain(value: number, locale: Locale): string {
+  return String(value).replace(".", DECIMAL_SEPARATOR[locale]);
+}
+
 /** Бүтін сан — бүтін күйінде, әйтпесе бір ондық таңбамен: 180 → "180", 104.5 → "104,5" */
 export function formatShort(value: number, locale: Locale): string {
   return Number.isInteger(value) ? String(value) : formatDecimal(value, locale, 1);
