@@ -30,8 +30,17 @@ export default async function proxy(request: NextRequest) {
       },
     },
   });
-  const { data } = await supabase.auth.getClaims();
+  const { data, error } = await supabase.auth.getClaims();
   const isLoggedIn = Boolean(data?.claims?.sub);
+
+  // Сессия жабылған/ескірген (мысалы refresh_token_not_found) — ескі cookie-лерді өшіреміз,
+  // әйтпесе әр сұраныста қайта жаңартуға тырысып, қате бере береді
+  if (error && !isLoggedIn) {
+    request.cookies
+      .getAll()
+      .filter(({ name }) => name.startsWith("sb-") && name.includes("-auth-token"))
+      .forEach(({ name }) => response.cookies.delete(name));
+  }
 
   // 3) Жабық беттер: "/kk/profile" → тіл "kk", жол "/profile"
   const [, locale, ...rest] = request.nextUrl.pathname.split("/");

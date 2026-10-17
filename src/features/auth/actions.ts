@@ -7,7 +7,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
-import { ensureDemoAccounts, type DemoRole } from "./demo";
+import { ensureDemoAccounts, resetDemoPassword, type DemoRole } from "./demo";
 import { mapAuthError, type AuthState, type OnboardingState } from "./errors";
 
 // Server Action ішінде тіл URL-ден оқылмайды, сондықтан формада жасырын өріс ретінде келеді
@@ -92,7 +92,18 @@ export async function demoLogin(_prev: AuthState, formData: FormData): Promise<A
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email: accounts[role].email, password });
+  const credentials = { email: accounts[role].email, password };
+  let { error } = await supabase.auth.signInWithPassword(credentials);
+  if (error?.code === "invalid_credentials") {
+    // Құпия сөз .env.local-да өзгерген болуы мүмкін — бір рет жаңартып, қайта кіреміз
+    try {
+      await resetDemoPassword(admin, accounts[role].id, password);
+    } catch (resetError) {
+      console.error("Демо құпия сөзін жаңарту қатесі:", resetError);
+      return { error: "unknown" };
+    }
+    ({ error } = await supabase.auth.signInWithPassword(credentials));
+  }
   if (error) return { error: mapAuthError(error.code) };
 
   redirect({ href: "/profile", locale });

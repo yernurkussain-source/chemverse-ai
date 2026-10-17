@@ -64,6 +64,8 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
     <html
       lang={locale}
       suppressHydrationWarning
+      // globals.css-тегі smooth scroll бет ауысқанда өшірілуі үшін (Next.js ұсынысы)
+      data-scroll-behavior="smooth"
       className={`${montserrat.variable} ${onest.variable} ${firaCode.variable} ${unbounded.variable} h-full antialiased`}
     >
       <head>

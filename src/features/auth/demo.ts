@@ -11,7 +11,11 @@ export const DEMO_ACCOUNTS = {
 // Демо сыныптың коды басты беттегі Live сабақ кодымен бірдей
 const DEMO_CLASS = { name: "8А", grade: 8, joinCode: "482913" };
 
-/** Пайдаланушы жоқ болса жасайды, бар болса құпия сөзін жаңартады; id қайтарады */
+/**
+ * Пайдаланушы жоқ болса жасайды; id қайтарады.
+ * Бар пайдаланушының құпия сөзін мұнда ӨЗГЕРТПЕЙМІЗ: Supabase құпия сөз ауысқанда барлық
+ * сессияны жабады — бірнеше қазы бір мезгілде кірсе, бір-бірін шығарып жіберер еді.
+ */
 async function ensureUser(admin: SupabaseClient, email: string, fullName: string, password: string) {
   const created = await admin.auth.admin.createUser({
     email,
@@ -25,10 +29,13 @@ async function ensureUser(admin: SupabaseClient, email: string, fullName: string
   if (error) throw error;
   const existing = data.users.find((u) => u.email === email);
   if (!existing) throw created.error ?? new Error(`Демо пайдаланушы табылмады: ${email}`);
-
-  const updated = await admin.auth.admin.updateUserById(existing.id, { password });
-  if (updated.error) throw updated.error;
   return existing.id;
+}
+
+/** .env.local-дағы DEMO_USER_PASSWORD өзгерсе ғана шақырылады (кіру сәтсіз болғанда) */
+export async function resetDemoPassword(admin: SupabaseClient, userId: string, password: string) {
+  const updated = await admin.auth.admin.updateUserById(userId, { password });
+  if (updated.error) throw updated.error;
 }
 
 /**

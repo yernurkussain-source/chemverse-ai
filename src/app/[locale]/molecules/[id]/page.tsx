@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { MoleculeDetailViewer } from "@/components/molecules/molecule-detail-viewer";
@@ -19,8 +21,26 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/molecule
   return { title: `${tm(`${molecule.id}.name`)} (${molecule.formula})`, description: tm(`${molecule.id}.description`) };
 }
 
+type Params = PageProps<"/[locale]/molecules/[id]">["params"];
+
 // Бір молекуланың беті: үлкен 3D көрініс және деректер
-export default async function MoleculePage({ params }: PageProps<"/[locale]/molecules/[id]">) {
+export default function MoleculePage({ params }: PageProps<"/[locale]/molecules/[id]">) {
+  const t = useTranslations("MoleculesPage");
+  const tViewer = useTranslations("MoleculeViewer");
+  return (
+    <div className="page-wrap py-8 md:py-12">
+      <Link href="/molecules" className="text-[0.9rem] font-semibold text-cyan hover:underline">
+        ← {t("back")}
+      </Link>
+      {/* URL-дегі молекула нөмірін оқитын бөлік — бет ауысқанда бірден ашылуы үшін Suspense ішінде */}
+      <Suspense fallback={<p className="mt-5 text-muted-foreground">{tViewer("loading")}</p>}>
+        <MoleculeContent params={params} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function MoleculeContent({ params }: { params: Params }) {
   const { id } = await params;
   const molecule = getMolecule(id);
   if (!molecule) notFound();
@@ -32,11 +52,7 @@ export default async function MoleculePage({ params }: PageProps<"/[locale]/mole
   const angle = `${molecule.angle.approx ? "≈" : ""}${formatShort(molecule.angle.degrees, locale)}°`;
 
   return (
-    <div className="page-wrap py-8 md:py-12">
-      <Link href="/molecules" className="text-[0.9rem] font-semibold text-cyan hover:underline">
-        ← {t("back")}
-      </Link>
-
+    <>
       <div className="mt-5 grid items-start gap-8 lg:grid-cols-[1.1fr_1fr]">
         <MoleculeDetailViewer id={molecule.id} />
 
@@ -73,7 +89,7 @@ export default async function MoleculePage({ params }: PageProps<"/[locale]/mole
           </p>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
