@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export type Profile = {
@@ -16,6 +17,9 @@ export type ClassInfo = { id: string; name: string; grade: number | null; join_c
 
 /** Кірген пайдаланушы, оның профилі және сыныптары (кірмеген болса — null) */
 export async function getCurrentAccount() {
+  // Бұл деректер әр сұраныста жаңадан оқылады. Next-ке нақты айтамыз: әйтпесе Supabase ішіндегі
+  // Date.now() (сессия мерзімін тексеру) алдын ала сызу кезінде «тұрақсыз мән» қатесін береді.
+  await connection();
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) return null;
