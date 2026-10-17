@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { AuthButton } from "@/components/auth/auth-button";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -29,8 +30,12 @@ export function SiteHeader() {
         <div className="ml-auto flex items-center gap-2 sm:gap-2.5 lg:ml-0">
           <ThemeToggle />
           <LocaleSwitcher />
+          {/* Телефонда кіру — төменгі мәзірдегі «Профиль» арқылы */}
+          <div className="hidden sm:block">
+            <AuthButton />
+          </div>
           <Link
-            href="/#lab"
+            href="/demo"
             className={cn(
               buttonVariants({ variant: "glow", size: "pill-sm" }),
               "hidden sm:inline-flex lg:hidden xl:inline-flex",

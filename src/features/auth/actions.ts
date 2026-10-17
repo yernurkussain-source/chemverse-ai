@@ -1,0 +1,140 @@
+"use server";
+
+import { headers } from "next/headers";
+import { hasLocale } from "next-intl";
+import { redirect } from "@/i18n/navigation";
+import { routing, type Locale } from "@/i18n/routing";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { createClient } from "@/lib/supabase/server";
+import { ensureDemoAccounts, type DemoRole } from "./demo";
+import { mapAuthError, type AuthState, type OnboardingState } from "./errors";
+
+// Server Action ішінде тіл URL-ден оқылмайды, сондықтан формада жасырын өріс ретінде келеді
+function readLocale(formData: FormData): Locale {
+  const value = String(formData.get("locale") ?? "");
+  return hasLocale(routing.locales, value) ? value : routing.defaultLocale;
+}
+
+const text = (formData: FormData, key: string) => String(formData.get(key) ?? "").trim();
+
+/** Кіру: email + құпия сөз */
+export async function login(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const locale = readLocale(formData);
+  if (!isSupabaseConfigured) return { error: "not_configured" };
+
+  const email = text(formData, "email");
+  const password = String(formData.get("password") ?? "");
+  if (!email || !password) return { error: "missing_fields" };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) return { error: mapAuthError(error.code) };
+
+  const { data: profile } = await supabase.from("profiles").select("onboarded").eq("id", data.user.id).single();
+  redirect({ href: profile?.onboarded ? "/profile" : "/onboarding", locale });
+  return null;
+}
+
+/** Тіркелу. Email растау қосулы болса — «поштаңызды тексеріңіз» хабарламасы шығады */
+export async function register(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const locale = readLocale(formData);
+  if (!isSupabaseConfigured) return { error: "not_configured" };
+
+  const fullName = text(formData, "fullName").slice(0, 80);
+  const email = text(formData, "email");
+  const password = String(formData.get("password") ?? "");
+  if (!fullName || !email || !password) return { error: "missing_fields" };
+  if (password.length < 8) return { error: "weak_password" };
+
+  const origin = (await headers()).get("origin") ?? "";
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { full_name: fullName, locale },
+      emailRedirectTo: `${origin}/${locale}/auth/callback`,
+    },
+  });
+  if (error) return { error: mapAuthError(error.code) };
+
+  // Email растау өшірулі болса, сессия бірден ашылады
+  if (data.session) redirect({ href: "/onboarding", locale });
+  return { checkEmail: email };
+}
+
+/** Шығу */
+export async function signOut(formData: FormData) {
+  const locale = readLocale(formData);
+  if (isSupabaseConfigured) {
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+  }
+  redirect({ href: "/", locale });
+}
+
+/** Демо режим: бір батырмамен оқушы немесе мұғалім болып кіру */
+export async function demoLogin(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const locale = readLocale(formData);
+  const role: DemoRole = formData.get("role") === "teacher" ? "teacher" : "student";
+
+  const admin = createAdminClient();
+  const password = process.env.DEMO_USER_PASSWORD ?? "";
+  if (!admin || password.length < 16) return { error: "not_configured" };
+
+  let accounts;
+  try {
+    accounts = await ensureDemoAccounts(admin, password);
+  } catch (error) {
+    console.error("Демо аккаунттарды дайындау қатесі:", error);
+    return { error: "unknown" };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email: accounts[role].email, password });
+  if (error) return { error: mapAuthError(error.code) };
+
+  redirect({ href: "/profile", locale });
+  return null;
+}
+
+/** Onboarding: рөл, аты-жөні, сынып; оқушы — кодпен сыныпқа қосылады, мұғалім — сынып ашады */
+export async function saveOnboarding(_prev: OnboardingState, formData: FormData): Promise<OnboardingState> {
+  const locale = readLocale(formData);
+  const role = text(formData, "role");
+  const fullName = text(formData, "fullName").slice(0, 80);
+  const school = text(formData, "school").slice(0, 120) || null;
+  const gradeValue = Number(text(formData, "grade"));
+  const grade = gradeValue >= 7 && gradeValue <= 11 ? gradeValue : null;
+  const joinCode = text(formData, "joinCode").replace(/\s/g, "");
+  const className = text(formData, "className").slice(0, 40);
+
+  if ((role !== "student" && role !== "teacher") || !fullName) return { error: "missing_fields" };
+  if (role === "student" && joinCode && !/^\d{6}$/.test(joinCode)) return { error: "invalid_code" };
+
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) {
+    redirect({ href: "/login", locale });
+    return null;
+  }
+
+  const { error: updateError } = await supabase
+    .from("profiles")
+    .update({ role, full_name: fullName, school, grade, locale, onboarded: true })
+    .eq("id", auth.user.id);
+  if (updateError) return { error: "unknown" };
+
+  if (role === "student" && joinCode) {
+    const { error } = await supabase.rpc("join_class", { p_code: joinCode });
+    if (error) return { error: error.message.includes("class_not_found") ? "class_not_found" : "unknown" };
+  }
+  if (role === "teacher" && className) {
+    const { error } = await supabase.rpc("create_class", { p_name: className, p_grade: grade });
+    if (error) return { error: "unknown" };
+  }
+
+  redirect({ href: "/profile", locale });
+  return null;
+}

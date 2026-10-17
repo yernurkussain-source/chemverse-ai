@@ -17,7 +17,9 @@
       "teacher": "For teachers",
       "app": "App"
     },
-    "demo": "Watch demo"
+    "demo": "Watch demo",
+    "login": "Log in",
+    "account": "My account"
   },
   "Theme": {
     "toDark": "Switch to dark mode",
@@ -68,12 +70,30 @@
     "massUnit": "g/mol"
   },
   "Molecules": {
-    "h2o": { "name": "Water", "shape": "Bent" },
-    "co2": { "name": "Carbon dioxide", "shape": "Linear" },
-    "ch4": { "name": "Methane", "shape": "Tetrahedral" },
-    "nh3": { "name": "Ammonia", "shape": "Trigonal pyramidal" },
-    "ethanol": { "name": "Ethanol", "shape": "Tetrahedral carbons" },
-    "benzene": { "name": "Benzene", "shape": "Planar hexagon" }
+    "h2o": {
+      "name": "Water",
+      "shape": "Bent"
+    },
+    "co2": {
+      "name": "Carbon dioxide",
+      "shape": "Linear"
+    },
+    "ch4": {
+      "name": "Methane",
+      "shape": "Tetrahedral"
+    },
+    "nh3": {
+      "name": "Ammonia",
+      "shape": "Trigonal pyramidal"
+    },
+    "ethanol": {
+      "name": "Ethanol",
+      "shape": "Tetrahedral carbons"
+    },
+    "benzene": {
+      "name": "Benzene",
+      "shape": "Planar hexagon"
+    }
   },
   "Modules": {
     "eyebrow": "Features",
@@ -144,10 +164,22 @@
     "text": "The AI relies only on verified learning materials, and the program recalculates numerical answers to check them. Every answer ends with its source.",
     "gesturesTitle": "Camera control gestures",
     "gestures": {
-      "point": { "name": "☝ Index finger", "action": "Rotate the molecule" },
-      "pinch": { "name": "🤏 Pinch", "action": "Zoom in / out" },
-      "fist": { "name": "✊ Fist", "action": "Next molecule" },
-      "palm": { "name": "✋ Open palm", "action": "Stop, reset the view" }
+      "point": {
+        "name": "☝ Index finger",
+        "action": "Rotate the molecule"
+      },
+      "pinch": {
+        "name": "🤏 Pinch",
+        "action": "Zoom in / out"
+      },
+      "fist": {
+        "name": "✊ Fist",
+        "action": "Next molecule"
+      },
+      "palm": {
+        "name": "✋ Open palm",
+        "action": "Stop, reset the view"
+      }
     },
     "privacy": "Camera frames are processed on the device and never sent to a server.",
     "chat": {
@@ -237,7 +269,9 @@
               "1": "Hook: “Why does table salt dissolve in water while fat doesn’t?”",
               "2": "Live lesson: a quick 2-question poll"
             },
-            "resources": { "1": "Live lesson · QR" }
+            "resources": {
+              "1": "Live lesson · QR"
+            }
           },
           "middle": {
             "items": {
@@ -245,14 +279,19 @@
               "2": "Table: determine the bond type from the electronegativity difference",
               "3": "Differentiation: the advanced level compares NH₃ and CH₄"
             },
-            "resources": { "1": "3D: H₂O, CO₂, CH₄", "2": "AR cards" }
+            "resources": {
+              "1": "3D: H₂O, CO₂, CH₄",
+              "2": "AR cards"
+            }
           },
           "end": {
             "items": {
               "1": "Formative assessment: 5 questions (auto-checked on the platform)",
               "2": "Reflection: “What I understood today / what was hard”"
             },
-            "resources": { "1": "Test · 5 questions" }
+            "resources": {
+              "1": "Test · 5 questions"
+            }
           }
         },
         "criteria": "Determines the bond type from electronegativity; gives two examples; shows the shared electron pair on a model."
@@ -265,7 +304,9 @@
             "items": {
               "1": "Predict the medium of household substances (lemon, soap)"
             },
-            "resources": { "1": "Live lesson · QR" }
+            "resources": {
+              "1": "Live lesson · QR"
+            }
           },
           "middle": {
             "items": {
@@ -273,14 +314,19 @@
               "2": "Find the equivalence point on the curve and explain the indicator color change",
               "3": "Differentiation: pH calculation problems (0.1 M; 0.01 M)"
             },
-            "resources": { "1": "Lab: titration", "2": "AI tutor" }
+            "resources": {
+              "1": "Lab: titration",
+              "2": "AI tutor"
+            }
           },
           "end": {
             "items": {
               "1": "Formative assessment: 5 questions",
               "2": "Reflection: “Which substance at home would you like to know the pH of?”"
             },
-            "resources": { "1": "Test · 5 questions" }
+            "resources": {
+              "1": "Test · 5 questions"
+            }
           }
         },
         "criteria": "Identifies the medium from the pH value; explains the color change of phenolphthalein; calculates the pH of a strong acid."
@@ -293,7 +339,9 @@
             "items": {
               "1": "Problem question: “Why is CO₂ linear while H₂O is bent?”"
             },
-            "resources": { "1": "3D: CO₂ / H₂O" }
+            "resources": {
+              "1": "3D: CO₂ / H₂O"
+            }
           },
           "middle": {
             "items": {
@@ -301,14 +349,19 @@
               "2": "Group work: compare the angles in CH₄, NH₃ and H₂O",
               "3": "AR: see the molecule on the desk via the QR code in the homework"
             },
-            "resources": { "1": "Gestures", "2": "AR · QR" }
+            "resources": {
+              "1": "Gestures",
+              "2": "AR · QR"
+            }
           },
           "end": {
             "items": {
               "1": "Live lesson: 3 questions with instant analysis of the results",
               "2": "Reflection"
             },
-            "resources": { "1": "Live lesson" }
+            "resources": {
+              "1": "Live lesson"
+            }
           }
         },
         "criteria": "Names the shape of the molecule; explains the difference in angles by lone electron pairs."
@@ -382,5 +435,90 @@
     "title": "Page not found",
     "text": "The link may be wrong, or this page hasn’t been created yet.",
     "back": "Back to home"
+  },
+  "Auth": {
+    "loginTitle": "Log in",
+    "loginSubtitle": "Log in to the platform with your email and password.",
+    "registerTitle": "Sign up",
+    "registerSubtitle": "Create an account, then choose your role and class.",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 8 characters",
+    "fullName": "Full name",
+    "submitLogin": "Log in",
+    "submitRegister": "Sign up",
+    "pending": "Please wait…",
+    "noAccount": "No account yet?",
+    "toRegister": "Sign up",
+    "haveAccount": "Already have an account?",
+    "toLogin": "Log in",
+    "orDemo": "Just want to look around?",
+    "toDemo": "Demo mode",
+    "checkEmailTitle": "Check your email",
+    "checkEmailText": "We sent a confirmation email to {email}. Open the link in the email.",
+    "errors": {
+      "invalid_credentials": "Wrong email or password.",
+      "user_already_exists": "This email is already registered. Try logging in.",
+      "weak_password": "The password is too simple. Use at least 8 characters.",
+      "email_address_invalid": "The email address is not valid.",
+      "email_not_confirmed": "The email is not confirmed yet. Open the email we sent you.",
+      "over_email_send_rate_limit": "Email sending limit reached. Please try again later.",
+      "missing_fields": "Please fill in all fields.",
+      "not_configured": "Supabase is not configured yet (.env.local).",
+      "unknown": "Something went wrong. Please try again."
+    }
+  },
+  "Demo": {
+    "title": "Demo mode",
+    "subtitle": "Log in with one click, no sign-up needed. Demo accounts already contain data.",
+    "student": "Log in as a student",
+    "studentText": "Aigerim, grade 8: tests, 3D, AI tutor",
+    "teacher": "Log in as a teacher",
+    "teacherText": "Class, assignments, lesson plan, live lesson",
+    "note": "Other people may also see changes made in a demo account."
+  },
+  "Onboarding": {
+    "title": "About you",
+    "subtitle": "Answer a few questions so the platform can show you the right sections.",
+    "roleLabel": "Who are you?",
+    "student": "Student",
+    "studentText": "I study and take tests",
+    "teacher": "Teacher",
+    "teacherText": "I teach lessons and run a class",
+    "fullName": "Full name",
+    "school": "School (optional)",
+    "grade": "Grade",
+    "joinCode": "Class code (optional)",
+    "joinCodeHint": "The 6-digit code from your teacher",
+    "className": "Name of your first class (optional)",
+    "classNameHint": "For example: 8A",
+    "submit": "Save",
+    "errors": {
+      "missing_fields": "Please choose a role and enter your name.",
+      "class_not_found": "No class was found with this code.",
+      "invalid_code": "The code must have 6 digits.",
+      "unknown": "Could not save. Please try again."
+    }
+  },
+  "Profile": {
+    "title": "My account",
+    "loading": "Loading…",
+    "roleStudent": "Student",
+    "roleTeacher": "Teacher",
+    "roleGuest": "Guest",
+    "demoBadge": "Demo",
+    "email": "Email",
+    "school": "School",
+    "grade": "Grade",
+    "xp": "XP",
+    "streak": "Streak",
+    "streakDays": "{count} days",
+    "classes": "Classes",
+    "noClasses": "No classes yet.",
+    "joinCode": "Join code",
+    "notOnboarded": "Your profile is incomplete — choose your role and class.",
+    "completeOnboarding": "Complete profile",
+    "edit": "Edit",
+    "signOut": "Log out"
   }
 }
