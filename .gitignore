@@ -47,3 +47,6 @@ next-env.d.ts
 
 # PWA service worker (scripts/build-sw.mjs жинайды)
 /public/sw.js
+
+# Жиналған APK
+/dist/
