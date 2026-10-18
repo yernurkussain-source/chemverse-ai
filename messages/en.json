@@ -433,20 +433,6 @@
     "tagline": "a platform to see chemistry and explore it with your own hands",
     "prototype": "PROTOTYPE · AI answers and the live lesson are simulated"
   },
-  "ComingSoon": {
-    "badge": "Coming soon",
-    "back": "Back to home",
-    "pages": {
-      "learn": {
-        "title": "Learn",
-        "text": "Topics, lessons and UNT preparation modules will be here."
-      },
-      "scan": {
-        "title": "Scan",
-        "text": "QR scanning, AR molecules and ChemScan — snap a photo of a problem from your notebook and get the solution."
-      }
-    }
-  },
   "NotFound": {
     "title": "Page not found",
     "text": "The link may be wrong, or this page hasn’t been created yet.",
@@ -535,7 +521,9 @@
     "notOnboarded": "Your profile is incomplete — choose your role and class.",
     "completeOnboarding": "Complete profile",
     "edit": "Edit",
-    "signOut": "Log out"
+    "signOut": "Log out",
+    "qrLink": "QR generator",
+    "examLink": "UNT test"
   },
   "MoleculeViewer": {
     "label": "3D molecule viewer. Drag to rotate; tap an atom.",
@@ -658,5 +646,150 @@
     "noAr": "AR is not available on this device — rotate the 3D model instead.",
     "openAr": "View in AR",
     "gestureLink": "Gesture control"
+  },
+  "Learn": {
+    "eyebrow": "Learn",
+    "title": "Learning and UNT preparation",
+    "subtitle": "Take timed tests, find weak topics and review with 3D tools. Lessons are coming soon.",
+    "items": {
+      "unt": {
+        "title": "UNT practice test",
+        "text": "A full timed test, server-side grading and a map of weak topics."
+      },
+      "periodic": {
+        "title": "Periodic table",
+        "text": "118 elements: mass, electronegativity, category."
+      },
+      "molecules": {
+        "title": "3D molecules",
+        "text": "Rotate 10 molecules, explore atoms, view them in AR."
+      },
+      "scan": {
+        "title": "QR scanner",
+        "text": "Scan a QR in a textbook or on a slide to open the molecule instantly."
+      }
+    }
+  },
+  "Qr": {
+    "eyebrow": "Teacher",
+    "title": "QR generator",
+    "subtitle": "Create QR codes for slides, posters or cards: scanning opens a molecule in AR, an element or a test.",
+    "loading": "Loading…",
+    "teachersOnly": "This page is for teachers only. Choose the “Teacher” role in your profile or sign in as the demo teacher.",
+    "teacherDemo": "Demo teacher",
+    "newTitle": "New QR",
+    "typeLabel": "QR type",
+    "targetLabel": "Target",
+    "types": {
+      "ar": "AR molecule",
+      "molecule": "3D molecule",
+      "element": "Element",
+      "exam": "UNT test"
+    },
+    "hints": {
+      "ar": "On a phone the molecule appears on the desk through the camera.",
+      "molecule": "Opens the 3D molecule page: rotate it and tap atoms.",
+      "element": "Opens the periodic table with this element selected.",
+      "exam": "The student goes to the UNT practice test page."
+    },
+    "create": "Create QR",
+    "created": "QR created — it is at the top of the list.",
+    "errors": {
+      "not_teacher": "Only teachers can create QR codes.",
+      "invalid_target": "The target is not valid.",
+      "not_configured": "Supabase keys are not set (.env.local).",
+      "unknown": "Unknown error. Check that the day 5 migration was run in Supabase."
+    },
+    "listTitle": "My QR codes ({count})",
+    "empty": "No QR codes yet. Create the first one with the form.",
+    "print": "Print",
+    "qrLabel": "QR code: {name}",
+    "scanHint": "Scan with your phone camera",
+    "scans": "Scans: {count}",
+    "disable": "Disable",
+    "enable": "Enable",
+    "invalid": {
+      "title": "Invalid QR",
+      "text": "This QR was not found, is disabled or has expired. Ask your teacher for a new one.",
+      "scanAgain": "Scan again",
+      "home": "Home"
+    }
+  },
+  "Scan": {
+    "title": "QR scanner",
+    "subtitle": "Point the camera at a QR code on a slide, in a textbook or on a card.",
+    "privacy": "Camera frames are processed only on your device and are never sent to the server.",
+    "start": "Turn on camera",
+    "retry": "Try again",
+    "starting": "Starting camera…",
+    "pointCamera": "Fit the QR code inside the square",
+    "stop": "Stop",
+    "external": "This QR leads to another website. Open it only if you trust it:",
+    "plainText": "Text in the QR:",
+    "notFound": "No QR code found in the image. Try a sharper photo.",
+    "fromImage": "From photo",
+    "manualLabel": "QR code or link",
+    "manualPlaceholder": "Code or link",
+    "open": "Open",
+    "errors": {
+      "denied": "Camera access was denied. Allow it in browser settings or scan from a photo.",
+      "insecure": "The camera only works over a secure (https) connection.",
+      "unavailable": "No camera found, or another app is using it."
+    }
+  },
+  "Exam": {
+    "untTitle": "UNT practice test",
+    "untShort": "UNT",
+    "untSubtitle": "A timed chemistry test. The score is calculated on the server, and at the end you will see your weak topics.",
+    "loading": "Loading…",
+    "notSeeded": "Test not found. Run supabase/seed.sql in Supabase.",
+    "questions": "Questions",
+    "duration": "Time",
+    "minutes": "{count} min",
+    "topics": "Topics",
+    "rules": {
+      "timer": "The timer starts when you begin; the test ends automatically when time runs out.",
+      "saved": "Every answer is saved instantly — you can continue even if the page closes.",
+      "server": "Correct answers are shown only after the test is finished."
+    },
+    "loginToStart": "Sign in or use demo mode to take the test.",
+    "demoStart": "Demo mode",
+    "login": "Sign in",
+    "start": "Start test",
+    "continue": "Continue test",
+    "recent": "My recent results",
+    "sessionTitle": "Test",
+    "answered": "Answered: {count}/{total}",
+    "timeLeft": "Time left",
+    "questionOf": "Question {n} of {total}",
+    "saveError": "The answer was not saved. Check your connection and choose again.",
+    "prev": "Back",
+    "next": "Next",
+    "finish": "Finish test",
+    "navigator": "Question list",
+    "goTo": "Go to question {n}",
+    "confirmUnanswered": "Unanswered: {count}. Finish the test?",
+    "confirmAll": "You answered every question. Finish the test?",
+    "confirmFinish": "Yes, finish",
+    "cancel": "Cancel",
+    "resultTitle": "Test result",
+    "timeIsUp": "Time is up",
+    "scoreLine": "{score} / {max} points",
+    "correct": "Correct",
+    "wrong": "Wrong",
+    "skipped": "No answer",
+    "wrongOrSkipped": "Wrong / blank",
+    "timeSpent": "Time",
+    "topicMap": "Results by topic",
+    "weakHint": "“Weak” means fewer than {threshold}% correct answers. Review these topics.",
+    "noWeak": "No weak topics — excellent result!",
+    "weak": "Weak",
+    "tryAgain": "Try again",
+    "toProfile": "My account",
+    "review": "Question review",
+    "correctAnswer": "Correct answer",
+    "yourAnswer": "Your answer",
+    "askAi": "Ask AI to explain",
+    "soon": "soon"
   }
 }

@@ -20,6 +20,7 @@
     "3dmol": "^2.5.5",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.0",
+    "html5-qrcode": "^2.3.8",
     "lucide-react": "^1.58.0",
     "next": "16.4.2",
     "next-intl": "^4.14.9",

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { formatAtomicMass, formatElectronegativity } from "@/lib/chemistry/element-format";
-import { ELEMENTS, tablePosition, type ChemicalElement, type ElementCategory } from "@/lib/chemistry/elements";
+import { ELEMENTS, getElement, tablePosition, type ChemicalElement, type ElementCategory } from "@/lib/chemistry/elements";
 import { cn } from "@/lib/utils";
 
 // Түрлердің түстері (ашық және қараңғы режимде де оқылатын жартылай мөлдір реңктер)
@@ -22,10 +22,13 @@ const CATEGORY_STYLE: Record<ElementCategory, string> = {
 
 const CATEGORIES = Object.keys(CATEGORY_STYLE) as ElementCategory[];
 
-export function PeriodicTable() {
+/** initialSymbol — элемент QR-ынан келгенде бірден таңдалатын элемент (мысалы "Na") */
+export function PeriodicTable({ initialSymbol }: { initialSymbol?: string }) {
   const t = useTranslations("PeriodicTable");
   const locale = useLocale();
-  const [selected, setSelected] = useState<ChemicalElement | null>(null);
+  const [selected, setSelected] = useState<ChemicalElement | null>(() =>
+    initialSymbol ? (getElement(initialSymbol) ?? null) : null,
+  );
 
   return (
     <div className="flex flex-col gap-5">

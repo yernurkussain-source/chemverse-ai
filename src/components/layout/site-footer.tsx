@@ -4,7 +4,7 @@ export function SiteFooter() {
   const t = useTranslations("Footer");
 
   return (
-    <footer className="border-t border-line py-8 text-[0.88rem] text-muted-foreground">
+    <footer className="border-t border-line py-8 print:hidden text-[0.88rem] text-muted-foreground">
       <div className="page-wrap flex flex-wrap items-center justify-between gap-4">
         <span>
           <b className="text-foreground">CHEMVERSE AI</b> · {t("tagline")}

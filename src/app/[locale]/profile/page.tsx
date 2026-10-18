@@ -113,6 +113,15 @@ async function ProfileDetails() {
       </section>
 
       <div className="flex flex-wrap gap-2.5">
+        {profile?.role === "teacher" ? (
+          <Link href="/teacher/qr" className={buttonVariants({ variant: "glow", size: "pill-sm" })}>
+            {t("qrLink")}
+          </Link>
+        ) : (
+          <Link href="/exam/unt" className={buttonVariants({ variant: "glow", size: "pill-sm" })}>
+            {t("examLink")}
+          </Link>
+        )}
         {profile?.onboarded && (
           <Link href="/onboarding" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
             {t("edit")}

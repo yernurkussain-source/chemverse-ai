@@ -71,7 +71,7 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
       <head>
         <ThemeScript />
       </head>
-      <body className="flex min-h-full flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">
+      <body className="flex min-h-full flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0 print:pb-0">
         <NextIntlClientProvider>
           <a
             href="#main"

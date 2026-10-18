@@ -14,7 +14,7 @@ export function SiteHeader() {
   const t = useTranslations("Header");
 
   return (
-    <header className="sticky top-0 z-20 border-b border-line bg-ink/80 pt-[env(safe-area-inset-top)] backdrop-blur-md">
+    <header className="sticky top-0 z-20 print:hidden border-b border-line bg-ink/80 pt-[env(safe-area-inset-top)] backdrop-blur-md">
       <div className="page-wrap flex h-16 items-center gap-3 sm:gap-6">
         <Logo />
 
