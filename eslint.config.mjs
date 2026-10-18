@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // MediaPipe-тің сыртқы WASM жүктегіштері (scripts/copy-mediapipe.mjs көшіреді)
+    "public/mediapipe/**",
   ]),
 ]);
 

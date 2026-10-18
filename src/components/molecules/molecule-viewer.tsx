@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useImperativeHandle, useRef, useState, type ReactNode, type Ref } from "react";
 import type { AtomSpec, GLViewer } from "3dmol";
 import { useLocale, useTranslations } from "next-intl";
 import { formatAtomicMass, formatElectronegativity } from "@/lib/chemistry/element-format";
@@ -32,8 +32,19 @@ function fitToView(viewer: GLViewer, style: ViewStyle) {
   if (style === "spaceFill") viewer.zoom(0.7);
 }
 
+/** Сырттан басқару (қол қимылы үшін) */
+export type MoleculeViewerApi = {
+  /** Градуспен айналдыру: dx — тік ось бойынша, dy — көлденең ось бойынша */
+  rotate: (dxDegrees: number, dyDegrees: number) => void;
+  zoom: (factor: number) => void;
+  reset: () => void;
+  setSpinning: (spinning: boolean) => void;
+};
+
 type Props = {
   molecule: Molecule;
+  /** Қол қимылымен басқару үшін (gesture-lab) */
+  apiRef?: Ref<MoleculeViewerApi>;
   viewStyle: ViewStyle;
   /** Бар болса, құралдар тақтасында стильді ауыстыру батырмасы шығады */
   onCycleStyle?: () => void;
@@ -48,7 +59,7 @@ type Props = {
  * 3D молекула көрінісі (3Dmol.js). Тышқанмен/саусақпен айналдыру, екі саусақпен үлкейту,
  * атомды басқанда — элемент атауы, массасы, электртерістігі.
  */
-export function MoleculeViewer({ molecule, viewStyle, onCycleStyle, className, atomCardClassName, children }: Props) {
+export function MoleculeViewer({ molecule, apiRef, viewStyle, onCycleStyle, className, atomCardClassName, children }: Props) {
   const t = useTranslations("MoleculeViewer");
   const locale = useLocale();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -146,6 +157,18 @@ export function MoleculeViewer({ molecule, viewStyle, onCycleStyle, className, a
     if (viewerRef.current) fitToView(viewerRef.current, viewStyleRef.current);
     setAtomSymbol(null);
   };
+
+  useImperativeHandle(apiRef, () => ({
+    rotate: (dx, dy) => {
+      const viewer = viewerRef.current;
+      if (!viewer) return;
+      if (dx) viewer.rotate(dx, "y");
+      if (dy) viewer.rotate(dy, "x");
+    },
+    zoom: (factor) => viewerRef.current?.zoom(factor),
+    reset,
+    setSpinning,
+  }));
 
   const element = atomSymbol ? getElement(atomSymbol) : undefined;
   const electronegativity = element ? formatElectronegativity(element, locale) : null;

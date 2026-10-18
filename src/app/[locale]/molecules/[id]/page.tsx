@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { buttonVariants } from "@/components/ui/button";
 import { MoleculeDetailViewer } from "@/components/molecules/molecule-detail-viewer";
 import { getElement } from "@/lib/chemistry/elements";
 import { getMolecule, MOLECULES, molarMass } from "@/lib/chemistry/molecules";
@@ -49,6 +50,7 @@ async function MoleculeContent({ params }: { params: Params }) {
   const t = await getTranslations("MoleculesPage");
   const tm = await getTranslations("Molecules");
   const tv = await getTranslations("Viewer");
+  const tAr = await getTranslations("Ar");
   const angle = `${molecule.angle.approx ? "≈" : ""}${formatShort(molecule.angle.degrees, locale)}°`;
 
   return (
@@ -83,6 +85,15 @@ async function MoleculeContent({ params }: { params: Params }) {
               })}
             </ul>
           </section>
+
+          <div className="flex flex-wrap gap-2.5">
+            <Link href={`/ar/${molecule.id}`} className={buttonVariants({ variant: "glow", size: "pill" })}>
+              {tAr("openAr")}
+            </Link>
+            <Link href="/gesture-lab" className={buttonVariants({ variant: "panel", size: "pill" })}>
+              {tAr("gestureLink")}
+            </Link>
+          </div>
 
           <p className="font-mono text-[0.78rem] text-muted-foreground">
             {molecule.pubchemCid ? t("source", { cid: molecule.pubchemCid }) : t("sourceGenerated")}

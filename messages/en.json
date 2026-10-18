@@ -594,5 +594,69 @@
       "lanthanide": "Lanthanides",
       "actinide": "Actinides"
     }
+  },
+  "GestureLab": {
+    "title": "Gesture control",
+    "subtitle": "The camera recognizes your hand: rotate the molecule with your index finger, zoom with a pinch, and make a fist for the next molecule.",
+    "consentTitle": "Camera access",
+    "consentText": "Hand tracking needs the camera. Video is processed only on this device — it is never sent anywhere or saved.",
+    "start": "Turn on camera",
+    "stop": "Turn off camera",
+    "loading": "Loading the hand tracking model…",
+    "running": "Camera on",
+    "noHand": "Show your hand to the camera",
+    "current": "Current gesture",
+    "cameraLabel": "Camera image and the 21 hand points",
+    "mouseHint": "Works without a camera too: rotate with the mouse or a finger, zoom with the wheel or two fingers.",
+    "errors": {
+      "denied": "Camera access was denied. Click the camera icon in the address bar and allow access.",
+      "unavailable": "No camera was found, or another app is using it.",
+      "insecure": "The camera only works over a secure (https) connection. On a phone, open the Vercel link.",
+      "model": "Could not load the hand tracking model."
+    },
+    "gestures": {
+      "point": {
+        "name": "☝ Index finger",
+        "action": "Move your finger to rotate"
+      },
+      "pinch": {
+        "name": "🤏 Pinch",
+        "action": "Pinch and move your hand up/down to zoom"
+      },
+      "fist": {
+        "name": "✊ Fist",
+        "action": "Hold for half a second — next molecule"
+      },
+      "open": {
+        "name": "✋ Open palm",
+        "action": "Stop, reset the view"
+      },
+      "victory": {
+        "name": "✌ V sign",
+        "action": "Change the display style"
+      },
+      "none": {
+        "name": "—",
+        "action": "No gesture detected"
+      }
+    },
+    "moleculeLabel": "Molecule"
+  },
+  "Ar": {
+    "title": "AR: {name}",
+    "subtitle": "Place the molecule on your desk through the phone camera.",
+    "button": "Place on desk (AR)",
+    "viewerLabel": "3D model of {name}",
+    "steps": {
+      "1": "Tap “Place on desk (AR)”.",
+      "2": "Point the phone at the desk and move it slightly until the surface is found.",
+      "3": "Move and rotate the molecule with a finger, zoom with two fingers."
+    },
+    "desktopTitle": "Open on your phone",
+    "desktopText": "AR works on phones. Scan this QR code with your phone camera.",
+    "qrLabel": "QR code of this page",
+    "noAr": "AR is not available on this device — rotate the 3D model instead.",
+    "openAr": "View in AR",
+    "gestureLink": "Gesture control"
   }
 }

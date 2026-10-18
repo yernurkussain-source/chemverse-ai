@@ -16,6 +16,7 @@ export default async function MoleculesPage() {
   const t = await getTranslations("MoleculesPage");
   const tm = await getTranslations("Molecules");
   const tv = await getTranslations("Viewer");
+  const tAr = await getTranslations("Ar");
   const locale = await getLocale();
 
   return (
@@ -26,9 +27,14 @@ export default async function MoleculesPage() {
           <h1 className="mt-2.5 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold">{t("title")}</h1>
           <p className="mt-2 max-w-[60ch] text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <Link href="/periodic-table" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
-          {t("periodicLink")}
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/gesture-lab" className={buttonVariants({ variant: "glow", size: "pill-sm" })}>
+            {tAr("gestureLink")}
+          </Link>
+          <Link href="/periodic-table" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
+            {t("periodicLink")}
+          </Link>
+        </div>
       </div>
 
       <ul className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">

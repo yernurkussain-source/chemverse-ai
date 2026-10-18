@@ -41,3 +41,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# MediaPipe WASM (scripts/copy-mediapipe.mjs көшіреді)
+/public/mediapipe/wasm/
