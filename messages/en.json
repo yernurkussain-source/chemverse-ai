@@ -392,7 +392,8 @@
         },
         "criteria": "Names the shape of the molecule; explains the difference in angles by lone electron pairs."
       }
-    }
+    },
+    "openStudio": "Open the real AI planner"
   },
   "AppShowcase": {
     "eyebrow": "Mobile app",
@@ -973,5 +974,82 @@
       "invalid_code": "The code must be 6 digits.",
       "unknown": "Unknown error. Please try again."
     }
+  },
+  "LessonStudio": {
+    "eyebrow": "AI Lesson Studio",
+    "title": "AI lesson planner",
+    "subtitle": "Type a topic — the AI drafts a short-term plan: objectives, stages and timing, tasks with descriptors, platform resources. The teacher has the final say.",
+    "loading": "Loading…",
+    "newPlan": "New plan",
+    "topic": "Topic",
+    "topicPlaceholder": "e.g. Types of chemical bonds",
+    "grade": "Grade",
+    "duration": "Duration",
+    "minutes": "{count} min",
+    "type": "Lesson type",
+    "types": {
+      "new": "New material",
+      "practice": "Problem solving",
+      "lab": "Lab work",
+      "review": "Review"
+    },
+    "notes": "Extra notes",
+    "notesHint": "Optional: class specifics, methods, resources",
+    "generate": "Create plan",
+    "generating": "The AI is drafting…",
+    "generatingHint": "This takes 20–40 seconds, keep the page open.",
+    "myPlans": "My plans",
+    "noPlans": "No plans yet.",
+    "errors": {
+      "not_teacher": "Only teachers can create plans.",
+      "missing_fields": "Enter a topic and choose all fields.",
+      "not_configured": "AI is not configured yet: add GOOGLE_GENERATIVE_AI_API_KEY to .env.local.",
+      "rate_limited": "Too many requests. Try again in a minute.",
+      "ai_error": "The AI could not create a plan. Refine the topic and try again."
+    },
+    "planTitle": "Short-term plan",
+    "planEyebrow": "Short-term lesson plan",
+    "backToStudio": "Back to planner",
+    "exportPdf": "PDF / print",
+    "pdfHint": "To get a PDF: “PDF / print” → choose “Save as PDF” as the printer.",
+    "delete": "Delete",
+    "sections": {
+      "learningObjectives": "Learning objectives",
+      "lessonObjectives": "Lesson objectives",
+      "assessmentCriteria": "Assessment criteria",
+      "terms": "Language objectives: terms",
+      "priorKnowledge": "Prior knowledge",
+      "values": "Values",
+      "crossCurricular": "Cross-curricular links",
+      "stages": "Lesson procedure",
+      "tasks": "Tasks and descriptors",
+      "differentiation": "Differentiation",
+      "reflection": "Reflection",
+      "homework": "Homework",
+      "platform": "CHEMVERSE AI resources"
+    },
+    "columns": {
+      "stage": "Stage",
+      "teacher": "Teacher activity",
+      "student": "Student activity",
+      "assessment": "Assessment",
+      "resources": "Resources"
+    },
+    "stageNames": {
+      "start": "Beginning",
+      "middle": "Middle",
+      "end": "End"
+    },
+    "points": "{count, plural, one {# point} other {# points}}",
+    "descriptors": "Descriptors:",
+    "resources": {
+      "molecule3d": "3D molecule",
+      "ar": "AR molecule",
+      "lab": "Virtual lab",
+      "test": "Test (auto-graded)",
+      "periodic": "Periodic table",
+      "ai": "AI tutor"
+    },
+    "aiNote": "This plan was drafted by AI. The teacher must check curriculum codes and content."
   }
 }
