@@ -525,7 +525,13 @@
     "edit": "Edit",
     "signOut": "Log out",
     "qrLink": "QR generator",
-    "examLink": "UNT test"
+    "examLink": "UNT test",
+    "teacherLink": "Teacher dashboard",
+    "assignments": "Assignments",
+    "due": "due {date}",
+    "assignmentDone": "Done ✓",
+    "assignmentTodo": "To do",
+    "assignmentOverdue": "Overdue"
   },
   "MoleculeViewer": {
     "label": "3D molecule viewer. Drag to rotate; tap an atom.",
@@ -902,5 +908,70 @@
       "retry": "Retry"
     },
     "errorShort": "error {value}%"
+  },
+  "Teacher": {
+    "eyebrow": "Teacher",
+    "title": "Teacher dashboard",
+    "subtitle": "Your classes, student results, assignments and lesson tools.",
+    "loading": "Loading…",
+    "teachersOnly": "This page is for teachers only. Choose the “Teacher” role in your profile or sign in as the demo teacher.",
+    "teacherDemo": "Demo teacher",
+    "tools": {
+      "studio": {
+        "title": "AI lesson planner",
+        "text": "A short-term lesson plan in a minute, exportable to PDF."
+      },
+      "qr": {
+        "title": "QR generator",
+        "text": "QR codes for slides and posters: AR molecule, element, test."
+      },
+      "lab": {
+        "title": "Virtual lab",
+        "text": "Titration: student results appear here."
+      }
+    },
+    "classes": "My classes",
+    "noClasses": "No classes yet. Create your first class with the form.",
+    "studentsCount": "{count, plural, one {# student} other {# students}}",
+    "joinCode": "Join code",
+    "joinHint": "Students enter this code on their profile page.",
+    "newClass": "New class",
+    "className": "Class name",
+    "grade": "Grade",
+    "gradeN": "Grade {n}",
+    "createClass": "Create class",
+    "classTitle": "Class",
+    "backToClasses": "Back to classes",
+    "students": "Students",
+    "noStudents": "No students yet. Give them the join code above.",
+    "student": "Student",
+    "tests": "Tests",
+    "lastTest": "Last test",
+    "avgTest": "Average",
+    "labs": "Lab",
+    "bestError": "best error {value}%",
+    "remove": "Remove",
+    "removeHint": "Remove the student from the class (results are kept)",
+    "assignments": "Assignments",
+    "noAssignments": "No assignments yet.",
+    "newAssignment": "New assignment",
+    "assignmentExam": "Test",
+    "assignmentTitle": "Title",
+    "assignmentTitleHint": "Optional, e.g. “Atomic structure — review”",
+    "assignmentDue": "Due date",
+    "assign": "Assign",
+    "assigned": "assigned {date}",
+    "due": "due {date}",
+    "doneShort": "done",
+    "delete": "Delete",
+    "join": "Join",
+    "joined": "You joined the class!",
+    "errors": {
+      "missing_fields": "Fill in all required fields.",
+      "invalid_date": "Invalid date.",
+      "class_not_found": "No class found with this code.",
+      "invalid_code": "The code must be 6 digits.",
+      "unknown": "Unknown error. Please try again."
+    }
   }
 }

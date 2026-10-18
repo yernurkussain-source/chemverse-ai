@@ -7,8 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { UserIcon } from "@/components/layout/nav-icons";
+import { JoinClassForm } from "@/components/teacher/forms";
 import { signOut } from "@/features/auth/actions";
 import { getCurrentAccount } from "@/features/auth/queries";
+import { getStudentAssignments } from "@/features/teacher/queries";
+import { cn } from "@/lib/utils";
 import { Link, redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 
@@ -110,12 +113,15 @@ async function ProfileDetails() {
             ))}
           </ul>
         )}
+        {profile?.role === "student" && <JoinClassForm />}
       </section>
+
+      {profile?.role === "student" && <StudentAssignments userId={user.id} locale={locale} />}
 
       <div className="flex flex-wrap gap-2.5">
         {profile?.role === "teacher" ? (
-          <Link href="/teacher/qr" className={buttonVariants({ variant: "glow", size: "pill-sm" })}>
-            {t("qrLink")}
+          <Link href="/teacher" className={buttonVariants({ variant: "glow", size: "pill-sm" })}>
+            {t("teacherLink")}
           </Link>
         ) : (
           <Link href="/exam/unt" className={buttonVariants({ variant: "glow", size: "pill-sm" })}>
@@ -135,6 +141,45 @@ async function ProfileDetails() {
         </form>
       </div>
     </div>
+  );
+}
+
+/** Оқушыға мұғалім берген тапсырмалар */
+async function StudentAssignments({ userId, locale }: { userId: string; locale: Locale }) {
+  const t = await getTranslations("Profile");
+  const assignments = await getStudentAssignments(userId, locale);
+  if (!assignments.length) return null;
+
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="text-base font-semibold">{t("assignments")}</h2>
+      <ul className="grid gap-2">
+        {assignments.map((a) => (
+          <li key={a.id}>
+            <Link
+              href="/exam/unt"
+              className="flex items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 px-3.5 py-2.5 hover:border-cyan-dim"
+            >
+              <span className="min-w-0">
+                <span className="block truncate font-semibold">{a.title}</span>
+                <span className="text-[0.78rem] text-muted-foreground">
+                  {a.className}
+                  {a.dueAt && ` · ${t("due", { date: a.dueAt.slice(0, 10) })}`}
+                </span>
+              </span>
+              <span
+                className={cn(
+                  "shrink-0 text-[0.8rem] font-semibold",
+                  a.done ? "text-good" : a.overdue ? "text-pink" : "text-amber",
+                )}
+              >
+                {a.done ? t("assignmentDone") : a.overdue ? t("assignmentOverdue") : t("assignmentTodo")}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
