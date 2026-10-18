@@ -11,12 +11,16 @@
     "lint": "eslint",
     "glb": "node scripts/sdf-to-glb.mjs",
     "rag": "node --env-file=.env.local scripts/seed-rag.mjs",
-    "sw": "node scripts/build-sw.mjs"
+    "sw": "node scripts/build-sw.mjs",
+    "android:sync": "node --env-file-if-exists=.env.local node_modules/@capacitor/cli/bin/capacitor sync android",
+    "android:apk": "npm run android:sync && cd android && gradlew.bat assembleDebug"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.99",
     "@ai-sdk/react": "^4.0.147",
     "@base-ui/react": "^1.9.0",
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
     "@google/model-viewer": "^4.4.0",
     "@mediapipe/tasks-vision": "^1.1.1",
     "@serwist/turbopack": "^9.5.13",
@@ -45,6 +49,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.6",

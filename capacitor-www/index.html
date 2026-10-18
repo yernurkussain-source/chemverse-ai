@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070b1a">
+  <title>Интернет жоқ · CHEMVERSE AI</title>
+  
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px;
+      background: radial-gradient(circle at 50% 30%, #14204a, #070b1a 70%); color: #e7ecff;
+      font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; text-align: center;
+    }
+    main { max-width: 420px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    img { width: 96px; height: 96px; border-radius: 24px; }
+    h1 { margin: 6px 0 0; font-size: 1.5rem; }
+    p { margin: 0; color: #8e9ac6; }
+    .ru, .en { font-size: .9rem; }
+    button {
+      margin-top: 8px; min-height: 48px; padding: 0 28px; border: 0; border-radius: 999px;
+      background: #3fe0f0; color: #04121a; font: 700 1rem system-ui, sans-serif; cursor: pointer;
+    }
+    a { color: #3fe0f0; }
+  </style>
+</head>
+<body>
+  <main>
+    
+    <h1>Интернет байланысы жоқ</h1>
+    <p>Бұрын ашылған беттер (3D молекулалар, периодтық кесте, зертхана) офлайн да жұмыс істейді. AI мұғалім, тест және Live сабақ үшін интернет керек.</p>
+    <p class="ru">Нет подключения к интернету. Ранее открытые страницы доступны офлайн.</p>
+    <p class="en">You are offline. Pages you opened before are available offline.</p>
+    <button type="button" onclick="location.reload()">Қайта көру · Повторить · Retry</button>
+    <p><a href="/kk/molecules">3D молекулалар</a> · <a href="/kk/periodic-table">Периодтық кесте</a></p>
+  </main>
+</body>
+</html>
