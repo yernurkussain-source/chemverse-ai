@@ -230,7 +230,8 @@
           "src": "Source: Chemistry, grade 8, “Types of chemical bonds”"
         }
       }
-    }
+    },
+    "openTutor": "Open the AI tutor"
   },
   "Live": {
     "eyebrow": "Live lesson",
@@ -656,6 +657,10 @@
         "title": "UNT practice test",
         "text": "A full timed test, server-side grading and a map of weak topics."
       },
+      "ai": {
+        "title": "AI tutor",
+        "text": "Ask a chemistry question: step-by-step explanations, formulas, sources."
+      },
       "periodic": {
         "title": "Periodic table",
         "text": "118 elements: mass, electronegativity, category."
@@ -798,6 +803,40 @@
     "correctAnswer": "Correct answer",
     "yourAnswer": "Your answer",
     "askAi": "Ask AI to explain",
-    "soon": "soon"
+    "askAiPrompt": "Explain this test question:\n{question}\n{options}\nMy answer: {chosen}. Correct answer: {correct}. Explain step by step why."
+  },
+  "AiTutor": {
+    "title": "AI tutor",
+    "modeLabel": "Answer mode",
+    "modes": {
+      "explain": "Explain",
+      "socratic": "Don't tell me the answer"
+    },
+    "newChat": "New chat",
+    "empty": "Ask any chemistry question — the AI explains step by step, shows formulas and cites the teacher's materials.",
+    "emptySocratic": "“Don't tell me the answer” mode: the AI asks guiding questions so you can solve it yourself.",
+    "starters": {
+      "molarMass": "Calculate the molar mass of H₂SO₄ step by step",
+      "bonds": "What is the difference between ionic and covalent bonds?",
+      "ph": "What is the H⁺ concentration in a solution with pH = 3?"
+    },
+    "thinking": "Thinking…",
+    "inputLabel": "Your question",
+    "placeholder": "Type your chemistry question…",
+    "send": "Send",
+    "stop": "Stop",
+    "sources": "Source",
+    "gPerMol": "g/mol",
+    "computed": "computed by code",
+    "disclaimer": "AI can make mistakes — check important things with your teacher.",
+    "demoLink": "Demo mode",
+    "errors": {
+      "not_configured": "AI is not configured yet: add GOOGLE_GENERATIVE_AI_API_KEY to .env.local.",
+      "unauthorized": "Sign in to use the AI tutor.",
+      "rate_limited": "Too many requests (10 per minute, 100 per day). Please wait a moment.",
+      "too_long": "The question is too long (2000 characters max).",
+      "bad_request": "Could not send the question. Please try again.",
+      "ai_error": "The AI could not answer. Please try again later."
+    }
   }
 }

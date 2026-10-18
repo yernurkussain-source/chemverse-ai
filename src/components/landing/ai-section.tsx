@@ -1,4 +1,6 @@
 import { useTranslations } from "next-intl";
+import { buttonVariants } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 import { AiChatDemo } from "./ai-chat-demo";
 import { Eyebrow, Section } from "./section";
 
@@ -14,6 +16,9 @@ export function AiSection() {
           <Eyebrow>{t("eyebrow")}</Eyebrow>
           <h2 className="mt-2.5 text-[clamp(1.5rem,3.2vw,2.3rem)] font-bold">{t("title")}</h2>
           <p className="mt-3.5 max-w-[48ch] text-muted-foreground">{t("text")}</p>
+          <Link href="/ai-tutor" className={`${buttonVariants({ variant: "glow", size: "pill" })} mt-5`}>
+            {t("openTutor")}
+          </Link>
 
           <h3 className="mt-8.5 text-[1.02rem] font-semibold">{t("gesturesTitle")}</h3>
           <ul className="mt-5 grid gap-2.5">

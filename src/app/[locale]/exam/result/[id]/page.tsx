@@ -192,9 +192,12 @@ async function ResultContent({ params }: { params: Params }) {
                       <p className="rounded-xl bg-panel-2 px-3 py-2 text-[0.88rem] text-muted-foreground">{item.explanation}</p>
                     )}
                     {!isCorrect && (
-                      <span className="self-start rounded-full border border-dashed border-line px-3 py-1.5 text-[0.8rem] text-muted-foreground">
-                        {t("askAi")} · {t("soon")}
-                      </span>
+                      <Link
+                        href={{ pathname: "/ai-tutor", query: { q: askAiPrompt(item, t) } }}
+                        className="self-start rounded-full border border-cyan-dim px-3.5 py-2 text-[0.82rem] font-semibold text-cyan hover:bg-cyan/10"
+                      >
+                        ✦ {t("askAi")}
+                      </Link>
                     )}
                   </div>
                 </details>
@@ -205,6 +208,18 @@ async function ResultContent({ params }: { params: Params }) {
       </section>
     </div>
   );
+}
+
+/** AI мұғалімге жіберілетін сұрақ: шарты, нұсқалар, оқушының және дұрыс жауап */
+function askAiPrompt(item: ResultView["review"][number], t: Awaited<ReturnType<typeof getTranslations<"Exam">>>) {
+  const label = (id: string | null) => item.options.find((o) => o.id === id)?.label ?? "—";
+  const options = item.options.map((o) => `${o.label}) ${o.body}`).join("\n");
+  return t("askAiPrompt", {
+    question: item.body,
+    options,
+    chosen: item.chosenId ? label(item.chosenId) : t("skipped"),
+    correct: label(item.correctId),
+  });
 }
 
 function Stat({ label, value }: { label: string; value: string }) {

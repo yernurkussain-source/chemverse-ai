@@ -8,7 +8,7 @@ import { isSupabaseConfigured, SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./
 const handleI18n = createMiddleware(routing);
 
 // Тек кірген пайдаланушыға арналған беттер
-const PROTECTED = ["/onboarding", "/profile", "/teacher", "/exam/session", "/exam/result"];
+const PROTECTED = ["/onboarding", "/profile", "/teacher", "/exam/session", "/exam/result", "/ai-tutor"];
 // Кірген пайдаланушыға қажет емес беттер
 const GUEST_ONLY = ["/login", "/register"];
 
