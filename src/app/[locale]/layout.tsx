@@ -7,6 +7,7 @@ import { getTranslations } from "next-intl/server";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { ServiceWorkerRegister } from "@/components/layout/sw-register";
 import { ThemeScript } from "@/components/layout/theme-script";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
@@ -24,10 +25,12 @@ const onest = Onest({
   variable: "--font-onest",
   display: "swap",
 });
+// Формулалар мен сандарға арналған — бірінші экранда маңызды емес, алдын ала жүктемейміз (телефонда жылдамырақ)
 const firaCode = Fira_Code({
   subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext"],
   variable: "--font-fira-code",
   display: "swap",
+  preload: false,
 });
 // Unbounded — тек логотип үшін («CHEMVERSE AI» — латын әріптері ғана)
 const unbounded = Unbounded({
@@ -46,12 +49,21 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: { default: t("title"), template: "%s · CHEMVERSE AI" },
     description: t("description"),
+    applicationName: "CHEMVERSE AI",
+    // iPhone: «Басты экранға қосу» кезіндегі атауы мен иконкасы
+    appleWebApp: { capable: true, title: "CHEMVERSE", statusBarStyle: "black-translucent" },
+    icons: { apple: "/icons/apple-touch-icon.png" },
   };
 }
 
 export const viewport: Viewport = {
   // iPhone-да экранның «ойығы» мен төменгі жолақ үшін safe-area жұмыс істеуі керек
   viewportFit: "cover",
+  // Телефон браузерінің жоғарғы жолағының түсі (ашық / қараңғы режим)
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f7fb" },
+    { media: "(prefers-color-scheme: dark)", color: "#070b1a" },
+  ],
 };
 
 export default async function LocaleLayout({ children }: LayoutProps<"/[locale]">) {
@@ -85,6 +97,7 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
           </main>
           <SiteFooter />
           <BottomNav />
+          <ServiceWorkerRegister />
         </NextIntlClientProvider>
       </body>
     </html>

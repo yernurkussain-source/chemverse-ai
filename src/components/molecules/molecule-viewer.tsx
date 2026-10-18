@@ -78,7 +78,22 @@ export function MoleculeViewer({ molecule, apiRef, viewStyle, onCycleStyle, clas
     if (!container) return;
     let observer: ResizeObserver | undefined;
 
-    import("3dmol")
+    // 3Dmol ауыр (~570 КБ): 3D терезесі экранға көрінгенде және браузер бос болғанда ғана жүктейміз —
+    // телефонда бет мәтіні алдымен шығады
+    let visibility: IntersectionObserver | undefined;
+    const visibleAndIdle = new Promise<void>((resolve) => {
+      visibility = new IntersectionObserver((entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        visibility?.disconnect();
+        // Safari-де requestIdleCallback жоқ — қысқа кідіріспен жүктейміз
+        if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(() => resolve(), { timeout: 1500 });
+        else setTimeout(resolve, 200);
+      });
+      visibility.observe(container);
+    });
+
+    visibleAndIdle
+      .then(() => import("3dmol"))
       .then(($3Dmol) => {
         if (cancelled) return;
         const viewer = $3Dmol.createViewer(container, { backgroundAlpha: 0, antialias: true });
@@ -93,6 +108,7 @@ export function MoleculeViewer({ molecule, apiRef, viewStyle, onCycleStyle, clas
 
     return () => {
       cancelled = true;
+      visibility?.disconnect();
       observer?.disconnect();
       viewerRef.current?.clear();
       viewerRef.current = null;

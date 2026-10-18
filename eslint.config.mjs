@@ -14,6 +14,10 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // MediaPipe-тің сыртқы WASM жүктегіштері (scripts/copy-mediapipe.mjs көшіреді)
     "public/mediapipe/**",
+    // PWA service worker — scripts/build-sw.mjs жинайтын файл
+    "public/sw.js",
+    // Android жобасы (Capacitor жасайды)
+    "android/**",
   ]),
 ]);
 

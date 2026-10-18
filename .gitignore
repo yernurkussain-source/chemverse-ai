@@ -44,3 +44,6 @@ next-env.d.ts
 
 # MediaPipe WASM (scripts/copy-mediapipe.mjs көшіреді)
 /public/mediapipe/wasm/
+
+# PWA service worker (scripts/build-sw.mjs жинайды)
+/public/sw.js

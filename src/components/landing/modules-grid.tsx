@@ -89,7 +89,7 @@ export function ModulesGrid() {
               </div>
               <h3 className="text-[1.02rem] font-semibold">{t(`items.${key}.title`)}</h3>
               <p className="text-[0.92rem] text-muted-foreground">{t(`items.${key}.text`)}</p>
-              <span className="mt-auto font-mono text-[0.7rem] tracking-[0.08em] text-cyan-dim uppercase">
+              <span className="mt-auto font-mono text-[0.7rem] tracking-[0.08em] text-muted-foreground uppercase">
                 {t(`items.${key}.who`)}
               </span>
             </article>

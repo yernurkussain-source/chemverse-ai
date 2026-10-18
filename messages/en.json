@@ -436,7 +436,7 @@
   },
   "Footer": {
     "tagline": "a platform to see chemistry and explore it with your own hands",
-    "prototype": "PROTOTYPE · AI answers and the live lesson are simulated"
+    "prototype": "BETA · examples on the home page are demos"
   },
   "NotFound": {
     "title": "Page not found",
@@ -836,7 +836,7 @@
     },
     "thinking": "Thinking…",
     "inputLabel": "Your question",
-    "placeholder": "Type your chemistry question…",
+    "placeholder": "Your chemistry question…",
     "send": "Send",
     "stop": "Stop",
     "sources": "Source",
