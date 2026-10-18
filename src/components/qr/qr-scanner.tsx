@@ -19,6 +19,8 @@ const READER_ID = "qr-reader";
 function internalPath(text: string): string | null {
   const value = text.trim();
   if (TOKEN_PATTERN.test(value)) return `/q/${value}`;
+  // 6 санды код — Live сабаққа қосылу
+  if (/^\d{3}\s?\d{3}$/.test(value)) return `/join/${value.replace(/\s/g, "")}`;
   // Қарапайым мәтін (мысалы "hello") сілтеме емес
   if (!/^(https?:\/\/|\/)/i.test(value)) return null;
   try {

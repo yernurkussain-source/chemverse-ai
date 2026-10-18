@@ -254,7 +254,9 @@
     "collecting": "Collecting answers…",
     "resultCorrect": "Correct answer: B — Tetrahedral.",
     "resultStats": "17 of 26 students answered correctly (65%)",
-    "replay": "Replay"
+    "replay": "Replay",
+    "startLive": "Start a live lesson",
+    "joinLive": "Join with a code"
   },
   "Studio": {
     "eyebrow": "For teachers",
@@ -918,6 +920,10 @@
     "teachersOnly": "This page is for teachers only. Choose the “Teacher” role in your profile or sign in as the demo teacher.",
     "teacherDemo": "Demo teacher",
     "tools": {
+      "live": {
+        "title": "Live lesson",
+        "text": "A live class quiz: QR → answers on a chart → leaderboard."
+      },
       "studio": {
         "title": "AI lesson planner",
         "text": "A short-term lesson plan in a minute, exportable to PDF."
@@ -1055,5 +1061,87 @@
       "ai": "AI tutor"
     },
     "aiNote": "This plan was drafted by AI. The teacher must check curriculum codes and content."
+  },
+  "LiveClass": {
+    "eyebrow": "Live lesson",
+    "title": "Live lesson",
+    "subtitle": "Pick a test and the number of questions → the projector shows a code and QR → students join from their phones without signing up → the answer chart updates live → leaderboard at the end.",
+    "loading": "Loading…",
+    "newSession": "New session",
+    "exam": "Test",
+    "count": "Questions",
+    "countN": "{count, plural, one {# question} other {# questions}}",
+    "seconds": "Per question",
+    "secondsN": "{count} seconds",
+    "create": "Open session",
+    "recent": "Recent sessions",
+    "noSessions": "No sessions yet.",
+    "phases": {
+      "lobby": "Waiting",
+      "question": "In progress",
+      "reveal": "In progress",
+      "finished": "Finished"
+    },
+    "backToLive": "Live lesson",
+    "codeLabel": "Code",
+    "online": "Realtime connected",
+    "polling": "Realtime not connected — refreshing every 4 seconds",
+    "fullscreen": "Big screen",
+    "exitFullscreen": "Exit big screen",
+    "finishNow": "Finish",
+    "qrLabel": "QR code to join the live lesson",
+    "scanOrGo": "Scan the QR with your phone camera, or open the site and enter the code:",
+    "players": "Players: {count}",
+    "waitingPlayers": "Waiting for students to join…",
+    "start": "Start · {total} questions",
+    "questionOf": "{n} / {total}",
+    "answered": "Answered: {count} / {total}",
+    "reveal": "Show answer",
+    "next": "Next question →",
+    "showResults": "Results →",
+    "correctStats": "{correct} of {total} correct",
+    "top": "Top five",
+    "finalTitle": "Leaderboard",
+    "noPlayers": "Nobody took part.",
+    "joinPageTitle": "Join a live lesson",
+    "joinPageText": "Enter the 6-digit code from the teacher's screen — no sign-up needed.",
+    "enter": "Enter",
+    "notFound": "No lesson found with this code.",
+    "enterOtherCode": "Enter another code",
+    "alreadyFinished": "This lesson has already finished.",
+    "joinTitle": "Enter your name",
+    "joinHint": "This name appears on the teacher's screen and the leaderboard.",
+    "nameLabel": "Your name",
+    "namePlaceholder": "e.g. Aibek",
+    "join": "Join",
+    "privacy": "No sign-up needed. Your name only appears in this lesson's leaderboard.",
+    "score": "{score} points",
+    "youAreIn": "You're in! 🎉",
+    "waitTeacher": "Wait for the teacher to start — the question will appear on this screen.",
+    "answerSent": "Answer received",
+    "waitOthers": "Waiting for the others…",
+    "timeUp": "Time is up",
+    "answerErrors": {
+      "closed": "The question is closed.",
+      "invalid": "Answer not accepted. Try refreshing the page."
+    },
+    "result": {
+      "right": "Correct!",
+      "wrong": "Wrong",
+      "none": "No answer"
+    },
+    "correctWas": "Correct answer",
+    "rank": "Place {rank} of {total}",
+    "thanks": "Thanks for playing!",
+    "errors": {
+      "not_teacher": "Only teachers can open a session.",
+      "missing_fields": "Fill in all fields.",
+      "no_questions": "This test has no questions.",
+      "not_found": "No lesson found with this code.",
+      "finished": "This lesson has already finished.",
+      "name_taken": "This name is taken — choose another.",
+      "full": "The lesson is full.",
+      "unknown": "Unknown error. Check that the day 8 SQL was run in Supabase."
+    }
   }
 }

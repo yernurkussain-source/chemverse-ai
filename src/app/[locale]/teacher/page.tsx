@@ -17,6 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const TOOLS = [
+  { key: "live", href: "/teacher/live" },
   { key: "studio", href: "/teacher/lesson-studio" },
   { key: "qr", href: "/teacher/qr" },
   { key: "lab", href: "/virtual-lab/titration" },
@@ -31,7 +32,7 @@ export default function TeacherPage() {
       <h1 className="mt-2.5 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold">{t("title")}</h1>
       <p className="mt-2 mb-8 max-w-[60ch] text-muted-foreground">{t("subtitle")}</p>
 
-      <ul className="mb-10 grid gap-3 sm:grid-cols-3">
+      <ul className="mb-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {TOOLS.map((tool) => (
           <li key={tool.key}>
             <Link
