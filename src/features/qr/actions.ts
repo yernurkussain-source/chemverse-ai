@@ -7,7 +7,10 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import { isQrType, normalizeTarget } from "./types";
 
-export type QrActionState = { error?: "not_teacher" | "invalid_target" | "not_configured" | "unknown"; created?: string } | null;
+export type QrActionState = {
+  error?: "not_teacher" | "invalid_target" | "invalid_class" | "not_configured" | "unknown";
+  created?: string;
+} | null;
 
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
 
@@ -39,10 +42,24 @@ export async function createQr(_prev: QrActionState, formData: FormData): Promis
   const target = normalizeTarget(type, String(formData.get(`target_${type}`) ?? "").trim());
   if (!target) return { error: "invalid_target" };
 
+  // Сынып таңдалса — ол осы мұғалімдікі ме
+  const classId = String(formData.get("classId") ?? "") || null;
+  if (classId) {
+    const { data: own } = await admin
+      .from("classes")
+      .select("id")
+      .eq("id", classId)
+      .eq("teacher_id", teacherId)
+      .maybeSingle();
+    if (!own) return { error: "invalid_class" };
+  }
+
   // Токен қайталанса (өте сирек) — тағы бір рет көреміз
   for (let attempt = 0; attempt < 3; attempt++) {
     const token = newToken();
-    const { error } = await admin.from("qr_resources").insert({ token, type, target, created_by: teacherId });
+    const { error } = await admin
+      .from("qr_resources")
+      .insert({ token, type, target, class_id: classId, created_by: teacherId });
     if (!error) {
       refresh();
       return { created: token };
@@ -69,5 +86,17 @@ export async function toggleQr(formData: FormData) {
     .eq("id", id)
     .eq("created_by", teacherId);
   if (error) console.error("QR күйін өзгерту қатесі:", error);
+  refresh();
+}
+
+/** QR-ды біржола жою (сканерлеу статистикасы да өшеді). Тек өз QR-ы */
+export async function deleteQr(formData: FormData) {
+  const admin = createAdminClient();
+  const teacherId = await currentTeacherId();
+  if (!admin || !teacherId) return;
+
+  const id = String(formData.get("id") ?? "");
+  const { error } = await admin.from("qr_resources").delete().eq("id", id).eq("created_by", teacherId);
+  if (error) console.error("QR жою қатесі:", error);
   refresh();
 }

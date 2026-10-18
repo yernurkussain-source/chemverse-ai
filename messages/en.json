@@ -698,7 +698,8 @@
       "not_teacher": "Only teachers can create QR codes.",
       "invalid_target": "The target is not valid.",
       "not_configured": "Supabase keys are not set (.env.local).",
-      "unknown": "Unknown error. Check that the day 5 migration was run in Supabase."
+      "unknown": "Unknown error. Check that the day 5 migration was run in Supabase.",
+      "invalid_class": "Class not found."
     },
     "listTitle": "My QR codes ({count})",
     "empty": "No QR codes yet. Create the first one with the form.",
@@ -713,7 +714,14 @@
       "text": "This QR was not found, is disabled or has expired. Ask your teacher for a new one.",
       "scanAgain": "Scan again",
       "home": "Home"
-    }
+    },
+    "classLabel": "Class",
+    "classAll": "Shared by all classes",
+    "classBadge": "class {name}",
+    "delete": "Delete",
+    "deleteConfirm": "The QR will be deleted permanently, along with its scan statistics. Delete?",
+    "deleteYes": "Yes, delete",
+    "cancel": "Cancel"
   },
   "Scan": {
     "title": "QR scanner",

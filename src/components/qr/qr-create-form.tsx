@@ -9,8 +9,8 @@ import { ELEMENTS } from "@/lib/chemistry/elements";
 import { MOLECULES } from "@/lib/chemistry/molecules";
 import { cn } from "@/lib/utils";
 
-/** Мұғалімнің жаңа QR жасайтын формасы: түрі + нысаны */
-export function QrCreateForm() {
+/** Мұғалімнің жаңа QR жасайтын формасы: түрі + нысаны + сыныбы */
+export function QrCreateForm({ classes }: { classes: { id: string; name: string }[] }) {
   const t = useTranslations("Qr");
   const tm = useTranslations("Molecules");
   const tExam = useTranslations("Exam");
@@ -76,6 +76,20 @@ export function QrCreateForm() {
           </select>
         )}
       </label>
+
+      {classes.length > 0 && (
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[0.85rem] text-muted-foreground">{t("classLabel")}</span>
+          <select name="classId" className={inputClass} defaultValue="">
+            <option value="">{t("classAll")}</option>
+            {classes.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
 
       <p className="text-[0.82rem] text-muted-foreground">{t(`hints.${type}`)}</p>
       <FormError message={state?.error ? t(`errors.${state.error}`) : undefined} />

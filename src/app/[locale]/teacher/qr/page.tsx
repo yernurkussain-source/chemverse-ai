@@ -8,6 +8,7 @@ import { Eyebrow } from "@/components/landing/section";
 import { PrintButton } from "@/components/qr/print-button";
 import { QrCode } from "@/components/qr/qr-code";
 import { QrCreateForm } from "@/components/qr/qr-create-form";
+import { QrDeleteButton } from "@/components/qr/qr-delete-button";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toggleQr } from "@/features/qr/actions";
@@ -78,17 +79,18 @@ async function TeacherQrContent() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("qr_resources")
-    .select("id, token, type, target, scan_count, is_active, expires_at, created_at")
+    .select("id, token, type, target, class_id, scan_count, is_active, expires_at, created_at")
     .order("created_at", { ascending: false })
     .returns<QrResource[]>();
   const items = (data ?? []).filter((qr) => isQrType(qr.type));
   const origin = await siteOrigin();
+  const classNames = new Map(account.classes.map((c) => [c.id, c.name]));
 
   return (
     <div className="grid gap-8 lg:grid-cols-[340px_1fr] print:block">
       <Card className="h-fit gap-4 rounded-3xl border border-line p-5 ring-0 shadow-[0_1px_2px_var(--shadow)] sm:p-6 dark:shadow-none print:hidden">
         <h2 className="font-display text-lg font-semibold">{t("newTitle")}</h2>
-        <QrCreateForm />
+        <QrCreateForm classes={account.classes.map(({ id, name }) => ({ id, name }))} />
       </Card>
 
       <section>
@@ -101,7 +103,12 @@ async function TeacherQrContent() {
         ) : (
           <ul className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-3 print:grid-cols-3 print:gap-4">
             {items.map((qr) => (
-              <QrCard key={qr.id} qr={qr} url={`${origin}/q/${qr.token}`} />
+              <QrCard
+                key={qr.id}
+                qr={qr}
+                url={`${origin}/q/${qr.token}`}
+                classLabel={qr.class_id ? classNames.get(qr.class_id) : undefined}
+              />
             ))}
           </ul>
         )}
@@ -110,7 +117,7 @@ async function TeacherQrContent() {
   );
 }
 
-async function QrCard({ qr, url }: { qr: QrResource; url: string }) {
+async function QrCard({ qr, url, classLabel }: { qr: QrResource; url: string; classLabel?: string }) {
   const t = await getTranslations("Qr");
   const { title, subtitle } = await describeTarget(qr.type, qr.target);
 
@@ -123,6 +130,7 @@ async function QrCard({ qr, url }: { qr: QrResource; url: string }) {
     >
       <span className="text-[0.75rem] font-semibold tracking-[0.06em] text-cyan uppercase print:text-black">
         {t(`types.${qr.type}`)}
+        {classLabel && <> · {t("classBadge", { name: classLabel })}</>}
       </span>
       <QrCode value={url} label={t("qrLabel", { name: title })} size={168} className="rounded-lg" />
       <span className="font-mono text-xl font-semibold">{title}</span>
@@ -149,6 +157,7 @@ async function QrCard({ qr, url }: { qr: QrResource; url: string }) {
             </button>
           </form>
         </div>
+        <QrDeleteButton id={qr.id} />
       </div>
     </li>
   );

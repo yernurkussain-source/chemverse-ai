@@ -16,6 +16,8 @@ export type QrResource = {
   token: string;
   type: QrType;
   target: string;
+  /** Қай сыныпқа арналған (null — барлық сыныпқа ортақ) */
+  class_id: string | null;
   scan_count: number;
   is_active: boolean;
   expires_at: string | null;
