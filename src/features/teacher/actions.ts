@@ -1,6 +1,9 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { hasLocale } from "next-intl";
+import { redirect } from "@/i18n/navigation";
+import { routing, type Locale } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
 
 export type TeacherFormState = { error?: "missing_fields" | "invalid_date" | "class_not_found" | "invalid_code" | "unknown"; ok?: boolean } | null;
@@ -67,6 +70,22 @@ export async function removeStudent(formData: FormData) {
     .eq("user_id", text(formData, "userId"));
   if (error) console.error("Оқушыны шығару қатесі:", error);
   refresh();
+}
+
+/**
+ * Сыныпты жою (RLS: тек өз сыныбы). Мүшелік пен тапсырмалар бірге жойылады,
+ * оқушылардың тест/зертхана нәтижелері сақталады.
+ */
+export async function deleteClass(formData: FormData) {
+  const localeValue = text(formData, "locale");
+  const locale: Locale = hasLocale(routing.locales, localeValue) ? localeValue : routing.defaultLocale;
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (auth.user) {
+    const { error } = await supabase.from("classes").delete().eq("id", text(formData, "classId")).eq("teacher_id", auth.user.id);
+    if (error) console.error("Сыныпты жою қатесі:", error);
+  }
+  redirect({ href: "/teacher", locale });
 }
 
 /** Оқушы 6 санды кодпен сыныпқа қосылады (профиль беті) */

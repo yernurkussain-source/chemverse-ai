@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { locale as rootLocale } from "next/root-params";
 import { hasLocale, useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { DeleteClassButton } from "@/components/teacher/delete-class-button";
 import { AssignmentForm } from "@/components/teacher/forms";
 import { Card } from "@/components/ui/card";
 import { deleteAssignment, removeStudent } from "@/features/teacher/actions";
@@ -162,6 +163,10 @@ async function ClassContent({ params }: { params: Params }) {
           <h2 className="font-display text-lg font-semibold">{t("newAssignment")}</h2>
           <AssignmentForm classId={detail.id} exams={detail.exams} />
         </Card>
+      </section>
+
+      <section className="border-t border-line pt-6">
+        <DeleteClassButton classId={detail.id} name={detail.name} students={detail.students.length} />
       </section>
     </div>
   );

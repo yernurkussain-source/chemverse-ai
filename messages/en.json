@@ -973,7 +973,11 @@
       "class_not_found": "No class found with this code.",
       "invalid_code": "The code must be 6 digits.",
       "unknown": "Unknown error. Please try again."
-    }
+    },
+    "deleteClass": "Delete class",
+    "deleteClassConfirm": "Class “{name}” will be deleted: {count} student(s) will leave it and its assignments will be removed. Test and lab results are kept. Delete?",
+    "deleteClassYes": "Yes, delete",
+    "cancel": "Cancel"
   },
   "LessonStudio": {
     "eyebrow": "AI Lesson Studio",
