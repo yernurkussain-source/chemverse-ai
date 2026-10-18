@@ -180,7 +180,8 @@
     "slider": "NaOH volume",
     "drop": "+1 drop",
     "reset": "Start over",
-    "conditions": "HCl + NaOH → NaCl + H₂O · c(HCl) = c(NaOH) = 0.1 mol/L · phenolphthalein: colorless to raspberry pink at pH 8.2–10"
+    "conditions": "HCl + NaOH → NaCl + H₂O · c(HCl) = c(NaOH) = 0.1 mol/L · phenolphthalein: colorless to raspberry pink at pH 8.2–10",
+    "openLab": "Enter the lab"
   },
   "Ai": {
     "eyebrow": "AI tutor",
@@ -661,6 +662,10 @@
         "title": "AI tutor",
         "text": "Ask a chemistry question: step-by-step explanations, formulas, sources."
       },
+      "lab": {
+        "title": "Virtual lab",
+        "text": "Titrate HCl of unknown concentration and find its concentration yourself."
+      },
       "periodic": {
         "title": "Periodic table",
         "text": "118 elements: mass, electronegativity, category."
@@ -838,5 +843,64 @@
       "bad_request": "Could not send the question. Please try again.",
       "ai_error": "The AI could not answer. Please try again later."
     }
+  },
+  "VirtualLab": {
+    "eyebrow": "Virtual lab",
+    "title": "Acid–base titration",
+    "subtitle": "The flask holds 25 mL of HCl of unknown concentration and phenolphthalein. Add 0.1 M NaOH, find the equivalence point and calculate the HCl concentration.",
+    "taskTitle": "Task",
+    "steps": {
+      "s1": "Add NaOH solution from the burette gradually.",
+      "s2": "Near the equivalence point, add drop by drop.",
+      "s3": "Stop when the solution turns pink.",
+      "s4": "Calculate c(HCl) from the volume of NaOH used."
+    },
+    "formula": "c(HCl) = c(NaOH) · V(NaOH) / V(HCl)",
+    "start": "Start the experiment",
+    "safetyTitle": "Safety rules",
+    "safety": {
+      "goggles": "Wear safety goggles.",
+      "gloves": "Handle acids and bases only with gloves.",
+      "burette": "Fill the burette below eye level and open the tap slowly.",
+      "spill": "If you spill, rinse with plenty of water and tell your teacher."
+    },
+    "flaskText": "HCl (?) + phph",
+    "colorNone": "The solution is colourless",
+    "colorPink": "The solution turned pink",
+    "titrateHint": "Add NaOH. You cannot take solution back — be careful near the equivalence point.",
+    "add": {
+      "ml1": "+1 mL",
+      "ml01": "+0.1 mL",
+      "drop": "+1 drop"
+    },
+    "stopHere": "Stop → calculate",
+    "calcTitle": "Calculate the concentration",
+    "answerLabel": "c(HCl), mol/L",
+    "answerInvalid": "Enter a number, e.g. 0.0950.",
+    "check": "Check",
+    "checking": "Checking…",
+    "backToTitrate": "Back to titration",
+    "grades": {
+      "excellent": "Excellent! Error below 2% — a real lab expert.",
+      "good": "Good! Error below 5%. Adding drop by drop will make it more precise.",
+      "retry": "The error is large. Check your calculation or the stopping point and try again."
+    },
+    "yourAnswer": "Your answer",
+    "trueValue": "True c(HCl)",
+    "errorPct": "Error",
+    "equivalence": "Equivalence point",
+    "overshootGood": "You stopped right at the equivalence point.",
+    "overshootOver": "You added {ml} mL past the equivalence point.",
+    "overshootUnder": "You stopped {ml} mL before the equivalence point.",
+    "saved": "Result saved — your teacher can see it.",
+    "notSaved": "Result not saved: sign in to save results.",
+    "again": "New experiment",
+    "history": "My attempts",
+    "gradeShort": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "retry": "Retry"
+    },
+    "errorShort": "error {value}%"
   }
 }

@@ -14,6 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const ITEMS = [
   { key: "unt", href: "/exam/unt", icon: <BookIcon size={24} />, accent: true },
   { key: "ai", href: "/ai-tutor", icon: <SparkIcon />, accent: true },
+  { key: "lab", href: "/virtual-lab/titration", icon: <FlaskIcon /> },
   { key: "periodic", href: "/periodic-table", icon: <AtomIcon size={24} /> },
   { key: "molecules", href: "/molecules", icon: <AtomIcon size={24} /> },
   { key: "scan", href: "/scan", icon: <ScanIcon size={24} /> },
@@ -41,6 +42,15 @@ export default function LearnPage() {
         ))}
       </ul>
     </div>
+  );
+}
+
+function FlaskIcon() {
+  return (
+    <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
+      <path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 006.2 21.5h11.6a2 2 0 001.7-3L14 9V3" strokeLinejoin="round" />
+      <path d="M7 15h10" />
+    </svg>
   );
 }
 

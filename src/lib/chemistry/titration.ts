@@ -13,14 +13,20 @@ export const TITRATION = {
 /** Судың иондық көбейтіндісі (25 °C) */
 const KW = 1e-14;
 
+/** Эквивалент нүктесі (мл NaOH): c(HCl)·V(HCl) = c(NaOH)·V(NaOH) */
+export function equivalenceVolume(acidConcentration: number = TITRATION.concentration): number {
+  return (acidConcentration * TITRATION.acidVolumeMl) / TITRATION.concentration;
+}
+
 /**
- * v мл NaOH қосылғандағы pH.
+ * v мл NaOH қосылғандағы pH. acidConcentration — HCl концентрациясы (әдепкі 0,1 М;
+ * виртуалды зертханада ол белгісіз, оқушы табуы керек).
  * Электрбейтараптық теңдеуі: [H⁺] − Kw/[H⁺] = d, мұндағы d — артық H⁺ концентрациясы
  * (d < 0 болса — артық OH⁻). Квадрат теңдеудің оң түбірі алынады.
  */
-export function titrationPH(v: number): number {
+export function titrationPH(v: number, acidConcentration: number = TITRATION.concentration): number {
   const { acidVolumeMl, concentration } = TITRATION;
-  const nH = (concentration * acidVolumeMl) / 1000;
+  const nH = (acidConcentration * acidVolumeMl) / 1000;
   const nOH = (concentration * v) / 1000;
   const totalLiters = (acidVolumeMl + v) / 1000;
   const d = (nH - nOH) / totalLiters;
@@ -42,8 +48,8 @@ export function phenolphthaleinColor(pH: number): { rgb: string; opacity: number
 /** Ерітінді ортасы — интерфейстегі жазу мен түс үшін */
 export type MediumState = "acid" | "equivalence" | "weakBase" | "base";
 
-export function mediumState(v: number, pH: number): MediumState {
-  if (Math.abs(v - TITRATION.equivalenceMl) < 0.03) return "equivalence";
+export function mediumState(v: number, pH: number, equivalenceMl: number = TITRATION.equivalenceMl): MediumState {
+  if (Math.abs(v - equivalenceMl) < 0.03) return "equivalence";
   if (pH < 7) return "acid";
   return pH >= 8.2 ? "base" : "weakBase";
 }
