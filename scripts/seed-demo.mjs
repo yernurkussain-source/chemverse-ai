@@ -139,11 +139,13 @@ const correctOf = new Map(options.filter((o) => o.is_correct).map((o) => [o.ques
 const wrongOf = new Map();
 for (const o of options.filter((o) => !o.is_correct)) wrongOf.set(o.question_id, [...(wrongOf.get(o.question_id) ?? []), o.id]);
 
-// ---------- 12 демо оқушы ----------
+// ---------- 12 демо оқушы + негізгі демо оқушы (Айгерім) ----------
+// Айгерімнің бұрынғы (сынақ кезіндегі) тест/зертхана нәтижелері ауыстырылады, профилі өзгермейді
+const MAIN_STUDENT = { name: null, skill: 0.79, main: true };
 const now = Date.now();
 let sessionsCount = 0;
-for (const student of STUDENTS) {
-  const id = await ensureStudent(student);
+for (const student of [...STUDENTS, MAIN_STUDENT]) {
+  const id = student.main ? mainStudent.id : await ensureStudent(student);
   // Бұрынғы демо нәтижелерді тазалап, жаңадан жасаймыз
   must(await db.from("exam_sessions").delete().eq("user_id", id), "сессиялар");
   must(await db.from("lab_attempts").delete().eq("user_id", id), "зертхана");
@@ -237,6 +239,8 @@ for (const student of STUDENTS) {
     );
   }
 
+  if (student.main) continue; // Айгерімнің профилін (аты, XP, серия) /demo өзі басқарады
+
   must(
     await db.from("profiles").upsert({
       id,
@@ -252,26 +256,7 @@ for (const student of STUDENTS) {
   );
   must(await db.from("class_members").upsert({ class_id: demoClass.id, user_id: id, joined_at: iso(now - 20 * DAY) }), "сынып");
 }
-console.log(`👩‍🎓 12 демо оқушы · ${sessionsCount} тест нәтижесі · 8А сыныбына қосылды`);
-
-// Негізгі демо оқушыға (Айгерім) зертхана нәтижелері
-for (const [daysAgo, errorPct] of [[9, 6.8], [4, 2.9], [1, 1.2]]) {
-  const trueConcentration = (80 + randomInt(41)) / 1000;
-  must(
-    await db.from("lab_attempts").insert({
-      user_id: mainStudent.id,
-      experiment_id: "titration",
-      created_at: iso(now - daysAgo * DAY),
-      result: {
-        trueConcentration,
-        answerErrorPct: errorPct,
-        grade: errorPct <= 2 ? "excellent" : errorPct <= 5 ? "good" : "retry",
-        seed: true,
-      },
-    }),
-    "Айгерім зертхана",
-  );
-}
+console.log(`👩‍🎓 12 демо оқушы + Айгерім · ${sessionsCount} тест нәтижесі · 8А сыныбы`);
 
 // ---------- Тапсырмалар ----------
 for (const a of SEED_ASSIGNMENTS) {
