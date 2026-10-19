@@ -65,15 +65,25 @@ async function main() {
     }
     process.stdout.write(`🧠 [${locale}] ${question} … `);
     const knowledge = await searchKnowledge(admin, question);
-    const result = await generateText({
-      model: chatModel(),
-      instructions: tutorInstructions(locale, "explain", knowledge),
-      prompt: question,
-      tools: tutorTools,
-      stopWhen: stepCountIs(4),
-      temperature: 0.3,
-      maxOutputTokens: 2000,
-    });
+    let result;
+    try {
+      result = await generateText({
+        model: chatModel(),
+        instructions: tutorInstructions(locale, "explain", knowledge),
+        prompt: question,
+        tools: tutorTools,
+        stopWhen: stepCountIs(4),
+        temperature: 0.3,
+        maxOutputTokens: 2000,
+        maxRetries: 1,
+      });
+    } catch (error) {
+      // Көбінесе — Gemini тегін лимиті бітті. Қалғанын ертең қайта іске қосып толтыруға болады
+      const quota = String(error).includes("quota");
+      console.log(quota ? "✗ Gemini лимиті бітті — қалғаны кейін" : `✗ қате: ${String(error).slice(0, 120)}`);
+      if (quota) break;
+      continue;
+    }
     const answer = result.text.trim();
     if (!answer) {
       console.log("✗ бос жауап, өткізілді");
