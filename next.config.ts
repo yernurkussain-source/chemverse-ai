@@ -18,6 +18,14 @@ const nextConfig: NextConfig = {
           { key: "Service-Worker-Allowed", value: "/" },
         ],
       },
+      {
+        // Android APK: телефон браузері оны «қосымша файлы» ретінде жүктеуі үшін
+        source: "/downloads/:file*",
+        headers: [
+          { key: "Content-Type", value: "application/vnd.android.package-archive" },
+          { key: "Content-Disposition", value: "attachment; filename=chemverse-ai.apk" },
+        ],
+      },
     ];
   },
   turbopack: {

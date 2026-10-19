@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
+import { buttonVariants } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 import { AtomIcon, BookIcon, HomeIcon, ScanIcon, UserIcon } from "@/components/layout/nav-icons";
 import { Eyebrow, Section } from "./section";
 
@@ -61,6 +63,9 @@ export function AppShowcase() {
               </li>
             ))}
           </ul>
+          <Link href="/install" className={`${buttonVariants({ variant: "glow", size: "pill" })} mt-6`}>
+            {t("install")}
+          </Link>
         </div>
 
         {/* Телефон макеті — сурет ретінде оқылады */}

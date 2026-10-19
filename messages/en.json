@@ -432,11 +432,13 @@
         "solutions": "Solutions, pH",
         "organic": "Organic chemistry"
       }
-    }
+    },
+    "install": "📱 Install on your phone"
   },
   "Footer": {
     "tagline": "a platform to see chemistry and explore it with your own hands",
-    "prototype": "BETA · examples on the home page are demos"
+    "prototype": "BETA · examples on the home page are demos",
+    "install": "📱 Install the app"
   },
   "NotFound": {
     "title": "Page not found",
@@ -1142,6 +1144,38 @@
       "name_taken": "This name is taken — choose another.",
       "full": "The lesson is full.",
       "unknown": "Unknown error. Check that the day 8 SQL was run in Supabase."
+    }
+  },
+  "Install": {
+    "eyebrow": "App",
+    "title": "Install CHEMVERSE AI on your phone",
+    "subtitle": "iPhone, Android or computer — choose your device. The app is free; sign-up is optional.",
+    "platformLabel": "Device",
+    "platforms": {
+      "ios": "iPhone",
+      "android": "Android",
+      "desktop": "Computer"
+    },
+    "installed": "The app is installed — you are using it right now!",
+    "installPwa": "Install via browser",
+    "ios": {
+      "openInSafari": "Open this page in Safari — on iPhone apps can only be added from Safari.",
+      "s1": "Open this page in Safari on your iPhone.",
+      "s2": "Tap the “Share” button in the bottom bar:",
+      "s3": "Choose “Add to Home Screen”:",
+      "s4": "Tap “Add” — the CHEMVERSE icon appears on your home screen.",
+      "note": "The app opens full screen without the browser bar. AR molecules on iPhone use Apple Quick Look."
+    },
+    "android": {
+      "download": "Download the Android app (APK, 4 MB)",
+      "s1": "Open the downloaded chemverse-ai.apk file.",
+      "s2": "If asked: “Allow installing from unknown sources” → allow it.",
+      "s3": "Tap “Install” — the CHEMVERSE icon appears on your home screen.",
+      "pwaAlt": "Or without the APK — install through the browser itself:"
+    },
+    "desktop": {
+      "qrLabel": "QR code for the app install page",
+      "scan": "Scan the QR code with your phone camera — the guide for your phone will open."
     }
   }
 }

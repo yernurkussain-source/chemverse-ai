@@ -37,4 +37,7 @@ execSync(process.platform === "win32" ? ".\\gradlew.bat assembleDebug --console=
 mkdirSync("dist", { recursive: true });
 const apk = join("android", "app", "build", "outputs", "apk", "debug", "app-debug.apk");
 copyFileSync(apk, join("dist", "chemverse-ai.apk"));
-console.log("✅ Дайын: dist\\chemverse-ai.apk");
+// Сайттағы «Орнату» бетінен жүктеу үшін (/downloads/chemverse-ai.apk) — git push кейін Vercel-де жаңарады
+mkdirSync(join("public", "downloads"), { recursive: true });
+copyFileSync(apk, join("public", "downloads", "chemverse-ai.apk"));
+console.log("✅ Дайын: dist\\chemverse-ai.apk және public\\downloads\\chemverse-ai.apk");
