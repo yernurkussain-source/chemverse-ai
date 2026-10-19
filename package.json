@@ -15,7 +15,8 @@
     "android:sync": "node --env-file-if-exists=.env.local node_modules/@capacitor/cli/bin/capacitor sync android",
     "android:apk": "node --env-file-if-exists=.env.local scripts/build-apk.mjs",
     "seed:demo": "node --env-file=.env.local --no-warnings scripts/seed-demo.mjs",
-    "cache:ai": "node --env-file=.env.local --no-warnings scripts/cache-ai.mjs"
+    "cache:ai": "node --env-file=.env.local --no-warnings scripts/cache-ai.mjs",
+    "ios:sync": "node --env-file-if-exists=.env.local node_modules/@capacitor/cli/bin/capacitor sync ios"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.99",
@@ -23,6 +24,7 @@
     "@base-ui/react": "^1.9.0",
     "@capacitor/android": "^8.5.3",
     "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
     "@google/model-viewer": "^4.4.0",
     "@mediapipe/tasks-vision": "^1.1.1",
     "@serwist/turbopack": "^9.5.13",

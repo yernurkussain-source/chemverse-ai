@@ -16,8 +16,9 @@ const eslintConfig = defineConfig([
     "public/mediapipe/**",
     // PWA service worker — scripts/build-sw.mjs жинайтын файл
     "public/sw.js",
-    // Android жобасы (Capacitor жасайды)
+    // Android және iOS жобалары (Capacitor жасайды)
     "android/**",
+    "ios/**",
   ]),
 ]);
 
