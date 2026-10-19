@@ -1,12 +1,13 @@
-import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, stepCountIs, streamText, tool, type UIMessage } from "ai";
+import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, stepCountIs, streamText, type UIMessage } from "ai";
 import { hasLocale } from "next-intl";
 import { z } from "zod";
 import { routing } from "@/i18n/routing";
+import { findCachedAnswer, type CachedAnswer } from "@/lib/ai/cache";
 import { tutorInstructions } from "@/lib/ai/prompt";
 import { chatModel, isAiConfigured } from "@/lib/ai/provider";
 import { isRateLimited, logUsage, saveTokenUsage } from "@/lib/ai/rate-limit";
 import { searchKnowledge, sourceTitle } from "@/lib/ai/rag";
-import { molarMassOf, parseFormula } from "@/lib/chemistry/formula";
+import { tutorTools } from "@/lib/ai/tools";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -29,6 +30,30 @@ const textOf = (message: UIMessage) =>
 // Қате кодтары клиентте аударылады (AiTutor.errors)
 const fail = (code: string, status: number) => new Response(code, { status });
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Кэштегі дайын жауап: AI жазып тұрғандай біртіндеп жіберіледі (~1,5 секундта) */
+function cachedResponse(cached: CachedAnswer) {
+  const stream = createUIMessageStream({
+    execute: async ({ writer }) => {
+      writer.write({ type: "start" });
+      cached.sources.forEach((source, i) => {
+        writer.write({ type: "source-document", sourceId: `${i + 1}`, mediaType: "text/markdown", title: source.title });
+      });
+      writer.write({ type: "text-start", id: "cached" });
+      const words = cached.answer.split(/(?<=\s)/);
+      const step = Math.max(1, Math.ceil(words.length / 60));
+      for (let i = 0; i < words.length; i += step) {
+        writer.write({ type: "text-delta", id: "cached", delta: words.slice(i, i + step).join("") });
+        await sleep(25);
+      }
+      writer.write({ type: "text-end", id: "cached" });
+      writer.write({ type: "finish" });
+    },
+  });
+  return createUIMessageStreamResponse({ stream });
+}
+
 /** AI мұғалім: сұрақ → тексеру → RAG → Gemini → стриминг жауап + дереккөздер (BLUEPRINT 10.4) */
 export async function POST(request: Request) {
   const admin = createAdminClient();
@@ -47,6 +72,12 @@ export async function POST(request: Request) {
   const question = last.role === "user" ? textOf(last).trim() : "";
   if (!question) return fail("bad_request", 400);
   if (question.length > MAX_QUESTION_LENGTH) return fail("too_long", 413);
+
+  // Демо сұрақ (сұхбаттың бірінші сұрағы, «Түсіндір» режимі) кэште болса — AI-сыз бірден жауап
+  if (messages.length === 1 && mode === "explain") {
+    const cached = await findCachedAnswer(admin, question, locale);
+    if (cached) return cachedResponse(cached);
+  }
 
   if (await isRateLimited(admin, auth.user.id)) return fail("rate_limited", 429);
   const usageId = await logUsage(admin, auth.user.id, "chat");
@@ -75,18 +106,8 @@ export async function POST(request: Request) {
         maxOutputTokens: 2000,
         temperature: 0.3,
         stopWhen: stepCountIs(4),
-        tools: {
-          // Сандарды AI жаттан емес, біздің кодпен есептейді
-          molarMass: tool({
-            description: "Химиялық формуланың молярлық массасын (г/моль) дәл есептейді. Мысалы: H2SO4, Ca(OH)2, CuSO4·5H2O.",
-            inputSchema: z.object({ formula: z.string().describe("Химиялық формула") }),
-            execute: async ({ formula }) => {
-              const atoms = parseFormula(formula);
-              if (!atoms) return { error: "Формула танылмады" };
-              return { formula, atoms, molarMass: Math.round(molarMassOf(atoms) * 100) / 100, unit: "г/моль" };
-            },
-          }),
-        },
+        // Сандарды AI жаттан емес, біздің кодпен есептейді
+        tools: tutorTools,
         onEnd: ({ totalUsage }) => {
           void saveTokenUsage(admin, usageId, totalUsage.inputTokens, totalUsage.outputTokens);
         },
