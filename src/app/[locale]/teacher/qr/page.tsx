@@ -87,7 +87,7 @@ async function TeacherQrContent() {
   const classNames = new Map(account.classes.map((c) => [c.id, c.name]));
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[340px_1fr] print:block">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[340px_1fr] print:block">
       <Card className="h-fit gap-4 rounded-3xl border border-line p-5 ring-0 shadow-[0_1px_2px_var(--shadow)] sm:p-6 dark:shadow-none print:hidden">
         <h2 className="font-display text-lg font-semibold">{t("newTitle")}</h2>
         <QrCreateForm classes={account.classes.map(({ id, name }) => ({ id, name }))} />

@@ -69,7 +69,7 @@ async function StudioContent() {
     .limit(20);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[380px_1fr]">
       <Card className="h-fit gap-4 rounded-3xl border border-line p-5 ring-0 shadow-[0_1px_2px_var(--shadow)] sm:p-6 dark:shadow-none">
         <h2 className="font-display text-lg font-semibold">{t("newPlan")}</h2>
         <StudioForm />

@@ -128,7 +128,7 @@ async function ClassContent({ params }: { params: Params }) {
       </section>
 
       {/* Тапсырмалар */}
-      <section className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
         <div>
           <h2 className="mb-3 font-display text-lg font-semibold">{t("assignments")}</h2>
           {detail.assignments.length === 0 ? (

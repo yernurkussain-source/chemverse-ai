@@ -76,7 +76,7 @@ async function Classes() {
   const classes = await getTeacherClasses(userId);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
       <section>
         <h2 className="mb-4 font-display text-lg font-semibold">{t("classes")}</h2>
         {classes.length === 0 ? (
