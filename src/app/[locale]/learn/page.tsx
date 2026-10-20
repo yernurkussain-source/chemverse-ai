@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const ITEMS = [
   { key: "unt", href: "/exam/unt", icon: <BookIcon size={24} />, accent: true },
   { key: "ai", href: "/ai-tutor", icon: <SparkIcon />, accent: true },
-  { key: "lab", href: "/virtual-lab/titration", icon: <FlaskIcon /> },
+  { key: "lab", href: "/virtual-lab", icon: <FlaskIcon /> },
   { key: "periodic", href: "/periodic-table", icon: <AtomIcon size={24} /> },
   { key: "molecules", href: "/molecules", icon: <AtomIcon size={24} /> },
   { key: "scan", href: "/scan", icon: <ScanIcon size={24} /> },

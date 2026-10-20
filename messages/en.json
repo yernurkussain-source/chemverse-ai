@@ -678,7 +678,7 @@
       },
       "lab": {
         "title": "Virtual lab",
-        "text": "Titrate HCl of unknown concentration and find its concentration yourself."
+        "text": "ChemLab: experiments for grades 7–10 — prediction, model, observation table, conclusion and a score out of 100."
       },
       "periodic": {
         "title": "Periodic table",
@@ -939,7 +939,7 @@
       },
       "lab": {
         "title": "Virtual lab",
-        "text": "Titration: student results appear here."
+        "text": "ChemLab: experiments for grades 7–10, scored on the server out of 100."
       }
     },
     "classes": "My classes",
@@ -1179,6 +1179,346 @@
     "desktop": {
       "qrLabel": "QR code for the app install page",
       "scan": "Scan the QR code with your phone camera — the guide for your phone will open."
+    }
+  },
+  "ChemLab": {
+    "eyebrow": "ChemLab · virtual lab",
+    "title": "ChemLab — a virtual chemistry lab",
+    "slogan": "Explore. Experiment. Draw conclusions!",
+    "subtitle": "Make a prediction, choose your own equipment, run the experiment on a model, fill in the observation table, calculate and write a conclusion. Your work is scored out of 100.",
+    "modelNote": "This is a learning model of a real lab practical. The results are not real measured data.",
+    "modelBadge": "Model result",
+    "modelBadgeTitle": "Model result — not real measured data",
+    "gradesTitle": "Choose your grade",
+    "grade": "Grade {grade}",
+    "gradeStats": "Experiments: {count} · ready: {ready}",
+    "gradeFocus": {
+      "7": "Equipment, safety, separating mixtures",
+      "8": "Atoms, formulas, signs of reactions",
+      "9": "Acids and bases, solutions, reaction rate",
+      "10": "Kinetics, equilibrium, electrochemistry, organic"
+    },
+    "readyTitle": "Ready experiments",
+    "myWorks": "My work",
+    "myWorksEmpty": "No work yet. Try an experiment!",
+    "scoreShort": "{score}/100",
+    "soon": "Coming soon",
+    "open": "Open",
+    "back": "ChemLab",
+    "gradeSubtitle": "Pick a topic and start the experiment. Cards marked “Coming soon” are still being built.",
+    "soonTitle": "This experiment is being built",
+    "soonText": "“{title}” is coming soon. Meanwhile, try the ready experiments.",
+    "steps": {
+      "goal": "Goal",
+      "prediction": "Prediction",
+      "equipment": "Equipment",
+      "experiment": "Experiment",
+      "observation": "Observation",
+      "analysis": "Analysis",
+      "conclusion": "Conclusion",
+      "score": "Score"
+    },
+    "stepOf": "Step {n}/8",
+    "nav": {
+      "back": "← Back",
+      "next": "Next →",
+      "start": "Start the experiment",
+      "submit": "Submit",
+      "submitting": "Checking…",
+      "again": "Try again",
+      "openResult": "Open the result page",
+      "needStep": "Finish this step to continue."
+    },
+    "errors": {
+      "start": "Could not start the experiment. Please reload the page.",
+      "invalid": "Could not send your answers. Please try again.",
+      "expired": "The experiment has expired (6 hours). Press “Try again”."
+    },
+    "goalStep": {
+      "goalTitle": "Goal",
+      "theoryTitle": "Theory in brief",
+      "safetyTitle": "Safety rules"
+    },
+    "predictionStep": {
+      "hint": "The prediction is not scored — we compare it with the result at the end."
+    },
+    "equipmentStep": {
+      "hint": "Choose the equipment you need. The list also has items you do not need — be careful.",
+      "selected": "Selected: {count}"
+    },
+    "observationStep": {
+      "hint": "The model shows the pH. For each row, choose the colour of the solution and its medium.",
+      "choose": "Choose"
+    },
+    "analysisStep": {
+      "hint": "Use your observations to calculate and answer the questions.",
+      "data": "Data",
+      "placeholder": "e.g. 0.0950"
+    },
+    "conclusionStep": {
+      "hint": "Write a scientific conclusion in 2–5 sentences. No ready-made text — this structure will help:",
+      "structure": {
+        "goal": "Goal — what did you investigate?",
+        "result": "Result — what number or observation did you get?",
+        "explain": "Explanation — why did it happen?"
+      },
+      "placeholder": "My goal was … In the experiment I noticed … This happened because …",
+      "sentences": "Sentences: {count}",
+      "minHint": "Write at least 2 sentences."
+    },
+    "scoreView": {
+      "title": "Score",
+      "total": "Total score",
+      "criteria": {
+        "procedure": "Carrying out the experiment",
+        "observation": "Recording observations",
+        "calc": "Calculations",
+        "conclusion": "Conclusion and explanation"
+      },
+      "provisional": "Provisional score: given by rules, your teacher can adjust it.",
+      "prediction": {
+        "right": "Your prediction was confirmed ✓",
+        "wrong": "Your prediction was not confirmed — that is an important result too.",
+        "none": "No prediction was made."
+      },
+      "saved": "Result saved — your teacher can see it.",
+      "notSaved": "Result not saved: log in to save your work.",
+      "revealTitle": "Model values",
+      "feedbackTitle": "Feedback",
+      "yourConclusion": "Conclusion",
+      "duration": "Time: {min} min"
+    },
+    "feedback": {
+      "equipmentPerfect": "Equipment chosen correctly.",
+      "equipmentMissing": "Missing equipment:",
+      "equipmentExtra": "Unneeded equipment (−3 points each):",
+      "endpointExact": "You stopped exactly at the equivalence point.",
+      "endpointOver": "You went {ml} mL past the equivalence point.",
+      "endpointUnder": "You stopped {ml} mL before the equivalence point.",
+      "observationAll": "The observation table is fully correct.",
+      "observationSome": "Observation table: {right} of {total} cells correct.",
+      "concentrationOk": "c(HCl) calculated correctly.",
+      "concentrationWrong": "Check your calculation: c(HCl) = c(NaOH)·V(NaOH)/V(HCl).",
+      "equivalenceOk": "The equivalence volume is correct.",
+      "equivalenceWrong": "The equivalence volume is far from the real value.",
+      "mediumOk": "The medium at the equivalence point is correct.",
+      "mediumWrong": "Think: what is the medium when a strong acid is fully neutralised by a strong base?",
+      "conclusionShort": "The conclusion is too short — write at least 2 sentences.",
+      "conclusionTerms": "Scientific terms: {found} of {total} used.",
+      "conclusionNoNumber": "Mention your result (the number) in the conclusion.",
+      "conclusionGood": "Complete conclusion: goal, result and explanation."
+    },
+    "resultPage": {
+      "title": "Experiment result",
+      "date": "Completed on: {date}",
+      "studentWork": "Student work"
+    },
+    "labs": {
+      "titration": {
+        "goal": "Find the concentration of hydrochloric acid (HCl) by titrating it with 0.1 M sodium hydroxide (NaOH).",
+        "theory": "When an acid reacts with a base, neutralisation takes place: HCl + NaOH → NaCl + H₂O. The moment all the acid has reacted is the equivalence point. For a strong acid and a strong base the medium at this point is neutral (pH ≈ 7). Phenolphthalein is colourless in acidic and neutral solutions and turns crimson in alkaline ones — stop at the first drop that gives a colour. At the equivalence point the amounts are equal: c(HCl)·V(HCl) = c(NaOH)·V(NaOH).",
+        "safety": {
+          "goggles": "Wear safety goggles.",
+          "gloves": "Handle the acid and the alkali only with gloves.",
+          "burette": "Fill the burette below eye level and open the tap slowly.",
+          "spill": "If a solution spills, rinse with plenty of water and tell your teacher."
+        },
+        "prediction": {
+          "question": "What do you think the pH will be at the equivalence point?",
+          "options": {
+            "lt7": "Below 7 (acidic)",
+            "eq7": "About 7 (neutral)",
+            "gt7": "Above 7 (alkaline)"
+          }
+        },
+        "equipment": {
+          "pipette": "Pipette (25 mL)",
+          "magnet": "Magnet",
+          "burette": "Burette",
+          "thermometer": "Thermometer",
+          "conical-flask": "Conical flask",
+          "filter-paper": "Filter paper",
+          "phenolphthalein": "Phenolphthalein"
+        },
+        "stopped": "You stopped at V(NaOH) = {ml} mL. Go to the next step or keep adding drops.",
+        "continue": "Continue",
+        "observation": {
+          "volume": "V(NaOH), mL",
+          "ph": "pH",
+          "color": "Colour",
+          "medium": "Medium",
+          "colors": {
+            "colorless": "Colourless",
+            "crimson": "Crimson"
+          },
+          "media": {
+            "acid": "Acidic",
+            "neutral": "Neutral",
+            "base": "Alkaline"
+          }
+        },
+        "questions": {
+          "concentration": {
+            "label": "HCl concentration c(HCl), mol/L"
+          },
+          "equivalence": {
+            "label": "Equivalence point: volume of NaOH used, mL"
+          },
+          "eqMedium": {
+            "label": "What is the medium of the solution at the equivalence point?",
+            "options": {
+              "acid": "Acidic",
+              "neutral": "Neutral",
+              "base": "Alkaline"
+            }
+          }
+        },
+        "conclusionHint": "Tip: write about the equivalence point, the indicator colour and the c(HCl) you calculated.",
+        "reveal": {
+          "trueConcentration": "Real c(HCl)",
+          "equivalenceMl": "Equivalence point",
+          "endpointMl": "Where you stopped",
+          "overshootMl": "Deviation",
+          "answerErrorPct": "c(HCl) error"
+        }
+      }
+    },
+    "catalog": {
+      "mixture-separation": {
+        "title": "Separating sand, salt and water",
+        "topic": "Separating mixtures",
+        "work": "Chooses the order of dissolving, filtering and evaporating."
+      },
+      "lab-equipment": {
+        "title": "Identify lab equipment",
+        "topic": "Lab equipment",
+        "work": "Picks equipment by its name or purpose."
+      },
+      "lab-safety": {
+        "title": "Chemical safety simulator",
+        "topic": "Safety rules",
+        "work": "Spots unsafe actions and chooses the safe step."
+      },
+      "pure-vs-mixture": {
+        "title": "Classifying substances",
+        "topic": "Pure substances and mixtures",
+        "work": "Tells pure substances from mixtures."
+      },
+      "phys-chem-phenomena": {
+        "title": "Observing phenomena",
+        "topic": "Physical and chemical changes",
+        "work": "Sorts changes into physical and chemical."
+      },
+      "substance-properties": {
+        "title": "Comparing properties",
+        "topic": "Properties of substances",
+        "work": "Compares colour, state and solubility."
+      },
+      "measurements": {
+        "title": "Measuring mass and volume",
+        "topic": "Measurements",
+        "work": "Chooses measuring tools and records mass and volume."
+      },
+      "atom-builder": {
+        "title": "Build an atom model",
+        "topic": "Atomic structure",
+        "work": "Places protons, neutrons and electrons in a model."
+      },
+      "molecule-builder": {
+        "title": "Molecule builder",
+        "topic": "Chemical formulas and valence",
+        "work": "Joins atoms and works out the formula."
+      },
+      "periodic-explorer": {
+        "title": "Explore an element",
+        "topic": "Periodic table",
+        "work": "Finds an element's symbol and key facts."
+      },
+      "reaction-signs": {
+        "title": "Observing a reaction",
+        "topic": "Signs of a chemical reaction",
+        "work": "Recognises gas, precipitate and colour change."
+      },
+      "balance-equations": {
+        "title": "Balancing coefficients",
+        "topic": "Chemical equations",
+        "work": "Balances simple equations."
+      },
+      "metals-nonmetals": {
+        "title": "Comparing properties",
+        "topic": "Metals and non-metals",
+        "work": "Classifies substances by their properties."
+      },
+      "indicator-lab": {
+        "title": "Indicator lab",
+        "topic": "Acids and bases",
+        "work": "Finds the medium of a solution with indicators."
+      },
+      "titration": {
+        "title": "Acid–base titration",
+        "topic": "Neutralisation",
+        "work": "Titrates unknown HCl with NaOH and calculates its concentration."
+      },
+      "reaction-rate": {
+        "title": "Reaction rate",
+        "topic": "Reaction rate and kinetics",
+        "work": "Changes temperature or concentration and compares graphs."
+      },
+      "solubility": {
+        "title": "Investigating solubility",
+        "topic": "Solutions",
+        "work": "Compares how temperature and amount affect solubility."
+      },
+      "mass-fraction": {
+        "title": "Preparing a solution",
+        "topic": "Mass fraction",
+        "work": "Prepares a solution and calculates the mass fraction."
+      },
+      "precipitation": {
+        "title": "Precipitate formation",
+        "topic": "Exchange reactions",
+        "work": "Watches a precipitate form and writes the ionic equation."
+      },
+      "metal-activity": {
+        "title": "Activity series",
+        "topic": "Reactivity of metals",
+        "work": "Compares how metals react."
+      },
+      "unknown-substance": {
+        "title": "Identify an unknown substance",
+        "topic": "Identifying substances",
+        "work": "Identifies an unknown substance from observations."
+      },
+      "equilibrium": {
+        "title": "Equilibrium model",
+        "topic": "Chemical equilibrium",
+        "work": "Analyses how equilibrium shifts when conditions change."
+      },
+      "redox": {
+        "title": "Electron transfer model",
+        "topic": "Redox reactions",
+        "work": "Finds oxidation states and electron transfer."
+      },
+      "dissociation": {
+        "title": "Ion model",
+        "topic": "Electrolytic dissociation",
+        "work": "Shows and tells apart the ions in a solution."
+      },
+      "galvanic-cell": {
+        "title": "Galvanic cell",
+        "topic": "Electrochemistry",
+        "work": "Explores the anode, cathode and electron flow."
+      },
+      "organic-builder": {
+        "title": "Structural formula builder",
+        "topic": "Organic chemistry",
+        "work": "Builds structural formulas of organic compounds."
+      },
+      "organic-properties": {
+        "title": "Matching properties and reactions",
+        "topic": "Properties of organic compounds",
+        "work": "Matches compound classes with properties and reactions."
+      }
     }
   }
 }

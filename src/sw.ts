@@ -23,7 +23,7 @@ declare const __OFFLINE_REVISION__: string;
  * құрылғыда бір оқушы шыққаннан кейін келесі адам оның деректерін офлайн көріп қоймауы үшін.
  * Тізім src/proxy.ts ішіндегі PROTECTED тізімімен бірдей (+ QR сілтемелері — санауыш үшін).
  */
-const PRIVATE_PAGE = /^\/(kk|ru|en)\/(profile|teacher|onboarding|ai-tutor|exam\/session|exam\/result|q)(\/|$)/;
+const PRIVATE_PAGE = /^\/(kk|ru|en)\/(profile|teacher|onboarding|ai-tutor|exam\/session|exam\/result|q|virtual-lab\/[^/]+\/result)(\/|$)/;
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,

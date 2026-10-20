@@ -1,0 +1,63 @@
+/**
+ * ChemLab каталогы (docs/chemlab/CHEMLAB_SPEC.md 3-бөлім). Мәтіндер — messages/*.json → ChemLab.catalog.<slug>.
+ * Дерекқордағы lab_experiments кестесі осы тізіммен бірдей (supabase/migrations/20261023000000_chemlab.sql).
+ * status: ready — тәжірибе жұмыс істейді; soon — карточкасы «Жақында» белгісімен құлыпталған.
+ */
+export const LAB_GRADES = [7, 8, 9, 10] as const;
+export type LabGrade = (typeof LAB_GRADES)[number];
+
+export const LAB_CATALOG = [
+  // 7-сынып
+  { slug: "mixture-separation", grades: [7], status: "soon" },
+  { slug: "lab-equipment", grades: [7], status: "soon" },
+  { slug: "lab-safety", grades: [7], status: "soon" },
+  { slug: "pure-vs-mixture", grades: [7], status: "soon" },
+  { slug: "phys-chem-phenomena", grades: [7], status: "soon" },
+  { slug: "substance-properties", grades: [7], status: "soon" },
+  { slug: "measurements", grades: [7], status: "soon" },
+  // 8-сынып
+  { slug: "atom-builder", grades: [8], status: "soon" },
+  { slug: "molecule-builder", grades: [8], status: "soon" },
+  { slug: "periodic-explorer", grades: [8], status: "ready", href: "/periodic-table" },
+  { slug: "reaction-signs", grades: [8], status: "soon" },
+  { slug: "balance-equations", grades: [8], status: "soon" },
+  { slug: "metals-nonmetals", grades: [8], status: "soon" },
+  // 9-сынып
+  { slug: "indicator-lab", grades: [9], status: "soon" },
+  { slug: "titration", grades: [9], status: "ready" },
+  { slug: "reaction-rate", grades: [9, 10], status: "soon" },
+  { slug: "solubility", grades: [9], status: "soon" },
+  { slug: "mass-fraction", grades: [9], status: "soon" },
+  { slug: "precipitation", grades: [9], status: "soon" },
+  { slug: "metal-activity", grades: [9], status: "soon" },
+  { slug: "unknown-substance", grades: [9, 10], status: "soon" },
+  // 10-сынып
+  { slug: "equilibrium", grades: [10], status: "soon" },
+  { slug: "redox", grades: [10], status: "soon" },
+  { slug: "dissociation", grades: [10], status: "soon" },
+  { slug: "galvanic-cell", grades: [10], status: "soon" },
+  { slug: "organic-builder", grades: [10], status: "soon" },
+  { slug: "organic-properties", grades: [10], status: "soon" },
+] as const satisfies readonly { slug: string; grades: readonly LabGrade[]; status: "ready" | "soon"; href?: string }[];
+
+export type LabEntry = (typeof LAB_CATALOG)[number];
+export type LabSlug = LabEntry["slug"];
+
+/** 8 қадамдық LabShell-де жұмыс істейтін тәжірибелер (2–3-сессияда толығады) */
+export const SHELL_LABS = ["titration"] as const satisfies readonly LabSlug[];
+export type ShellLabSlug = (typeof SHELL_LABS)[number];
+
+export const isShellLab = (slug: string): slug is ShellLabSlug => (SHELL_LABS as readonly string[]).includes(slug);
+
+export function getLab(slug: string): LabEntry | undefined {
+  return LAB_CATALOG.find((lab) => lab.slug === slug);
+}
+
+export function labsForGrade(grade: LabGrade): LabEntry[] {
+  return LAB_CATALOG.filter((lab) => (lab.grades as readonly number[]).includes(grade));
+}
+
+export const isLabGrade = (value: number): value is LabGrade => (LAB_GRADES as readonly number[]).includes(value);
+
+/** Тәжірибенің адресі: сілтеме түріндегілер (периодтық кесте) өз бетіне апарады */
+export const labHref = (lab: LabEntry) => ("href" in lab ? lab.href : `/virtual-lab/${lab.slug}`);

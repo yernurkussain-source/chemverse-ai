@@ -24,6 +24,8 @@
   --pink: #d93378;
   --amber: #b97f00;
   --good: #0f9a66;
+  /* ChemLab: 8-сыныптың акцент түсі */
+  --blue: #2f62d9;
   --on-accent: #ffffff;
   --glow: rgba(10, 142, 166, 0.35);
   --glow-soft: rgba(10, 142, 166, 0.12);
@@ -86,6 +88,7 @@
   --pink: #ff5fa2;
   --amber: #ffc857;
   --good: #46e3a0;
+  --blue: #7ea6ff;
   --on-accent: #04121a;
   --glow: rgba(63, 224, 240, 0.35);
   --glow-soft: rgba(63, 224, 240, 0.16);
@@ -125,6 +128,7 @@
   --color-pink: var(--pink);
   --color-amber: var(--amber);
   --color-good: var(--good);
+  --color-blue: var(--blue);
   --color-on-accent: var(--on-accent);
   --color-glow: var(--glow);
   --color-glow-soft: var(--glow-soft);
