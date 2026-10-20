@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Locale } from "@/i18n/routing";
+import { shuffleOptions } from "@/lib/option-order";
 
 /**
  * Live сабақтың серверлік бөлігі (тек әкімші клиентімен: оқушылар тіркеусіз, RLS арқылы кіре алмайды).
@@ -58,17 +59,31 @@ const pick = (row: Localized, field: string, locale: Locale) =>
 
 export type LiveQuestion = { id: string; body: string; options: { id: string; label: string; body: string }[] };
 
-/** Сұрақ мәтіні мен нұсқалар — дұрыс жауапсыз */
-export async function loadQuestion(admin: SupabaseClient, questionId: string, locale: Locale): Promise<LiveQuestion | null> {
+export type LoadedLiveQuestion = {
+  question: LiveQuestion;
+  /** Дерекқордағы әріп (live_responses.answer) → нұсқа id. Тек серверде, клиентке жіберілмейді */
+  optionIdByStoredLabel: Record<string, string>;
+};
+
+/**
+ * Сұрақ мәтіні мен нұсқалар — дұрыс жауапсыз. Нұсқалардың реті сессия бойынша араласады
+ * (option-order.ts): мұғалім экраны мен оқушы телефонында бірдей, ал дұрыс жауаптың әрпі алдын ала белгісіз.
+ */
+export async function loadQuestion(
+  admin: SupabaseClient,
+  questionId: string,
+  locale: Locale,
+  sessionId: string,
+): Promise<LoadedLiveQuestion | null> {
   const [{ data: q }, { data: options }] = await Promise.all([
     admin.from("questions").select("id, body_kk, body_ru, body_en").eq("id", questionId).maybeSingle(),
     admin.from("question_options").select("id, label, body_kk, body_ru, body_en").eq("question_id", questionId).order("label"),
   ]);
   if (!q) return null;
+  const stored = (options ?? []).map((o) => ({ id: o.id as string, label: o.label as string, body: pick(o, "body", locale) }));
   return {
-    id: q.id as string,
-    body: pick(q, "body", locale),
-    options: (options ?? []).map((o) => ({ id: o.id as string, label: o.label as string, body: pick(o, "body", locale) })),
+    question: { id: q.id as string, body: pick(q, "body", locale), options: shuffleOptions(stored, `${sessionId}:${q.id}`) },
+    optionIdByStoredLabel: Object.fromEntries(stored.map((o) => [o.label, o.id])),
   };
 }
 

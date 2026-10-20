@@ -19,6 +19,9 @@ const eslintConfig = defineConfig([
     // Android және iOS жобалары (Capacitor жасайды)
     "android/**",
     "ios/**",
+    // Playwright есептері (npx playwright test жасайды)
+    "playwright-report/**",
+    "test-results/**",
   ]),
 ]);
 

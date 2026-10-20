@@ -44,9 +44,9 @@ export async function GET(request: NextRequest, { params }: RouteContext<"/api/l
   const questionId = session.phase === "lobby" ? null : (session.question_ids[session.current_question] ?? null);
   const showQuestion = session.phase === "question" || session.phase === "reveal";
 
-  const [board, question, correctId, myAnswer] = await Promise.all([
+  const [board, loaded, correctId, myAnswer] = await Promise.all([
     leaderboard(admin, session.id),
-    showQuestion && questionId ? loadQuestion(admin, questionId, locale) : Promise.resolve(null),
+    showQuestion && questionId ? loadQuestion(admin, questionId, locale, session.id) : Promise.resolve(null),
     session.phase === "reveal" && questionId ? correctOptionId(admin, questionId) : Promise.resolve(null),
     participantId && questionId
       ? admin
@@ -61,7 +61,8 @@ export async function GET(request: NextRequest, { params }: RouteContext<"/api/l
   const rank = participantId ? board.findIndex((p) => p.id === participantId) : -1;
   const me = rank >= 0 ? board[rank] : null;
   const answer = myAnswer.data as { answer: string; is_correct: boolean; points: number } | null;
-  const answeredOptionId = answer && question ? (question.options.find((o) => o.label === answer.answer)?.id ?? null) : null;
+  const question = loaded?.question ?? null;
+  const answeredOptionId = answer ? (loaded?.optionIdByStoredLabel[answer.answer] ?? null) : null;
   const revealed = session.phase === "reveal" || session.phase === "finished";
 
   const state: StudentLiveState = {

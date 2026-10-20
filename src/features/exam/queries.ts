@@ -1,6 +1,7 @@
 import { connection } from "next/server";
 import type { Locale } from "@/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { shuffleOptions } from "@/lib/option-order";
 import { createClient } from "@/lib/supabase/server";
 import { finalizeSession, isPastDeadline, type SessionRow } from "./grading";
 import { WEAK_TOPIC_THRESHOLD } from "./scoring";
@@ -82,8 +83,11 @@ export type ExamQuestion = {
   options: { id: string; label: string; body: string }[];
 };
 
-/** Сұрақтар мен нұсқалар — тек ашық бағандар (is_correct және түсіндірме мұнда жоқ) */
-async function loadQuestions(questionIds: string[], locale: Locale): Promise<ExamQuestion[]> {
+/**
+ * Сұрақтар мен нұсқалар — тек ашық бағандар (is_correct және түсіндірме мұнда жоқ).
+ * Нұсқалардың реті әр сессияда араласады (option-order.ts), тест пен нәтиже бетінде бірдей.
+ */
+async function loadQuestions(questionIds: string[], locale: Locale, sessionId: string): Promise<ExamQuestion[]> {
   const supabase = await createClient();
   const [{ data: questions }, { data: options }] = await Promise.all([
     supabase
@@ -107,9 +111,12 @@ async function loadQuestions(questionIds: string[], locale: Locale): Promise<Exa
         id,
         topic: q.topics ? pick(q.topics, "title", locale) : "",
         body: pick(q, "body", locale),
-        options: (options ?? [])
-          .filter((o) => o.question_id === id)
-          .map((o) => ({ id: o.id as string, label: o.label as string, body: pick(o, "body", locale) })),
+        options: shuffleOptions(
+          (options ?? [])
+            .filter((o) => o.question_id === id)
+            .map((o) => ({ id: o.id as string, label: o.label as string, body: pick(o, "body", locale) })),
+          `${sessionId}:${id}`,
+        ),
       },
     ];
   });
@@ -157,7 +164,7 @@ export async function getSessionView(sessionId: string, locale: Locale): Promise
 
   const supabase = await createClient();
   const [questions, { data: answers }, { data: exam }] = await Promise.all([
-    loadQuestions(session.question_ids, locale),
+    loadQuestions(session.question_ids, locale, session.id),
     // Тек таңдалған нұсқа — is_correct бағаны оқылмайды
     supabase.from("student_answers").select("question_id, option_id").eq("session_id", sessionId),
     session.exam_id
@@ -201,7 +208,7 @@ export async function getResultView(sessionId: string, locale: Locale): Promise<
   if (!admin) return null;
 
   const [questions, { data: secrets }, { data: correctOptions }, { data: answers }, { data: exam }] = await Promise.all([
-    loadQuestions(session.question_ids, locale),
+    loadQuestions(session.question_ids, locale, session.id),
     admin.from("questions").select("id, explanation_kk, explanation_ru, explanation_en").in("id", session.question_ids),
     admin.from("question_options").select("id, question_id").in("question_id", session.question_ids).eq("is_correct", true),
     admin.from("student_answers").select("question_id, option_id").eq("session_id", sessionId),

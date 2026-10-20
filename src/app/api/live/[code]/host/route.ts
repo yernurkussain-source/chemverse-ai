@@ -39,21 +39,22 @@ export async function GET(request: NextRequest, { params }: RouteContext<"/api/l
   if (!session || !admin) return new NextResponse("not_found", { status: 404 });
 
   const questionId = session.phase === "lobby" ? null : (session.question_ids[session.current_question] ?? null);
-  const [board, question, correctId, responses] = await Promise.all([
+  const [board, loaded, correctId, responses] = await Promise.all([
     leaderboard(admin, session.id),
-    questionId && session.phase !== "finished" ? loadQuestion(admin, questionId, locale) : Promise.resolve(null),
+    questionId && session.phase !== "finished" ? loadQuestion(admin, questionId, locale, session.id) : Promise.resolve(null),
     questionId && session.phase !== "finished" ? correctOptionId(admin, questionId) : Promise.resolve(null),
     questionId
       ? admin.from("live_responses").select("answer").eq("session_id", session.id).eq("question_id", questionId)
       : Promise.resolve({ data: [] }),
   ]);
 
-  // Жауаптар диаграммасы: нұсқа әрпі → нұсқа id → саны
+  // Жауаптар диаграммасы: дерекқордағы әріп → нұсқа id → саны
+  const question = loaded?.question ?? null;
   const counts: Record<string, number> = {};
   for (const option of question?.options ?? []) counts[option.id] = 0;
   for (const r of responses.data ?? []) {
-    const option = question?.options.find((o) => o.label === r.answer);
-    if (option) counts[option.id] += 1;
+    const optionId = loaded?.optionIdByStoredLabel[r.answer as string];
+    if (optionId && optionId in counts) counts[optionId] += 1;
   }
 
   const state: HostLiveState = {
