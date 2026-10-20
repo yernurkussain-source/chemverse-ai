@@ -36,7 +36,7 @@ describe("Аудармалар", () => {
 
   test("сервер қайтаратын қате кодтарының бәрінің аудармасы бар", () => {
     const codes: Record<string, string[]> = {
-      "Auth.errors": ["invalid_credentials", "user_already_exists", "weak_password", "email_address_invalid", "email_not_confirmed", "over_email_send_rate_limit", "missing_fields", "not_configured", "unknown"],
+      "Auth.errors": ["invalid_credentials", "user_already_exists", "weak_password", "email_address_invalid", "email_not_confirmed", "over_email_send_rate_limit", "missing_fields", "not_configured", "oauth_failed", "unknown"],
       "Onboarding.errors": ["missing_fields", "class_not_found", "invalid_code", "unknown"],
       "AiTutor.errors": ["not_configured", "unauthorized", "rate_limited", "too_long", "bad_request", "ai_error"],
       "LiveClass.errors": ["not_teacher", "missing_fields", "no_questions", "not_found", "finished", "name_taken", "full", "unknown"],

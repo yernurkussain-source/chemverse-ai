@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { redirect as externalRedirect } from "next/navigation";
 import { hasLocale } from "next-intl";
 import { redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
@@ -62,6 +63,28 @@ export async function register(_prev: AuthState, formData: FormData): Promise<Au
   // Email растау өшірулі болса, сессия бірден ашылады
   if (data.session) redirect({ href: "/onboarding", locale });
   return { checkEmail: email };
+}
+
+/**
+ * Google арқылы кіру/тіркелу: Supabase Google-дың кіру бетінің адресін береді, біз соған жібереміз.
+ * Google-дан кейін /[locale]/auth/callback бетіне қайтады (сессия сол жерде ашылады).
+ * Google Client ID/Secret кодта жоқ — олар Supabase баптауларында (docs/GOOGLE-LOGIN.md).
+ */
+export async function googleLogin(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const locale = readLocale(formData);
+  if (!isSupabaseConfigured) return { error: "not_configured" };
+
+  const origin = (await headers()).get("origin") ?? "";
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: `${origin}/${locale}/auth/callback`, queryParams: { prompt: "select_account" } },
+  });
+  if (error || !data.url) {
+    console.error("Google кіру қатесі:", error);
+    return { error: "oauth_failed" };
+  }
+  externalRedirect(data.url);
 }
 
 /** Шығу */

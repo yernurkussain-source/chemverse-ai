@@ -8,6 +8,7 @@ export type AuthErrorCode =
   | "over_email_send_rate_limit"
   | "missing_fields"
   | "not_configured"
+  | "oauth_failed"
   | "unknown";
 
 export type OnboardingErrorCode = "missing_fields" | "class_not_found" | "invalid_code" | "unknown";

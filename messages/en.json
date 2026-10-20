@@ -447,7 +447,7 @@
   },
   "Auth": {
     "loginTitle": "Log in",
-    "loginSubtitle": "Log in to the platform with your email and password.",
+    "loginSubtitle": "Log in with your Google account or email.",
     "registerTitle": "Sign up",
     "registerSubtitle": "Create an account, then choose your role and class.",
     "email": "Email",
@@ -465,6 +465,8 @@
     "toDemo": "Demo mode",
     "checkEmailTitle": "Check your email",
     "checkEmailText": "We sent a confirmation email to {email}. Open the link in the email.",
+    "google": "Continue with Google",
+    "or": "or",
     "errors": {
       "invalid_credentials": "Wrong email or password.",
       "user_already_exists": "This email is already registered. Try logging in.",
@@ -474,6 +476,7 @@
       "over_email_send_rate_limit": "Email sending limit reached. Please try again later.",
       "missing_fields": "Please fill in all fields.",
       "not_configured": "Supabase is not configured yet (.env.local).",
+      "oauth_failed": "Google sign-in failed. Try again or sign in with email.",
       "unknown": "Something went wrong. Please try again."
     }
   },

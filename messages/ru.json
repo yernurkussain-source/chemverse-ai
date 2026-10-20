@@ -447,7 +447,7 @@
   },
   "Auth": {
     "loginTitle": "Вход",
-    "loginSubtitle": "Войдите на платформу по email и паролю.",
+    "loginSubtitle": "Войдите через аккаунт Google или по email.",
     "registerTitle": "Регистрация",
     "registerSubtitle": "Создайте аккаунт — затем выберете роль и класс.",
     "email": "Email",
@@ -465,6 +465,8 @@
     "toDemo": "Демо-режим",
     "checkEmailTitle": "Проверьте почту",
     "checkEmailText": "На адрес {email} отправлено письмо для подтверждения. Откройте ссылку из письма.",
+    "google": "Войти через Google",
+    "or": "или",
     "errors": {
       "invalid_credentials": "Неверный email или пароль.",
       "user_already_exists": "Этот email уже зарегистрирован. Попробуйте войти.",
@@ -474,6 +476,7 @@
       "over_email_send_rate_limit": "Достигнут лимит отправки писем. Повторите позже.",
       "missing_fields": "Заполните все поля.",
       "not_configured": "Supabase ещё не настроен (.env.local).",
+      "oauth_failed": "Не удалось войти через Google. Попробуйте ещё раз или войдите по email.",
       "unknown": "Произошла ошибка. Попробуйте ещё раз."
     }
   },

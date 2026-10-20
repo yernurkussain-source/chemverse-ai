@@ -447,7 +447,7 @@
   },
   "Auth": {
     "loginTitle": "Кіру",
-    "loginSubtitle": "Платформаға email және құпия сөзбен кіріңіз.",
+    "loginSubtitle": "Платформаға Google аккаунтымен немесе email арқылы кіріңіз.",
     "registerTitle": "Тіркелу",
     "registerSubtitle": "Аккаунт ашыңыз — сосын рөл мен сыныпты таңдайсыз.",
     "email": "Email",
@@ -465,6 +465,8 @@
     "toDemo": "Демо режим",
     "checkEmailTitle": "Поштаңызды тексеріңіз",
     "checkEmailText": "{email} адресіне растау хаты жіберілді. Хаттағы сілтемені ашыңыз.",
+    "google": "Google арқылы кіру",
+    "or": "немесе",
     "errors": {
       "invalid_credentials": "Email немесе құпия сөз қате.",
       "user_already_exists": "Бұл email бұрын тіркелген. Кіріп көріңіз.",
@@ -474,6 +476,7 @@
       "over_email_send_rate_limit": "Хат жіберу шегіне жеттік. Біраз уақыттан кейін қайталаңыз.",
       "missing_fields": "Барлық өрісті толтырыңыз.",
       "not_configured": "Supabase әлі бапталмаған (.env.local).",
+      "oauth_failed": "Google арқылы кіру сәтсіз болды. Қайталап көріңіз немесе email арқылы кіріңіз.",
       "unknown": "Қате шықты. Қайталап көріңіз."
     }
   },
