@@ -18,6 +18,13 @@ declare const self: WorkerGlobalScope & { __SW_MANIFEST: (PrecacheEntry | string
 /** offline.html хэші (scripts/build-sw.mjs қояды) — бет өзгерсе, кэш жаңарады */
 declare const __OFFLINE_REVISION__: string;
 
+/**
+ * Жеке деректері бар беттер (профиль, мұғалім кабинеті, тест, AI) кэштелмейді: мектептегі ортақ
+ * құрылғыда бір оқушы шыққаннан кейін келесі адам оның деректерін офлайн көріп қоймауы үшін.
+ * Тізім src/proxy.ts ішіндегі PROTECTED тізімімен бірдей (+ QR сілтемелері — санауыш үшін).
+ */
+const PRIVATE_PAGE = /^\/(kk|ru|en)\/(profile|teacher|onboarding|ai-tutor|exam\/session|exam\/result|q)(\/|$)/;
+
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: true,
@@ -26,6 +33,7 @@ const serwist = new Serwist({
   runtimeCaching: [
     { matcher: ({ url }) => url.pathname.startsWith("/api/live/") || url.pathname.startsWith("/api/ai/"), handler: new NetworkOnly() },
     { matcher: ({ url }) => url.hostname.endsWith(".supabase.co"), handler: new NetworkOnly() },
+    { matcher: ({ url, sameOrigin }) => sameOrigin && PRIVATE_PAGE.test(url.pathname), handler: new NetworkOnly() },
     ...defaultCache,
   ],
   // Интернет жоқ және бет кэште болмаса — офлайн бет
@@ -37,3 +45,17 @@ const serwist = new Serwist({
 });
 
 serwist.addEventListeners();
+
+// Бұрынғы нұсқа кэштеп қойған жеке беттерді өшіреміз
+async function purgePrivatePages() {
+  for (const name of await caches.keys()) {
+    const cache = await caches.open(name);
+    for (const request of await cache.keys()) {
+      if (PRIVATE_PAGE.test(new URL(request.url).pathname)) await cache.delete(request);
+    }
+  }
+}
+
+self.addEventListener("activate", (event) => {
+  (event as Event & { waitUntil: (promise: Promise<unknown>) => void }).waitUntil(purgePrivatePages());
+});

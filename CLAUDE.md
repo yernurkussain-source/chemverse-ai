@@ -46,6 +46,7 @@
 - `npm run dev` — жергілікті сайт: http://localhost:3000
 - `npm run build` — production жинағын тексеру
 - `npm run lint` — код сапасын тексеру
+- `npm test` — автоматты тесттер (`tests/*.test.ts`, node:test + esbuild)
 
 ## Мен Windows + VS Code қолданамын
 - Командаларды PowerShell-ге сай жаз.

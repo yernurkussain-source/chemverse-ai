@@ -20,7 +20,7 @@ export function parseFormula(input: string): Record<string, number> | null {
     if (!match) return null;
     const coefficient = match[1] ? Number(match[1]) : 1;
     const atoms = parseGroup(match[2]);
-    if (!atoms) return null;
+    if (!atoms || coefficient === 0) return null;
     for (const [symbol, count] of Object.entries(atoms)) total[symbol] = (total[symbol] ?? 0) + count * coefficient;
   }
   return Object.keys(total).length ? total : null;
@@ -29,6 +29,7 @@ export function parseFormula(input: string): Record<string, number> | null {
 function parseGroup(formula: string): Record<string, number> | null {
   const stack: Record<string, number>[] = [{}];
   let i = 0;
+  // Индекс жоқ болса — 1; нөлдік индекс (H0) қате формула саналады → 0 қайтарылады
   const readNumber = () => {
     const m = /^\d+/.exec(formula.slice(i));
     if (!m) return 1;
@@ -46,6 +47,7 @@ function parseGroup(formula: string): Record<string, number> | null {
       i++;
       const group = stack.pop()!;
       const n = readNumber();
+      if (n === 0) return null;
       const top = stack[stack.length - 1];
       for (const [symbol, count] of Object.entries(group)) top[symbol] = (top[symbol] ?? 0) + count * n;
     } else {
@@ -53,6 +55,7 @@ function parseGroup(formula: string): Record<string, number> | null {
       if (!m || !getElement(m[0])) return null;
       i += m[0].length;
       const n = readNumber();
+      if (n === 0) return null;
       const top = stack[stack.length - 1];
       top[m[0]] = (top[m[0]] ?? 0) + n;
     }

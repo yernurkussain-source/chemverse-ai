@@ -1,8 +1,8 @@
-import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, stepCountIs, streamText, type UIMessage } from "ai";
+import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, stepCountIs, streamText } from "ai";
 import { hasLocale } from "next-intl";
-import { z } from "zod";
 import { routing } from "@/i18n/routing";
 import { findCachedAnswer, type CachedAnswer } from "@/lib/ai/cache";
+import { chatRequestSchema, MAX_QUESTION_LENGTH, textOf, toHistory } from "@/lib/ai/chat-request";
 import { tutorInstructions } from "@/lib/ai/prompt";
 import { chatModel, isAiConfigured } from "@/lib/ai/provider";
 import { isRateLimited, logUsage, saveTokenUsage } from "@/lib/ai/rate-limit";
@@ -12,20 +12,6 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export const maxDuration = 60;
-
-// Сұраныс пішімін тексеру (Zod): тым ұзын не көп хабарлама қабылданбайды
-const bodySchema = z.object({
-  messages: z.array(z.custom<UIMessage>((m) => typeof m === "object" && m !== null && "role" in m)).min(1).max(40),
-  mode: z.enum(["explain", "socratic"]).default("explain"),
-  locale: z.string().default("kk"),
-});
-
-const MAX_QUESTION_LENGTH = 2000;
-/** AI-ға жіберілетін соңғы хабарламалар саны (шығынды шектеу үшін) */
-const HISTORY_LIMIT = 12;
-
-const textOf = (message: UIMessage) =>
-  message.parts.map((part) => (part.type === "text" ? part.text : "")).join("");
 
 // Қате кодтары клиентте аударылады (AiTutor.errors)
 const fail = (code: string, status: number) => new Response(code, { status });
@@ -63,7 +49,8 @@ export async function POST(request: Request) {
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) return fail("unauthorized", 401);
 
-  const parsed = bodySchema.safeParse(await request.json().catch(() => null));
+  // Сұраныс пішімін тексеру (Zod): рөлдер, хабарлама саны мен ұзындығы — chat-request.ts
+  const parsed = chatRequestSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return fail("bad_request", 400);
   const { messages, mode } = parsed.data;
   const locale = hasLocale(routing.locales, parsed.data.locale) ? parsed.data.locale : routing.defaultLocale;
@@ -84,7 +71,7 @@ export async function POST(request: Request) {
 
   // Тек сұрақ мәтіні жіберіледі — оқушының аты-жөні не профилі AI-ға берілмейді
   const knowledge = await searchKnowledge(admin, question);
-  const history = messages.slice(-HISTORY_LIMIT).map((m) => ({ role: m.role, parts: m.parts }));
+  const history = toHistory(messages);
 
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {

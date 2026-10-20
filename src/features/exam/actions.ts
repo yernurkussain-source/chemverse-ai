@@ -65,6 +65,8 @@ export async function startExam(formData: FormData) {
   if (!sessionId) {
     const { data: links } = await admin.from("exam_questions").select("question_id").eq("exam_id", exam.id);
     const questionIds = shuffle((links ?? []).map((l) => l.question_id as string));
+    // Сұрақсыз тест беті ашылмайды (бос сессия жасамаймыз)
+    if (!questionIds.length) throw new Error(`Exam has no questions: ${slug}`);
     const deadline = new Date(Date.now() + exam.duration_minutes * 60_000).toISOString();
     const { data: created, error } = await admin
       .from("exam_sessions")

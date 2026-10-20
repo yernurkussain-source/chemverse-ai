@@ -63,6 +63,7 @@ Supabase → **SQL Editor**-де ретімен іске қосыңыз:
 | `npm run dev` | Жергілікті сайт |
 | `npm run build` | Production жинағы (алдымен PWA service worker жиналады) |
 | `npm run lint` | Код сапасын тексеру |
+| `npm test` | Автоматты тесттер (`tests/`): химия есептері, тест бағалау, аудармалар, AI сұраныс тексерісі |
 | `npm run rag` | `docs/rag/` материалдарын AI білім қорына жүктеу |
 | `npm run seed:demo` | Демо деректер: 8А сыныбы, 12 демо оқушы, нәтижелер, ҚМЖ, QR (`-- --reset` — тазалау) |
 | `npm run cache:ai` | Демо сұрақтарына AI жауаптарын кэштеу → `docs/demo/ai-answers.md` (`-- --force` — қайта жасау) |
