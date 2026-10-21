@@ -152,6 +152,7 @@ function Experiment({ params, value: raw, onChange }: ExperimentProps) {
 /** 5-қадам: V(NaOH) → pH (модель) және оқушы толтыратын түс пен орта */
 function Observation({ params, experiment, values, onChange }: ObservationProps) {
   const t = useTranslations("ChemLab.labs.titration.observation");
+  const tl = useTranslations("ChemLab.labs.titration");
   const locale = useLocale() as Locale;
   const rows = observationRows(concentrationOf(params), asValue(experiment).endpointMl);
   return (
@@ -168,6 +169,7 @@ function Observation({ params, experiment, values, onChange }: ObservationProps)
       }))}
       values={values}
       onChange={onChange}
+      hint={tl("observationHint")}
     />
   );
 }

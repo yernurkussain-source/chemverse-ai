@@ -13,6 +13,8 @@ export type LabTexts = {
   predictionQuestion: string;
   predictions: { value: string; label: string }[];
   equipment: { id: string; label: string }[];
+  /** «Құралдар» қадамының тәжірибеге тән кеңесі (жоқ болса — жалпы мәтін) */
+  equipmentHint?: string;
   equipmentLabel: (id: string) => string;
   questions: AnalysisQuestion[];
   conclusionHint: string;

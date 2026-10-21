@@ -1247,7 +1247,7 @@
       "selected": "Selected: {count}"
     },
     "observationStep": {
-      "hint": "The model shows the pH. For each row, choose the colour of the solution and its medium.",
+      "hint": "The model fills in some values. Fill in the other columns yourself.",
       "choose": "Choose"
     },
     "analysisStep": {
@@ -1306,7 +1306,32 @@
       "conclusionShort": "The conclusion is too short — write at least 2 sentences.",
       "conclusionTerms": "Scientific terms: {found} of {total} used.",
       "conclusionNoNumber": "Mention your result (the number) in the conclusion.",
-      "conclusionGood": "Complete conclusion: goal, result and explanation."
+      "conclusionGood": "Complete conclusion: goal, result and explanation.",
+      "mixtureSeparated": "The mixture is fully separated: sand on the filter, salt in the dish.",
+      "mixtureNotSeparated": "The mixture is not fully separated — which stage was missing?",
+      "wrongActions": "Wrong actions: {count} (−3 points each).",
+      "fractionOk": "The mass fraction is correct.",
+      "fractionWrong": "Check the mass fraction: ω = m(salt) / m(mixture) · 100%.",
+      "yieldOk": "The yield is calculated correctly.",
+      "yieldWrong": "Check the yield: η = m(obtained) / m(initial) · 100%.",
+      "whySandOk": "Correct explanation of why the sand stays on the filter.",
+      "whySandWrong": "Think: which particles cannot pass through filter paper?",
+      "goalOk": {
+        "carbon12": "Carbon-12 built correctly.",
+        "sodiumIon": "Na⁺ ion built correctly.",
+        "chlorideIon": "Cl⁻ ion built correctly."
+      },
+      "goalWrong": {
+        "carbon12": "Carbon-12: check the numbers of protons, neutrons and electrons (A = 12).",
+        "sodiumIon": "Na⁺: sodium loses one electron — how many electrons are left?",
+        "chlorideIon": "Cl⁻: chlorine gains one electron — how many electrons does it have?"
+      },
+      "identityOk": "Correct: the number of protons determines the element.",
+      "identityWrong": "The atomic number (Z) equals the number of which particle?",
+      "magnesiumOk": "The Mg shells are correct.",
+      "magnesiumWrong": "Mg: arrange 12 electrons using the “2, 8, …” rule.",
+      "oxideOk": "The number of electrons in O²⁻ is correct.",
+      "oxideWrong": "O²⁻: an oxygen atom has 8 electrons — what does a 2− charge mean?"
     },
     "resultPage": {
       "title": "Experiment result",
@@ -1380,7 +1405,232 @@
           "endpointMl": "Where you stopped",
           "overshootMl": "Deviation",
           "answerErrorPct": "c(HCl) error"
-        }
+        },
+        "observationHint": "The model shows the pH. For each row, choose the colour of the solution and its medium."
+      },
+      "mixture-separation": {
+        "goal": "Recover pure sand and salt from a mixture of sand, table salt and water, and calculate the yield of salt.",
+        "theory": "Mixtures are separated using differences in the properties of their components. Table salt (NaCl) dissolves well in water, sand does not. So first we dissolve the mixture in water, then filter it through filter paper: the insoluble sand stays on the filter while the salt solution (filtrate) passes through. Evaporating the filtrate in a porcelain dish removes the water and leaves salt crystals. The wet sand on the filter is dried. Yield: η = m(obtained) / m(initial) · 100%.",
+        "safety": {
+          "goggles": "Wear safety goggles.",
+          "hotDish": "Hold the hot porcelain dish only with crucible tongs.",
+          "stir": "Stir the solution with a glass rod while evaporating so it does not spit.",
+          "heater": "Never leave the heater unattended; keep its cable away from water."
+        },
+        "prediction": {
+          "question": "How do you think a mixture of sand and table salt can be separated?",
+          "options": {
+            "magnet": "Pull it apart with a magnet",
+            "dissolve": "Dissolve in water, filter and evaporate",
+            "sieve": "Sieve the dry mixture",
+            "heat": "Simply heat it strongly"
+          }
+        },
+        "equipment": {
+          "funnel": "Funnel with filter paper",
+          "magnet": "Magnet",
+          "beaker": "Beaker",
+          "hotplate": "Hot plate",
+          "dropper": "Dropper",
+          "glass-rod": "Glass rod",
+          "porcelain-dish": "Porcelain dish"
+        },
+        "actions": {
+          "dissolve": {
+            "label": "Dissolve",
+            "text": "Add the mixture to water and stir with a rod"
+          },
+          "filter": {
+            "label": "Filter",
+            "text": "Pour through a funnel with filter paper"
+          },
+          "evaporate": {
+            "label": "Evaporate",
+            "text": "Heat the filtrate in a porcelain dish"
+          },
+          "dry": {
+            "label": "Dry",
+            "text": "Dry the wet sand on the filter"
+          },
+          "magnet": {
+            "label": "Magnet",
+            "text": "Bring a magnet close to the mixture"
+          }
+        },
+        "log": {
+          "dissolved": "The salt dissolved; the sand settled at the bottom of the beaker.",
+          "filtered": "The sand stayed on the filter paper; the salt solution passed through (filtrate).",
+          "evaporated": "The water evaporated — white salt crystals are left in the dish.",
+          "dried": "The sand is dry: clean, dry sand.",
+          "alreadyDissolved": "The salt is already dissolved.",
+          "alreadyFiltered": "The mixture is already filtered.",
+          "alreadyEvaporated": "The filtrate is already evaporated.",
+          "alreadyDried": "The sand is already dry.",
+          "filterDry": "The dry mixture stayed on the filter and the salt did not separate. The salt is not dissolved yet — what should you do first?",
+          "evaporateFirst": "The water evaporated, but the sand and salt are still mixed. Does evaporation separate an undissolved substance?",
+          "evaporateBeforeFilter": "If you evaporate the water in the beaker, the salt stays with the sand. How do you remove the sand first?",
+          "dryEarly": "There is nothing to dry yet — the sand is still in the solution. Separate it first.",
+          "magnet": "Nothing was attracted. Are sand and salt attracted to a magnet?"
+        },
+        "scene": {
+          "beaker": "Beaker",
+          "filter": "Filter",
+          "dish": "Dish",
+          "water": "Water, 100 mL",
+          "mixture": "Mixture 20 g"
+        },
+        "logTitle": "Action log",
+        "logEmpty": "Choose an action — the model will show the result.",
+        "actionsTitle": "Actions",
+        "done": "The mixture is separated! Go to the next step.",
+        "places": {
+          "beaker": "Beaker",
+          "filter": "Filter paper",
+          "filtrate": "Filtrate",
+          "dish": "Porcelain dish"
+        },
+        "observation": {
+          "substance": "Substance",
+          "place": "Where it ended up",
+          "soluble": "Dissolves in water",
+          "mass": "Mass, g",
+          "substances": {
+            "sand": "Sand",
+            "salt": "Table salt (NaCl)"
+          },
+          "solubleOptions": {
+            "yes": "Dissolves",
+            "no": "Does not dissolve"
+          }
+        },
+        "data": {
+          "mixture": "Mixture: 20 g (sand 12 g + salt 8 g)",
+          "got": "Obtained (model): sand 11.8 g, salt 7.7 g",
+          "formula": "ω = m(salt) / m(mixture) · 100%   η = m(obtained) / m(initial) · 100%"
+        },
+        "questions": {
+          "fraction": {
+            "label": "Mass fraction of salt in the mixture ω, %"
+          },
+          "yield": {
+            "label": "Yield of salt η, %"
+          },
+          "whySand": {
+            "label": "Why does the sand stay on the filter?",
+            "options": {
+              "insoluble": "It does not dissolve in water",
+              "heavy": "It is heavier than salt",
+              "magnetic": "It is magnetic",
+              "crystal": "It forms crystals"
+            }
+          }
+        },
+        "conclusionHint": "Tip: write which substance dissolves in water, why filtering and evaporating are needed, and the yield of salt.",
+        "reveal": {
+          "saltFractionPct": "Mass fraction of salt",
+          "saltYieldPct": "Yield of salt",
+          "sandYieldG": "Sand obtained",
+          "saltYieldG": "Salt obtained",
+          "mistakes": "Wrong actions"
+        },
+        "observationHint": "The model measured the masses. Choose where each substance ended up and whether it dissolves in water."
+      },
+      "atom-builder": {
+        "goal": "Choose the numbers of protons, neutrons and electrons to build atom and ion models; identify the element, mass number and charge.",
+        "theory": "An atom consists of a positively charged nucleus with electrons moving around it. The nucleus contains protons (charge +1) and neutrons (charge 0). The element is determined by the number of protons — it equals the atomic number (Z). Mass number: A = protons + neutrons. An atom has equal numbers of protons and electrons, so it is neutral. An atom that loses an electron becomes a positive ion (cation, e.g. Na⁺); one that gains an electron becomes a negative ion (anion, e.g. Cl⁻). Electrons fill shells: up to 2 in the 1st, up to 8 in the 2nd and up to 8 in the 3rd (Z ≤ 20).",
+        "safety": {
+          "model": "This is a learning model (the Bohr model): in a real atom electrons form a “cloud”.",
+          "radioactive": "Unstable (radioactive) isotopes are handled in real labs only with special permission — here it is only a model.",
+          "screen": "Rest your eyes during long sessions: every 20 minutes look at something far away."
+        },
+        "prediction": {
+          "question": "What do you think changes if a neutral atom gains one electron?",
+          "options": {
+            "element": "It becomes a different element",
+            "charge": "Its charge changes (it becomes a negative ion); the element stays the same",
+            "mass": "Its mass number increases by 1"
+          }
+        },
+        "equipmentHint": "Choose the particles that make up an atom. The list also has things you do not need — be careful.",
+        "equipment": {
+          "photon": "Photon",
+          "proton": "Proton",
+          "molecule": "Molecule",
+          "neutron": "Neutron",
+          "ion": "Ion",
+          "electron": "Electron"
+        },
+        "particles": {
+          "p": "Proton (p⁺)",
+          "n": "Neutron (n⁰)",
+          "e": "Electron (e⁻)",
+          "plus": "Add",
+          "minus": "Remove"
+        },
+        "info": {
+          "element": "Element",
+          "noElement": "No element — add a proton",
+          "massNumber": "Mass number A",
+          "charge": "Charge",
+          "kind": {
+            "none": "—",
+            "atom": "Neutral atom",
+            "cation": "Positive ion (cation)",
+            "anion": "Negative ion (anion)"
+          },
+          "shells": "Electron shells",
+          "stable": "Stable isotope ✓",
+          "rare": "This isotope is rare or unstable"
+        },
+        "goals": {
+          "title": "Goals",
+          "hint": "Choose a goal, build the particle and press “Save”. Save all three goals.",
+          "carbon12": "Carbon-12 atom (¹²C)",
+          "sodiumIon": "Sodium ion Na⁺",
+          "chlorideIon": "Chloride ion Cl⁻",
+          "save": "Save for this goal",
+          "saved": "Saved: {symbol}",
+          "notSaved": "Not saved yet"
+        },
+        "bohrNote": "The Bohr model is a learning model; the real electron cloud looks different.",
+        "observation": {
+          "goal": "Goal",
+          "built": "Built",
+          "mass": "A",
+          "charge": "Charge",
+          "shells": "Shells",
+          "shellsPlaceholder": "2, 8, 1",
+          "notBuilt": "not saved",
+          "charges": {
+            "0": "0",
+            "2-": "−2",
+            "1-": "−1",
+            "1+": "+1",
+            "2+": "+2"
+          }
+        },
+        "questions": {
+          "identity": {
+            "label": "What determines the kind of atom (which element it is)?",
+            "options": {
+              "neutrons": "Number of neutrons",
+              "protons": "Number of protons",
+              "electrons": "Number of electrons",
+              "mass": "Mass number"
+            }
+          },
+          "magnesium": {
+            "label": "How are the electrons of magnesium (Mg, Z = 12) arranged in shells?"
+          },
+          "oxideElectrons": {
+            "label": "How many electrons are there in an O²⁻ ion?"
+          }
+        },
+        "conclusionHint": "Tip: write what determines the kind of atom, how an ion gets its charge, and your examples (Na⁺, Cl⁻).",
+        "reveal": {
+          "goalsRight": "Goals built correctly"
+        },
+        "observationHint": "For each particle you built, write its mass number A, charge and electron shells."
       }
     },
     "catalog": {

@@ -6,6 +6,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { isShellLab, type ShellLabSlug } from "./catalog";
 import { CONCLUSION_MAX_LENGTH } from "./conclusion";
+import { atomExperimentSchema, gradeAtom } from "./experiments/atom-builder/grade";
+import { gradeMixture, mixtureExperimentSchema } from "./experiments/mixture-separation/grade";
 import { gradeTitration, titrationExperimentSchema } from "./experiments/titration/grade";
 import { CONCENTRATION_RANGE } from "./experiments/titration/model";
 import { signParams, verifyParams } from "./params-token";
@@ -23,6 +25,9 @@ const secret = () => process.env.SUPABASE_SECRET_KEY || "chemverse-local-dev";
 const PARAMS: Record<ShellLabSlug, () => Record<string, number>> = {
   // HCl концентрациясы 0,080–0,120 М (pH-метр оны жанама көрсетеді — бұл тәжірибенің өзі)
   titration: () => ({ c: randomInt(CONCENTRATION_RANGE.min * 1000, CONCENTRATION_RANGE.max * 1000 + 1) / 1000 }),
+  // Бұл екеуінде жасырын параметр жоқ (spec-тегі тұрақты деректер); токен тек уақыт пен тәжірибені бекітеді
+  "mixture-separation": () => ({}),
+  "atom-builder": () => ({}),
 };
 
 export type StartLabResult = { ok: true; params: Record<string, number>; token: string } | { ok: false };
@@ -65,6 +70,14 @@ function grade(slug: ShellLabSlug, params: Record<string, number>, input: z.infe
       const experiment = titrationExperimentSchema.safeParse(input.experiment);
       if (!experiment.success || typeof params.c !== "number") return null;
       return gradeTitration(params.c, { ...input, experiment: experiment.data });
+    }
+    case "mixture-separation": {
+      const experiment = mixtureExperimentSchema.safeParse(input.experiment);
+      return experiment.success ? gradeMixture({ ...input, experiment: experiment.data }) : null;
+    }
+    case "atom-builder": {
+      const experiment = atomExperimentSchema.safeParse(input.experiment);
+      return experiment.success ? gradeAtom({ ...input, experiment: experiment.data }) : null;
     }
   }
 }

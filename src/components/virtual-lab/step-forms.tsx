@@ -10,15 +10,18 @@ export function EquipmentPicker({
   items,
   selected,
   onToggle,
+  hint,
 }: {
   items: { id: string; label: string }[];
   selected: string[];
   onToggle: (id: string) => void;
+  /** Тәжірибеге тән кеңес (мысалы атомда — «бөлшектерді таңда») */
+  hint?: string;
 }) {
   const t = useTranslations("ChemLab.equipmentStep");
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-muted-foreground">{t("hint")}</p>
+      <p className="text-muted-foreground">{hint ?? t("hint")}</p>
       <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {items.map((item) => {
           const on = selected.includes(item.id);
@@ -55,10 +58,18 @@ export function EquipmentPicker({
 
 export type ObservationColumn =
   | { key: string; label: string; kind: "auto"; model?: boolean }
-  | { key: string; label: string; kind: "select"; options: { value: string; label: string }[] };
+  | { key: string; label: string; kind: "select"; options: { value: string; label: string }[] }
+  | { key: string; label: string; kind: "text"; placeholder?: string; inputMode?: "decimal" | "text" };
+
+export type ObservationRow = {
+  id: string;
+  cells: Record<string, string>;
+  /** Толтырылмайтын жол (мысалы мақсат сақталмаған) */
+  disabled?: boolean;
+};
 
 /**
- * 5-қадам: бақылау кестесі. «auto» бағандар модельден толады (ModelBadge), «select» бағандарды оқушы толтырады.
+ * 5-қадам: бақылау кестесі. «auto» бағандар модельден толады (ModelBadge), «select»/«text» бағандарды оқушы толтырады.
  * Ұяшық id-і: `${row.id}.${column.key}` (мысалы r0.color) — сервер дәл осы кілттерді тексереді.
  */
 export function ObservationTable({
@@ -66,29 +77,45 @@ export function ObservationTable({
   rows,
   values,
   onChange,
+  hint,
 }: {
   columns: ObservationColumn[];
-  rows: { id: string; cells: Record<string, string> }[];
+  rows: ObservationRow[];
   values: Record<string, string>;
   onChange: (cellId: string, value: string) => void;
+  /** Тәжірибеге тән кеңес (жоқ болса — жалпы мәтін) */
+  hint?: string;
 }) {
   const t = useTranslations("ChemLab.observationStep");
   const autoColumns = columns.filter((c) => c.kind === "auto");
-  const selectColumns = columns.filter((c) => c.kind === "select");
+  const inputColumns = columns.filter((c) => c.kind !== "auto");
 
-  const select = (column: Extract<ObservationColumn, { kind: "select" }>, row: { id: string; cells: Record<string, string> }, className?: string) => {
+  const field = (column: ObservationColumn, row: ObservationRow, className?: string) => {
     const cellId = `${row.id}.${column.key}`;
+    const filled = Boolean(values[cellId]);
+    const base = cn(
+      "w-full min-w-24 rounded-lg border bg-panel px-2 py-1.5 disabled:opacity-50",
+      filled ? "border-cyan-dim" : "border-line text-muted-foreground",
+      className,
+    );
+    const label = `${column.label} · ${row.cells[columns[0].key]}`;
+    if (column.kind === "text") {
+      return (
+        <input
+          aria-label={label}
+          value={values[cellId] ?? ""}
+          disabled={row.disabled}
+          onChange={(e) => onChange(cellId, e.target.value.slice(0, 20))}
+          inputMode={column.inputMode ?? "text"}
+          autoComplete="off"
+          placeholder={column.placeholder}
+          className={cn(base, "font-mono text-foreground")}
+        />
+      );
+    }
+    if (column.kind !== "select") return null;
     return (
-      <select
-        aria-label={`${column.label} · ${row.cells[columns[0].key]}`}
-        value={values[cellId] ?? ""}
-        onChange={(e) => onChange(cellId, e.target.value)}
-        className={cn(
-          "w-full min-w-24 rounded-lg border bg-panel px-2 py-1.5",
-          values[cellId] ? "border-cyan-dim" : "border-line text-muted-foreground",
-          className,
-        )}
-      >
+      <select aria-label={label} value={values[cellId] ?? ""} disabled={row.disabled} onChange={(e) => onChange(cellId, e.target.value)} className={base}>
         <option value="" disabled>
           {t("choose")}
         </option>
@@ -103,7 +130,7 @@ export function ObservationTable({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-muted-foreground">{t("hint")}</p>
+      <p className="text-muted-foreground">{hint ?? t("hint")}</p>
 
       {/* Телефон: әр жол — жеке карточка (кесте экранға сыймайды) */}
       <ol className="flex flex-col gap-2 sm:hidden">
@@ -118,11 +145,11 @@ export function ObservationTable({
                 </span>
               ))}
             </p>
-            <div className="grid grid-cols-2 gap-2">
-              {selectColumns.map((column) => (
-                <label key={column.key} className="flex flex-col gap-1 text-[0.75rem] text-muted-foreground">
+            <div className={cn("grid gap-2", inputColumns.length === 3 ? "grid-cols-3" : "grid-cols-2")}>
+              {inputColumns.map((column) => (
+                <label key={column.key} className="flex min-w-0 flex-col gap-1 text-[0.75rem] text-muted-foreground">
                   {column.label}
-                  {column.kind === "select" && select(column, row, "py-2.5 text-[0.95rem] text-foreground")}
+                  {field(column, row, "min-w-0 py-2.5 text-[0.95rem] text-foreground")}
                 </label>
               ))}
             </div>
@@ -156,7 +183,7 @@ export function ObservationTable({
                       {column.kind === "auto" ? (
                         <span className="font-mono font-semibold tabular-nums">{row.cells[column.key]}</span>
                       ) : (
-                        select(column, row)
+                        field(column, row)
                       )}
                     </td>
                   );

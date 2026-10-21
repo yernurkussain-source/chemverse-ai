@@ -221,6 +221,7 @@ export function LabShell({ slug }: { slug: ShellLabSlug }) {
     body = (
       <EquipmentPicker
         items={texts.equipment}
+        hint={texts.equipmentHint}
         selected={state.equipment}
         onToggle={(id) =>
           patch({ equipment: state.equipment.includes(id) ? state.equipment.filter((e) => e !== id) : [...state.equipment, id] })
