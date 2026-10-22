@@ -19,6 +19,8 @@ export type LabTexts = {
   questions: AnalysisQuestion[];
   conclusionHint: string;
   revealLabel: (key: string) => string | null;
+  /** Ашылған мәнді мәтінмен жазу (мысалы пробиркадағы ерітіндінің атауы); null — formatReveal қолданылады */
+  formatRevealValue?: (key: string, value: number) => string | null;
 };
 
 export type LabParams = Record<string, number>;

@@ -1,4 +1,6 @@
 import { connection } from "next/server";
+import { getTranslations } from "next-intl/server";
+import { isShellLab } from "@/features/virtual-lab/catalog";
 import type { Locale } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
 
@@ -10,6 +12,21 @@ import { createClient } from "@/lib/supabase/server";
 type Localized = Record<string, unknown>;
 const pick = (row: Localized, field: string, locale: Locale) =>
   (row[`${field}_${locale}`] as string | null) || (row[`${field}_kk`] as string | null) || "";
+
+/** ChemLab тапсырмасының атауы (тәжірибенің атауы таңдалған тілде) */
+async function labTitles(locale: Locale) {
+  const t = await getTranslations({ locale, namespace: "ChemLab" });
+  return (slug: string | null) => (slug && isShellLab(slug) ? t(`catalog.${slug}.title`) : "");
+}
+
+/**
+ * Тапсырмалар: assignments.experiment_id бағаны (ChemLab 3-сессия миграциясы) жоқ болса —
+ * ескі сұраумен (тек тест тапсырмалары), бет құламауы үшін.
+ */
+async function withLabColumn<T>(build: (extra: string) => PromiseLike<{ data: T | null; error: unknown }>) {
+  const full = await build(", experiment_id");
+  return full.error ? build("") : full;
+}
 
 /** Кірген мұғалімнің id-і (мұғалім болмаса — null) */
 export async function getTeacherId() {
@@ -49,6 +66,8 @@ export type AssignmentRow = {
   id: string;
   title: string;
   examTitle: string;
+  /** ChemLab тапсырмасы болса — тәжірибенің slug-ы */
+  labSlug: string | null;
   dueAt: string | null;
   createdAt: string;
   done: number;
@@ -82,12 +101,24 @@ export async function getClassDetail(classId: string, teacherId: string, locale:
       .select("user_id, joined_at, profiles(full_name, xp)")
       .eq("class_id", classId)
       .returns<{ user_id: string; joined_at: string; profiles: { full_name: string | null; xp: number } | null }[]>(),
-    supabase
-      .from("assignments")
-      .select("id, title, exam_id, due_at, created_at, exams(title_kk, title_ru, title_en)")
-      .eq("class_id", classId)
-      .order("created_at", { ascending: false })
-      .returns<{ id: string; title: string | null; exam_id: string | null; due_at: string | null; created_at: string; exams: Localized | null }[]>(),
+    withLabColumn((extra) =>
+      supabase
+        .from("assignments")
+        .select(`id, title, exam_id, due_at, created_at, exams(title_kk, title_ru, title_en)${extra}`)
+        .eq("class_id", classId)
+        .order("created_at", { ascending: false })
+        .returns<
+          {
+            id: string;
+            title: string | null;
+            exam_id: string | null;
+            experiment_id?: string | null;
+            due_at: string | null;
+            created_at: string;
+            exams: Localized | null;
+          }[]
+        >(),
+    ),
     supabase.from("exams").select("id, title_kk, title_ru, title_en").order("created_at"),
   ]);
 
@@ -100,7 +131,7 @@ export async function getClassDetail(classId: string, teacherId: string, locale:
           .in("user_id", studentIds)
           .neq("status", "in_progress")
           .order("finished_at", { ascending: false }),
-        supabase.from("lab_attempts").select("user_id, result").in("user_id", studentIds),
+        supabase.from("lab_attempts").select("user_id, experiment_id, created_at, result").in("user_id", studentIds),
       ])
     : [{ data: [] }, { data: [] }];
 
@@ -124,17 +155,23 @@ export async function getClassDetail(classId: string, teacherId: string, locale:
   });
   students.sort((a, b) => a.name.localeCompare(b.name, locale));
 
-  // Тапсырма орындалды: тапсырма берілгеннен кейін сол тест аяқталған
+  // Тапсырма орындалды: тапсырма берілгеннен кейін сол тест аяқталған / сол тәжірибе тапсырылған
+  const labTitle = await labTitles(locale);
   const assignmentRows: AssignmentRow[] = (assignments ?? []).map((a) => {
+    const labSlug = a.experiment_id ?? null;
     const done = new Set(
-      (sessions ?? [])
-        .filter((s) => s.exam_id === a.exam_id && s.finished_at && s.finished_at >= a.created_at)
-        .map((s) => s.user_id),
+      labSlug
+        ? (labs ?? []).filter((l) => l.experiment_id === labSlug && l.created_at >= a.created_at).map((l) => l.user_id)
+        : (sessions ?? [])
+            .filter((s) => s.exam_id === a.exam_id && s.finished_at && s.finished_at >= a.created_at)
+            .map((s) => s.user_id),
     );
+    const targetTitle = labSlug ? labTitle(labSlug) : a.exams ? pick(a.exams, "title", locale) : "";
     return {
       id: a.id,
-      title: a.title || (a.exams ? pick(a.exams, "title", locale) : ""),
-      examTitle: a.exams ? pick(a.exams, "title", locale) : "",
+      title: a.title || targetTitle,
+      examTitle: targetTitle,
+      labSlug,
       dueAt: a.due_at,
       createdAt: a.created_at,
       done: done.size,
@@ -155,6 +192,8 @@ export async function getClassDetail(classId: string, teacherId: string, locale:
 export type StudentAssignment = {
   id: string;
   title: string;
+  /** Тапсырманы орындайтын бет: тест немесе ChemLab тәжірибесі */
+  href: string;
   className: string;
   dueAt: string | null;
   done: boolean;
@@ -165,34 +204,43 @@ export type StudentAssignment = {
 export async function getStudentAssignments(userId: string, locale: Locale): Promise<StudentAssignment[]> {
   await connection();
   const supabase = await createClient();
-  const { data: assignments } = await supabase
-    .from("assignments")
-    .select("id, title, exam_id, due_at, created_at, classes(name), exams(title_kk, title_ru, title_en)")
-    .order("created_at", { ascending: false })
-    .limit(10)
-    .returns<{
-      id: string;
-      title: string | null;
-      exam_id: string | null;
-      due_at: string | null;
-      created_at: string;
-      classes: { name: string } | null;
-      exams: Localized | null;
-    }[]>();
+  const { data: assignments } = await withLabColumn((extra) =>
+    supabase
+      .from("assignments")
+      .select(`id, title, exam_id, due_at, created_at, classes(name), exams(title_kk, title_ru, title_en)${extra}`)
+      .order("created_at", { ascending: false })
+      .limit(10)
+      .returns<
+        {
+          id: string;
+          title: string | null;
+          exam_id: string | null;
+          experiment_id?: string | null;
+          due_at: string | null;
+          created_at: string;
+          classes: { name: string } | null;
+          exams: Localized | null;
+        }[]
+      >(),
+  );
   if (!assignments?.length) return [];
 
-  const { data: sessions } = await supabase
-    .from("exam_sessions")
-    .select("exam_id, finished_at")
-    .eq("user_id", userId)
-    .neq("status", "in_progress");
+  const [{ data: sessions }, { data: labs }] = await Promise.all([
+    supabase.from("exam_sessions").select("exam_id, finished_at").eq("user_id", userId).neq("status", "in_progress"),
+    supabase.from("lab_attempts").select("experiment_id, created_at").eq("user_id", userId),
+  ]);
+  const labTitle = await labTitles(locale);
 
   const now = Date.now();
   return assignments.map((a) => {
-    const done = (sessions ?? []).some((s) => s.exam_id === a.exam_id && s.finished_at && s.finished_at >= a.created_at);
+    const labSlug = a.experiment_id ?? null;
+    const done = labSlug
+      ? (labs ?? []).some((l) => l.experiment_id === labSlug && l.created_at >= a.created_at)
+      : (sessions ?? []).some((s) => s.exam_id === a.exam_id && s.finished_at && s.finished_at >= a.created_at);
     return {
       id: a.id,
-      title: a.title || (a.exams ? pick(a.exams, "title", locale) : ""),
+      title: a.title || (labSlug ? labTitle(labSlug) : a.exams ? pick(a.exams, "title", locale) : ""),
+      href: labSlug ? `/virtual-lab/${labSlug}` : "/exam/unt",
       className: a.classes?.name ?? "",
       dueAt: a.due_at,
       done,

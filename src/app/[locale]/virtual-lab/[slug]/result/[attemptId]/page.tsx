@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Eyebrow } from "@/components/landing/section";
 import { LabResult } from "@/components/virtual-lab/lab-result";
+import { RefreshWhilePending } from "@/components/virtual-lab/refresh-while-pending";
 import { isShellLab } from "@/features/virtual-lab/catalog";
 import { getAttempt } from "@/features/virtual-lab/queries";
 import { Link } from "@/i18n/navigation";
@@ -56,9 +57,14 @@ async function ResultContent({ params }: { params: Params }) {
       </p>
       <LabResult
         slug={attempt.lab.slug}
-        outcome={{ breakdown: attempt.breakdown, feedback: attempt.feedback, reveal: attempt.reveal }}
+        outcome={{ breakdown: attempt.breakdown, feedback: attempt.feedback, reveal: attempt.reveal, conclusionSource: attempt.conclusionSource }}
         conclusion={attempt.conclusion}
+        override={attempt.override}
+        // Басқаның жұмысын тек оның мұғалімі көре алады (RLS) — сондықтан түзету формасы соған ғана
+        teacherView={!attempt.own}
+        attemptId={attempt.id}
       />
+      {attempt.conclusionSource === "pending" && <RefreshWhilePending />}
     </>
   );
 }

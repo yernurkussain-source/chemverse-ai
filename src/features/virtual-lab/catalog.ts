@@ -23,9 +23,9 @@ export const LAB_CATALOG = [
   { slug: "balance-equations", grades: [8], status: "soon" },
   { slug: "metals-nonmetals", grades: [8], status: "soon" },
   // 9-сынып
-  { slug: "indicator-lab", grades: [9], status: "soon" },
+  { slug: "indicator-lab", grades: [9], status: "ready" },
   { slug: "titration", grades: [9], status: "ready" },
-  { slug: "reaction-rate", grades: [9, 10], status: "soon" },
+  { slug: "reaction-rate", grades: [9, 10], status: "ready" },
   { slug: "solubility", grades: [9], status: "soon" },
   { slug: "mass-fraction", grades: [9], status: "soon" },
   { slug: "precipitation", grades: [9], status: "soon" },
@@ -43,8 +43,8 @@ export const LAB_CATALOG = [
 export type LabEntry = (typeof LAB_CATALOG)[number];
 export type LabSlug = LabEntry["slug"];
 
-/** 8 қадамдық LabShell-де жұмыс істейтін тәжірибелер (2–3-сессияда толығады) */
-export const SHELL_LABS = ["titration", "mixture-separation", "atom-builder"] as const satisfies readonly LabSlug[];
+/** 8 қадамдық LabShell-де жұмыс істейтін тәжірибелер (сынып ретімен) */
+export const SHELL_LABS = ["mixture-separation", "atom-builder", "indicator-lab", "titration", "reaction-rate"] as const satisfies readonly LabSlug[];
 export type ShellLabSlug = (typeof SHELL_LABS)[number];
 
 export const isShellLab = (slug: string): slug is ShellLabSlug => (SHELL_LABS as readonly string[]).includes(slug);
@@ -61,3 +61,7 @@ export const isLabGrade = (value: number): value is LabGrade => (LAB_GRADES as r
 
 /** Тәжірибенің адресі: сілтеме түріндегілер (периодтық кесте) өз бетіне апарады */
 export const labHref = (lab: LabEntry) => ("href" in lab ? lab.href : `/virtual-lab/${lab.slug}`);
+
+/** «Ишара алу» батырмасы бар қадамдар (мақсат пен бағалау қадамында ишара жоқ) */
+export const HINT_STEPS = ["prediction", "equipment", "experiment", "observation", "analysis", "conclusion"] as const;
+export type HintStep = (typeof HINT_STEPS)[number];

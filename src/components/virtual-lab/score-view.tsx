@@ -12,13 +12,21 @@ import { ModelBadge } from "./parts";
 const scoreColor = (pct: number) => (pct >= 0.85 ? "text-good" : pct >= 0.6 ? "text-cyan" : "text-amber");
 const barColor = (pct: number) => (pct >= 0.85 ? "bg-good" : pct >= 0.6 ? "bg-cyan" : "bg-amber");
 
-/** 8-қадам және нәтиже беті: 100 ұпай, 4 критерий, кері байланыс, модельдің ашылған мәндері */
-export function ScoreView({ lab, outcome }: { lab: LabModule; outcome: LabOutcome }) {
+export type ScoreOverride = { conclusion: number; comment: string | null };
+
+/**
+ * 8-қадам және нәтиже беті: 100 ұпай, 4 критерий, кері байланыс, модельдің ашылған мәндері.
+ * override — мұғалім түзеткен қорытынды ұпайы (бар болса, жалпы ұпай соның есебімен).
+ */
+export function ScoreView({ lab, outcome, override }: { lab: LabModule; outcome: LabOutcome; override?: ScoreOverride | null }) {
   const t = useTranslations("ChemLab");
   const tf = useTranslations("ChemLab.feedback");
   const locale = useLocale();
   const texts = lab.useTexts();
-  const { breakdown, feedback, reveal } = outcome;
+  const { feedback, reveal } = outcome;
+  const breakdown = override
+    ? { ...outcome.breakdown, conclusion: override.conclusion, total: outcome.breakdown.total - outcome.breakdown.conclusion + override.conclusion }
+    : outcome.breakdown;
   const prediction = reveal.predictionCorrect;
 
   const feedbackText = (key: string, values?: Record<string, string | number>) => {
@@ -72,12 +80,36 @@ export function ScoreView({ lab, outcome }: { lab: LabModule; outcome: LabOutcom
                   {items.map((item, i) => (
                     <li key={`${item.key}-${i}`}>
                       • {feedbackText(item.key, item.values)}
+                      {item.text && <span className="text-foreground"> {item.text}</span>}
                       {item.equipment?.length ? <b className="text-foreground"> {item.equipment.map(texts.equipmentLabel).join(", ")}</b> : null}
                     </li>
                   ))}
                 </ul>
               )}
-              {criterion === "conclusion" && <p className="mt-2 text-[0.78rem] text-amber">{t("scoreView.provisional")}</p>}
+              {criterion === "conclusion" && (
+                <div className="mt-2 flex flex-col gap-1 text-[0.78rem]">
+                  {override ? (
+                    <>
+                      <p className="font-semibold text-good">
+                        ✓ {t("scoreView.override", { score: override.conclusion })} ({t("scoreView.originalScore", { score: outcome.breakdown.conclusion })})
+                      </p>
+                      {override.comment && (
+                        <p className="text-foreground">
+                          <b>{t("scoreView.teacherComment")}</b> {override.comment}
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-amber">
+                      {outcome.conclusionSource === "ai"
+                        ? t("scoreView.aiGraded")
+                        : outcome.conclusionSource === "pending"
+                          ? `⏳ ${t("scoreView.aiPending")}`
+                          : t("scoreView.provisional")}
+                    </p>
+                  )}
+                </div>
+              )}
             </li>
           );
         })}
@@ -90,7 +122,7 @@ export function ScoreView({ lab, outcome }: { lab: LabModule; outcome: LabOutcom
         <dl className="m-0 grid grid-cols-2 gap-2 sm:grid-cols-3">
           {Object.entries(reveal).flatMap(([key, value]) => {
             const label = texts.revealLabel(key);
-            const text = typeof value === "number" ? lab.formatReveal(key, value, locale) : null;
+            const text = typeof value === "number" ? (texts.formatRevealValue?.(key, value) ?? lab.formatReveal(key, value, locale)) : null;
             if (!label || !text) return [];
             return [
               <div key={key} className="rounded-xl bg-panel-2 px-3 py-2.5">

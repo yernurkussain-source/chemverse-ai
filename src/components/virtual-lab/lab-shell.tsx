@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useReducer, useRef, useState, useTransition, type ReactNode } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { startLab, submitLab, type LabOutcome } from "@/features/virtual-lab/actions";
-import type { ShellLabSlug } from "@/features/virtual-lab/catalog";
+import { HINT_STEPS, type HintStep, type ShellLabSlug } from "@/features/virtual-lab/catalog";
 import { Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { HintButton } from "./hint-button";
 import type { LabParams, LabValue } from "./module";
 import { LAB_MODULES } from "./modules";
 import { ChoiceList, SafetyCard } from "./parts";
@@ -50,6 +51,7 @@ const SCORE_STEP = LAB_STEPS.length - 1;
  */
 export function LabShell({ slug }: { slug: ShellLabSlug }) {
   const t = useTranslations("ChemLab");
+  const locale = useLocale();
   const lab = LAB_MODULES[slug];
   const texts = lab.useTexts();
   const router = useRouter();
@@ -133,6 +135,7 @@ export function LabShell({ slug }: { slug: ShellLabSlug }) {
         observations: state.observations,
         answers: state.answers,
         conclusion: state.conclusion,
+        locale,
       });
       if (!result.ok) {
         setError(result.error);
@@ -143,6 +146,7 @@ export function LabShell({ slug }: { slug: ShellLabSlug }) {
           breakdown: result.breakdown,
           feedback: result.feedback,
           reveal: result.reveal,
+          conclusionSource: result.conclusionSource,
           attemptId: result.attemptId,
           saved: result.saved,
         },
@@ -164,6 +168,19 @@ export function LabShell({ slug }: { slug: ShellLabSlug }) {
   }
 
   const params = state.session?.params ?? {};
+
+  /** Ишараға берілетін деректер: тек осы қадамға қатыстылары (оқушының аты-жөні жоқ) */
+  const hintContext = (current: HintStep) => () => {
+    const slice: Record<HintStep, unknown> = {
+      prediction: { chosen: state.prediction },
+      equipment: { chosen: state.equipment },
+      experiment: state.experiment,
+      observation: { experiment: state.experiment, filled: state.observations },
+      analysis: { experiment: state.experiment, answers: state.answers },
+      conclusion: { text: state.conclusion, answers: state.answers },
+    };
+    return JSON.stringify(slice[current]);
+  };
   const step = LAB_STEPS[state.step];
   const canNext = (() => {
     switch (step) {
@@ -271,6 +288,12 @@ export function LabShell({ slug }: { slug: ShellLabSlug }) {
           {t(`steps.${step}`)}
         </h2>
         {body}
+
+        {(HINT_STEPS as readonly string[]).includes(step) && !state.result && (
+          <div className="mt-5">
+            <HintButton key={step} slug={slug} step={step as HintStep} context={hintContext(step as HintStep)} />
+          </div>
+        )}
 
         {error && (
           <p role="alert" className="mt-4 rounded-[10px] border border-pink/40 bg-pink/10 px-3 py-2 text-[0.88rem] text-pink">

@@ -18,6 +18,8 @@ export type FeedbackItem = {
   key: string;
   values?: Record<string, string | number>;
   equipment?: string[];
+  /** AI-дың еркін мәтіні (аударылмайды, ICU-дан өтпейді — ішінде «{» болса да бұзылмайды) */
+  text?: string;
 };
 
 /** Әр қате әрекет үшін алынатын ұпай */

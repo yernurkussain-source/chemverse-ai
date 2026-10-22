@@ -157,7 +157,7 @@ async function StudentAssignments({ userId, locale }: { userId: string; locale: 
         {assignments.map((a) => (
           <li key={a.id}>
             <Link
-              href="/exam/unt"
+              href={a.href}
               className="flex items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 px-3.5 py-2.5 hover:border-cyan-dim"
             >
               <span className="min-w-0">

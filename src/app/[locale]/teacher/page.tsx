@@ -20,7 +20,7 @@ const TOOLS = [
   { key: "live", href: "/teacher/live" },
   { key: "studio", href: "/teacher/lesson-studio" },
   { key: "qr", href: "/teacher/qr" },
-  { key: "lab", href: "/virtual-lab" },
+  { key: "lab", href: "/teacher/labs" },
 ] as const;
 
 // Мұғалім кабинеті: сыныптар және құралдар

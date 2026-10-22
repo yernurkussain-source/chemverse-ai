@@ -1,17 +1,24 @@
 "use server";
 
 import { randomInt } from "node:crypto";
+import { after } from "next/server";
+import { hasLocale } from "next-intl";
 import { z } from "zod";
+import { routing, type Locale } from "@/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { aiConclusionScore, isAiAvailable, labContext } from "./ai";
 import { isShellLab, type ShellLabSlug } from "./catalog";
 import { CONCLUSION_MAX_LENGTH } from "./conclusion";
 import { atomExperimentSchema, gradeAtom } from "./experiments/atom-builder/grade";
+import { gradeIndicator, indicatorExperimentSchema } from "./experiments/indicator-lab/grade";
+import { isValidOrder, SOLUTIONS } from "./experiments/indicator-lab/model";
 import { gradeMixture, mixtureExperimentSchema } from "./experiments/mixture-separation/grade";
+import { gradeRate, rateExperimentSchema } from "./experiments/reaction-rate/grade";
 import { gradeTitration, titrationExperimentSchema } from "./experiments/titration/grade";
 import { CONCENTRATION_RANGE } from "./experiments/titration/model";
 import { signParams, verifyParams } from "./params-token";
-import type { FeedbackItem, ScoreBreakdown } from "./scoring";
+import { totalScore, type FeedbackItem, type ScoreBreakdown } from "./scoring";
 
 /**
  * ChemLab тәжірибелерінің серверлік бөлігі (docs/chemlab/CHEMLAB_SPEC.md 6-бөлім).
@@ -25,9 +32,19 @@ const secret = () => process.env.SUPABASE_SECRET_KEY || "chemverse-local-dev";
 const PARAMS: Record<ShellLabSlug, () => Record<string, number>> = {
   // HCl концентрациясы 0,080–0,120 М (pH-метр оны жанама көрсетеді — бұл тәжірибенің өзі)
   titration: () => ({ c: randomInt(CONCENTRATION_RANGE.min * 1000, CONCENTRATION_RANGE.max * 1000 + 1) / 1000 }),
-  // Бұл екеуінде жасырын параметр жоқ (spec-тегі тұрақты деректер); токен тек уақыт пен тәжірибені бекітеді
+  // Бұларда жасырын параметр жоқ (spec-тегі тұрақты деректер); токен тек уақыт пен тәжірибені бекітеді
   "mixture-separation": () => ({}),
   "atom-builder": () => ({}),
+  "reaction-rate": () => ({}),
+  // 6 ерітінді A–F пробиркаларына кездейсоқ ретпен (Фишер–Йейтс)
+  "indicator-lab": () => {
+    const order = SOLUTIONS.map((_, i) => i);
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = randomInt(i + 1);
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    return Object.fromEntries(order.map((solution, tube) => [`t${tube}`, solution]));
+  },
 };
 
 export type StartLabResult = { ok: true; params: Record<string, number>; token: string } | { ok: false };
@@ -49,6 +66,7 @@ const submissionSchema = z.object({
   observations: z.record(short, short).refine((o) => Object.keys(o).length <= 100),
   answers: z.record(short, short).refine((a) => Object.keys(a).length <= 20),
   conclusion: z.string().max(CONCLUSION_MAX_LENGTH),
+  locale: z.string().max(5).optional(),
 });
 
 export type LabSubmissionInput = z.input<typeof submissionSchema>;
@@ -58,6 +76,11 @@ export type LabOutcome = {
   feedback: FeedbackItem[];
   /** Тәжірибеден кейін ашылатын мәндер (мысалы нақты концентрация) */
   reveal: Record<string, number | boolean | null>;
+  /**
+   * Қорытындыны кім алдын ала бағалады: AI (рубрика), ереже (AI қолжетімсіз болса)
+   * немесе «pending» — AI фонда тексеріп жатыр (нәтиже беті кейін жаңарады).
+   */
+  conclusionSource?: "ai" | "rule" | "pending";
 };
 
 export type SubmitLabResult =
@@ -79,7 +102,61 @@ function grade(slug: ShellLabSlug, params: Record<string, number>, input: z.infe
       const experiment = atomExperimentSchema.safeParse(input.experiment);
       return experiment.success ? gradeAtom({ ...input, experiment: experiment.data }) : null;
     }
+    case "indicator-lab": {
+      const experiment = indicatorExperimentSchema.safeParse(input.experiment);
+      if (!experiment.success || !isValidOrder(params)) return null;
+      return gradeIndicator(params, { ...input, experiment: experiment.data });
+    }
+    case "reaction-rate": {
+      const experiment = rateExperimentSchema.safeParse(input.experiment);
+      return experiment.success ? gradeRate({ ...input, experiment: experiment.data }) : null;
+    }
   }
+}
+
+/** AI-дың ұпайы мен ескертуін бағалауға қосу (ереже бойынша ескертулердің орнына) */
+function applyAiConclusion(outcome: LabOutcome, graded: { score: number; feedback: string }): LabOutcome {
+  const { breakdown } = outcome;
+  return {
+    ...outcome,
+    conclusionSource: "ai",
+    breakdown: totalScore({ procedure: breakdown.procedure, observation: breakdown.observation, calc: breakdown.calc, conclusion: graded.score }),
+    feedback: [...outcome.feedback.filter((f) => f.criterion !== "conclusion"), { criterion: "conclusion", key: "aiFeedback", text: graded.feedback }],
+  };
+}
+
+/**
+ * Қорытындыны AI рубрикасымен ФОНДА бағалау (spec 6, 7-бөлім): оқушы жауап алғаннан кейін (after) жүреді,
+ * сондықтан AI баяу болса да күтпейді. Сәтсіз болса — ереже бойынша ұпай қалады. Мұғалім кейін түзете алады.
+ */
+async function gradeConclusionLater(
+  attemptId: string,
+  outcome: LabOutcome,
+  input: z.infer<typeof submissionSchema>,
+  slug: ShellLabSlug,
+  userId: string,
+  admin: NonNullable<ReturnType<typeof createAdminClient>>,
+  result: Record<string, unknown>,
+) {
+  const locale: Locale = hasLocale(routing.locales, input.locale) ? input.locale : routing.defaultLocale;
+  const graded = await aiConclusionScore(admin, userId, {
+    lab: await labContext(slug, locale),
+    locale,
+    conclusion: input.conclusion,
+    facts: { model: outcome.reveal, answers: input.answers, observations: input.observations },
+  });
+  const final = graded ? applyAiConclusion(outcome, graded) : { ...outcome, conclusionSource: "rule" as const };
+
+  // Мұғалім осы аралықта түзетіп үлгерсе, оның бағасын бұзбаймыз
+  const { data: current } = await admin.from("lab_attempts").select("teacher_override").eq("id", attemptId).maybeSingle();
+  const update: Record<string, unknown> = {
+    result: { ...result, breakdown: final.breakdown, feedback: final.feedback, conclusionSource: final.conclusionSource },
+    score_breakdown: final.breakdown,
+    ai_feedback: graded?.feedback ?? null,
+  };
+  if (!current?.teacher_override) update.score_total = final.breakdown.total;
+  const { error } = await admin.from("lab_attempts").update(update).eq("id", attemptId);
+  if (error) console.error("AI бағасын сақтау қатесі:", error);
 }
 
 /** Мұғалімнің бұрынғы сынып беті үшін (answerErrorPct бойынша қысқа баға) */
@@ -95,13 +172,18 @@ export async function submitLab(raw: LabSubmissionInput): Promise<SubmitLabResul
 
   const verified = verifyParams(input.token, slug, secret());
   if (!verified) return { ok: false, error: "expired" };
-  const outcome = grade(slug, verified.params, input);
-  if (!outcome) return { ok: false, error: "invalid" };
+  const graded = grade(slug, verified.params, input);
+  if (!graded) return { ok: false, error: "invalid" };
 
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
   const admin = createAdminClient();
-  if (!auth.user || !admin) return { ok: true, attemptId: null, saved: false, ...outcome };
+  // Кірмеген оқушыға AI шақырылмайды (шектеу пайдаланушы бойынша) — ереже бойынша баға
+  if (!auth.user || !admin) return { ok: true, attemptId: null, saved: false, ...graded, conclusionSource: "rule" };
+  const userId = auth.user.id;
+  // AI бар болса — қорытынды фонда бағаланады; әзірге ереже бойынша ұпай «pending» белгісімен
+  const aiLater = Boolean(input.conclusion.trim()) && (await isAiAvailable(admin, userId));
+  const outcome: LabOutcome = { ...graded, conclusionSource: aiLater ? "pending" : "rule" };
 
   const durationSec = Math.round((Date.now() - verified.startedAt) / 1000);
   // result — бәрі бір жерде (миграция іске қосылмаса да нәтиже беті жұмыс істейді)
@@ -111,6 +193,7 @@ export async function submitLab(raw: LabSubmissionInput): Promise<SubmitLabResul
     durationSec,
     breakdown: outcome.breakdown,
     feedback: outcome.feedback,
+    conclusionSource: outcome.conclusionSource,
     prediction: input.prediction,
     conclusion: input.conclusion,
   };
@@ -139,5 +222,7 @@ export async function submitLab(raw: LabSubmissionInput): Promise<SubmitLabResul
     console.error("Зертхана нәтижесін сақтау қатесі:", error);
     return { ok: true, attemptId: null, saved: false, ...outcome };
   }
-  return { ok: true, attemptId: data.id as string, saved: true, ...outcome };
+  const attemptId = data.id as string;
+  if (aiLater) after(() => gradeConclusionLater(attemptId, outcome, input, slug, userId, admin, result));
+  return { ok: true, attemptId, saved: true, ...outcome };
 }

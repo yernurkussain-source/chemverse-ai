@@ -939,7 +939,7 @@
       },
       "lab": {
         "title": "Virtual lab",
-        "text": "ChemLab: experiments for grades 7–10, scored on the server out of 100."
+        "text": "ChemLab: assign experiments to classes, see results, review conclusions."
       }
     },
     "classes": "My classes",
@@ -1286,7 +1286,12 @@
       "revealTitle": "Model values",
       "feedbackTitle": "Feedback",
       "yourConclusion": "Conclusion",
-      "duration": "Time: {min} min"
+      "duration": "Time: {min} min",
+      "aiGraded": "The conclusion was pre-scored by AI using the rubric — your teacher can adjust it.",
+      "override": "Teacher's score: {score}/25",
+      "originalScore": "originally: {score}/25",
+      "teacherComment": "Teacher's comment:",
+      "aiPending": "AI is checking the conclusion — the score will update on the result page in a few seconds. For now this is a provisional rule-based score."
     },
     "feedback": {
       "equipmentPerfect": "Equipment chosen correctly.",
@@ -1331,7 +1336,26 @@
       "magnesiumOk": "The Mg shells are correct.",
       "magnesiumWrong": "Mg: arrange 12 electrons using the “2, 8, …” rule.",
       "oxideOk": "The number of electrons in O²⁻ is correct.",
-      "oxideWrong": "O²⁻: an oxygen atom has 8 electrons — what does a 2− charge mean?"
+      "oxideWrong": "O²⁻: an oxygen atom has 8 electrons — what does a 2− charge mean?",
+      "tubesTested": "Tubes tested: {count}/{total}.",
+      "phenolOk": "The phenolphthalein limit is explained correctly.",
+      "phenolWrong": "Think: from which pH does phenolphthalein change colour?",
+      "higherPhOk": "The pH values are compared correctly.",
+      "higherPhWrong": "Compare the universal indicator colours again: which is closer to the end of the scale?",
+      "whichIndicatorOk": "The right indicator was chosen.",
+      "whichIndicatorWrong": "Which indicator shows not just “acid/alkali” but also how big the pH is?",
+      "pairTemperatureOk": "The effect of temperature was compared fairly (only T changed).",
+      "pairTemperatureMissing": "Two runs differing only in temperature were missing.",
+      "pairConcentrationOk": "The effect of concentration was compared fairly (only c changed).",
+      "pairConcentrationMissing": "Two runs differing only in concentration were missing.",
+      "bothChanged": "Runs where both parameters changed: {count} (−3 points each).",
+      "tempFactorOk": "The temperature coefficient is correct.",
+      "tempFactorWrong": "Compare the t½ of two runs: how many times smaller is one than the other?",
+      "halfLifeOk": "The change in t½ is correct.",
+      "halfLifeWrong": "How does k change when the concentration doubles, given t½ = ln 2 / k?",
+      "finalVolumeOk": "The reason for the equal final volume is correct.",
+      "finalVolumeWrong": "Think: which reagent is in short supply and runs out first?",
+      "aiFeedback": "AI note:"
     },
     "resultPage": {
       "title": "Experiment result",
@@ -1631,6 +1655,201 @@
           "goalsRight": "Goals built correctly"
         },
         "observationHint": "For each particle you built, write its mass number A, charge and electron shells."
+      },
+      "indicator-lab": {
+        "goal": "Use indicator colours to find the medium (acidic, neutral, alkaline) of six unknown solutions.",
+        "theory": "An indicator is a substance that changes colour depending on the medium of a solution. The medium is described by pH: pH < 7 — acidic, pH = 7 — neutral, pH > 7 — alkaline. Each indicator changes colour in its own pH range: litmus is red in acid and blue in alkali; phenolphthalein turns crimson only in alkaline solutions (pH > 8.2); methyl orange is red in acid and yellow in neutral and alkaline solutions. A universal indicator shows a full colour scale, so it lets you estimate the pH.",
+        "safety": {
+          "goggles": "Wear safety goggles and gloves.",
+          "teacher": "Work with acids and alkalis only under your teacher's supervision.",
+          "noTaste": "Never taste or smell the solutions.",
+          "spill": "If a drop gets on your skin, rinse with plenty of water."
+        },
+        "prediction": {
+          "question": "What do you think the medium of baking soda (NaHCO₃) solution is?",
+          "options": {
+            "acid": "Acidic",
+            "neutral": "Neutral",
+            "base": "Alkaline"
+          }
+        },
+        "equipment": {
+          "burner": "Spirit burner",
+          "test-tubes": "Test tubes (A–F)",
+          "filter-paper": "Filter paper",
+          "dropper": "Dropper",
+          "thermometer": "Thermometer",
+          "indicators": "Indicator set",
+          "goggles": "Safety goggles"
+        },
+        "indicators": {
+          "litmus": "Litmus",
+          "phenolphthalein": "Phenolphthalein",
+          "methylOrange": "Methyl orange",
+          "universal": "Universal indicator"
+        },
+        "colors": {
+          "red": "red",
+          "purple": "purple",
+          "blue": "blue",
+          "colorless": "colourless",
+          "palePink": "pale pink",
+          "crimson": "crimson",
+          "orange": "orange",
+          "yellow": "yellow",
+          "green": "green",
+          "teal": "blue-green",
+          "blueViolet": "blue-violet",
+          "violet": "deep violet"
+        },
+        "solutions": {
+          "hcl": "Hydrochloric acid, 0.01 M",
+          "lemon": "Lemon juice",
+          "water": "Distilled water",
+          "nacl": "Table salt (NaCl) solution",
+          "soda": "Baking soda (NaHCO₃) solution",
+          "naoh": "Sodium hydroxide, 0.01 M"
+        },
+        "experiment": {
+          "tube": "Test tube",
+          "indicator": "Indicator",
+          "drop": "Add a drop",
+          "hint": "Choose a test tube and an indicator, then press “Add a drop”. You can try several indicators on one tube — a fresh sample is taken each time.",
+          "log": "Observations",
+          "empty": "Nothing added yet.",
+          "progress": "Tubes tested: {count}/6",
+          "unknown": "Unknown solution"
+        },
+        "observation": {
+          "tube": "Tube",
+          "seen": "Colours observed",
+          "medium": "Medium",
+          "notTested": "not tested",
+          "media": {
+            "acid": "Acidic",
+            "neutral": "Neutral",
+            "base": "Alkaline"
+          }
+        },
+        "observationHint": "Compare the colours in each tube and decide the medium yourself.",
+        "questions": {
+          "phenol": {
+            "label": "Why can't phenolphthalein tell an acidic solution from a neutral one?",
+            "options": {
+              "reacts": "Phenolphthalein reacts with acid and is destroyed",
+              "colorless": "It is colourless in both: it only changes colour above pH 8.2",
+              "noIons": "A neutral solution has no ions at all",
+              "weak": "The indicator is too weak"
+            }
+          },
+          "higherPh": {
+            "label": "Which has the higher pH: baking soda or NaOH?",
+            "options": {
+              "soda": "Baking soda",
+              "naoh": "NaOH",
+              "same": "The same"
+            }
+          },
+          "whichIndicator": {
+            "label": "Which indicator shows this clearly?",
+            "options": {
+              "litmus": "Litmus",
+              "phenolphthalein": "Phenolphthalein",
+              "methylOrange": "Methyl orange",
+              "universal": "Universal indicator"
+            }
+          }
+        },
+        "conclusionHint": "Tip: write which solutions turned out acidic, neutral and alkaline, and which indicator gave the most information.",
+        "reveal": {
+          "tube": "Tube {tube}"
+        }
+      },
+      "reaction-rate": {
+        "goal": "Investigate how temperature and concentration affect the rate of the reaction between magnesium and hydrochloric acid.",
+        "theory": "Reaction: Mg + 2HCl → MgCl₂ + H₂↑. A gas syringe measures the volume of hydrogen released. The reaction rate is the amount of product formed per unit time. When the temperature rises, particles move faster and collide more often — by van 't Hoff's rule the rate grows γ times for every 10 °C. Raising the concentration also makes collisions more frequent. There is little magnesium (0.05 g) and it is the limiting reagent, so the final volume is the same in every case. The half-time t½ is the time for half of the volume to form: the higher the rate, the smaller t½.",
+        "safety": {
+          "flammable": "Hydrogen is flammable: keep away from flames.",
+          "acid": "Handle hydrochloric acid only with goggles and gloves.",
+          "vent": "Carry out the experiment in a ventilated room.",
+          "model": "This is a learning model: the numbers are not real measured data."
+        },
+        "prediction": {
+          "question": "How do you think the reaction rate changes if the temperature rises by 10 °C?",
+          "options": {
+            "faster": "It increases",
+            "slower": "It decreases",
+            "same": "It does not change"
+          }
+        },
+        "equipment": {
+          "thermometer": "Thermometer",
+          "magnet": "Magnet",
+          "gas-syringe": "Gas syringe",
+          "porcelain-dish": "Porcelain dish",
+          "conical-flask": "Conical flask",
+          "stopwatch": "Stopwatch",
+          "filter-paper": "Filter paper",
+          "cylinder": "Measuring cylinder"
+        },
+        "experiment": {
+          "temperature": "Temperature, °C",
+          "concentration": "c(HCl), M",
+          "start": "Start",
+          "running": "Running…",
+          "clear": "Clear the graph",
+          "maxRuns": "Up to 4 runs. Clear the graph to compare something else.",
+          "warnBoth": "Careful: both parameters changed since the last run. For a fair test, change only one at a time!",
+          "hint": "Choose a temperature or concentration and press “Start”. Each run stays on the graph in its own colour.",
+          "gammaNote": "The model uses γ = 2. In real reactions γ is usually between 2 and 4.",
+          "syringe": "Gas syringe",
+          "volume": "V(H₂), mL",
+          "time": "t, s",
+          "runs": "Runs",
+          "needTwo": "Do at least 2 runs: change only the temperature in one and only the concentration in another.",
+          "reading": "Dashed line — t = 30 s: read V(30 s) from the graph here."
+        },
+        "observation": {
+          "n": "No.",
+          "T": "T, °C",
+          "c": "c, M",
+          "v30": "V(30 s), mL",
+          "half": "t½, s"
+        },
+        "observationHint": "The model calculated t½. Read V(30 s) from the graph yourself (±1 mL).",
+        "questions": {
+          "tempFactor": {
+            "label": "How many times faster was the reaction when the temperature rose by 10 °C?"
+          },
+          "halfLife": {
+            "label": "How did t½ change when the concentration doubled?",
+            "options": {
+              "doubled": "It doubled",
+              "halved": "It halved",
+              "same": "It did not change",
+              "quartered": "It became 4 times smaller"
+            }
+          },
+          "finalVolume": {
+            "label": "Why is the final volume the same in every case?",
+            "options": {
+              "acidRunsOut": "The acid runs out",
+              "syringeFull": "The syringe becomes full",
+              "mgLimiting": "Magnesium is limiting: once it has all reacted, the volume of H₂ stays constant",
+              "sameTemp": "Because the temperature is the same"
+            }
+          }
+        },
+        "data": {
+          "vmax": "V_max = 49.4 mL (m(Mg) = 0.05 g, acid in excess)",
+          "formula": "k = k₀·c·γ^((T−20)/10);  t½ = ln 2 / k;  rate increase = t½(1) / t½(2)"
+        },
+        "conclusionHint": "Tip: write how temperature and concentration changed the rate (how many times) and why the final volume is the same.",
+        "reveal": {
+          "vMaxMl": "Final volume V_max",
+          "gamma": "Temperature coefficient γ",
+          "violations": "“Two parameters” mistakes"
+        }
       }
     },
     "catalog": {
@@ -1769,6 +1988,90 @@
         "topic": "Properties of organic compounds",
         "work": "Matches compound classes with properties and reactions."
       }
+    },
+    "hints": {
+      "prediction": {
+        "l1": "Re-read the theory: what are you making a prediction about?",
+        "l2": "A prediction is your own idea and is not scored. Base it on the main rule from the theory.",
+        "l3": "First step: find the sentence in the theory that relates to the question and put it in your own words."
+      },
+      "equipment": {
+        "l1": "Which piece of equipment does each action of the experiment need?",
+        "l2": "Picture the actions in order (pour, stir, measure, heat…) — each needs its own tool. Unneeded items cost −3 points.",
+        "l3": "First step: decide what you will pour the substances into and what you will measure with."
+      },
+      "experiment": {
+        "l1": "Which actions reach the goal, and in what order?",
+        "l2": "Read the model's feedback: after each action, look at what changed.",
+        "l3": "First step: do only the first action and look at the result."
+      },
+      "observation": {
+        "l1": "Which value does the model show? What does it tell you?",
+        "l2": "Look at each row separately: compare the model's value with the rule from the theory.",
+        "l3": "First step: fill in only the first row and check the rule."
+      },
+      "analysis": {
+        "l1": "Which formula or rule do you need to answer the question?",
+        "l2": "Put the numbers from the Data section into the formula. Watch the units.",
+        "l3": "First step: write the formula and substitute the known values — finish the calculation yourself."
+      },
+      "conclusion": {
+        "l1": "What was the goal of the experiment and what did you find?",
+        "l2": "Follow the structure: Goal → Result (a real number) → Explanation (why?). Use scientific terms.",
+        "l3": "Start your first sentence like this: “The goal of the experiment was …”. Write the rest yourself."
+      }
+    },
+    "hint": {
+      "button": "💡 Get a hint",
+      "more": "Another hint",
+      "level": "Hint {level}/3",
+      "loading": "Thinking…",
+      "ai": "AI hint",
+      "static": "Ready-made tip",
+      "noMore": "All hints shown — now try it yourself!",
+      "error": "Could not get a hint. Please try again."
+    },
+    "override": {
+      "title": "Score the conclusion (teacher)",
+      "score": "Points (0–25)",
+      "comment": "Comment (optional)",
+      "save": "Save",
+      "saved": "Saved. The total score is updated."
+    },
+    "teacherErrors": {
+      "missing_fields": "Fill in all required fields correctly.",
+      "invalid_date": "Invalid date.",
+      "migration": "Run the ChemLab session 3 migration in Supabase.",
+      "forbidden": "Only the student's teacher can do this.",
+      "unknown": "Unknown error. Please try again."
+    },
+    "teacherLabs": {
+      "eyebrow": "Teacher · ChemLab",
+      "title": "ChemLab: assignments and results",
+      "subtitle": "Assign an experiment to a class and follow students' best scores (out of 100). Click a cell to open the work — you can adjust the conclusion score there.",
+      "notTeacher": "This page is for teachers only.",
+      "noClasses": "Create a class first.",
+      "toTeacher": "Go to the teacher dashboard",
+      "assignTitle": "Assign an experiment",
+      "class": "Class",
+      "lab": "Experiment",
+      "titleLabel": "Title (optional)",
+      "due": "Due date (optional)",
+      "assign": "Assign",
+      "assigned": "Assignment created.",
+      "resultsTitle": "Results",
+      "student": "Student",
+      "noStudents": "No students in this class yet. Give them the class code.",
+      "average": "Average",
+      "attempts": "{count} tries",
+      "assignmentsTitle": "ChemLab assignments",
+      "noAssignments": "No ChemLab assignments yet.",
+      "dueDate": "Due: {date}",
+      "noDue": "No due date",
+      "done": "{done}/{total} done",
+      "delete": "Delete",
+      "migration": "To create assignments, run the ChemLab session 3 migration in Supabase (20261025000000_chemlab_session3.sql).",
+      "open": "Open ChemLab"
     }
   }
 }
