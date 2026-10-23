@@ -8,13 +8,14 @@ import { routing, type Locale } from "@/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { aiConclusionScore, isAiAvailable, labContext } from "./ai";
-import { isShellLab, type ShellLabSlug } from "./catalog";
+import { getLab, isShellLab, type ShellLabSlug } from "./catalog";
 import { CONCLUSION_MAX_LENGTH } from "./conclusion";
 import { atomExperimentSchema, gradeAtom } from "./experiments/atom-builder/grade";
 import { gradeIndicator, indicatorExperimentSchema } from "./experiments/indicator-lab/grade";
 import { isValidOrder, SOLUTIONS } from "./experiments/indicator-lab/model";
 import { gradeMixture, mixtureExperimentSchema } from "./experiments/mixture-separation/grade";
 import { gradeRate, rateExperimentSchema } from "./experiments/reaction-rate/grade";
+import { GAMMA_OPTIONS } from "./experiments/reaction-rate/model";
 import { gradeTitration, titrationExperimentSchema } from "./experiments/titration/grade";
 import { CONCENTRATION_RANGE } from "./experiments/titration/model";
 import { signParams, verifyParams } from "./params-token";
@@ -28,14 +29,16 @@ import { totalScore, type FeedbackItem, type ScoreBreakdown } from "./scoring";
 // Қолтаңба кілті. Supabase бапталмаған жергілікті нұсқада нәтиже бәрібір сақталмайды
 const secret = () => process.env.SUPABASE_SECRET_KEY || "chemverse-local-dev";
 
-/** Әр тәжірибенің жасырын параметрлері (сервер кездейсоқ таңдайды) */
-const PARAMS: Record<ShellLabSlug, () => Record<string, number>> = {
+/** Әр тәжірибенің жасырын параметрлері (сервер кездейсоқ таңдайды); level — деңгейі бар тәжірибеде сынып */
+const PARAMS: Record<ShellLabSlug, (level: number | null) => Record<string, number>> = {
   // HCl концентрациясы 0,080–0,120 М (pH-метр оны жанама көрсетеді — бұл тәжірибенің өзі)
   titration: () => ({ c: randomInt(CONCENTRATION_RANGE.min * 1000, CONCENTRATION_RANGE.max * 1000 + 1) / 1000 }),
   // Бұларда жасырын параметр жоқ (spec-тегі тұрақты деректер); токен тек уақыт пен тәжірибені бекітеді
   "mixture-separation": () => ({}),
   "atom-builder": () => ({}),
-  "reaction-rate": () => ({}),
+  // 9-сынып: γ = 2 белгілі; 10-сынып («Реакция кинетикасы»): γ жасырын, оқушы оны деректерінен табады
+  "reaction-rate": (level): Record<string, number> =>
+    level === 10 ? { level: 10, g: GAMMA_OPTIONS[randomInt(GAMMA_OPTIONS.length)] } : { level: 9 },
   // 6 ерітінді A–F пробиркаларына кездейсоқ ретпен (Фишер–Йейтс)
   "indicator-lab": () => {
     const order = SOLUTIONS.map((_, i) => i);
@@ -49,10 +52,12 @@ const PARAMS: Record<ShellLabSlug, () => Record<string, number>> = {
 
 export type StartLabResult = { ok: true; params: Record<string, number>; token: string } | { ok: false };
 
-/** Тәжірибені бастау: параметрлер + қолтаңбалы токен (тапсырғанда тексеріледі) */
-export async function startLab(slug: string): Promise<StartLabResult> {
+/** Тәжірибені бастау: параметрлер + қолтаңбалы токен (тапсырғанда тексеріледі). level — деңгей (мысалы 10) */
+export async function startLab(slug: string, level?: number): Promise<StartLabResult> {
   if (!isShellLab(slug)) return { ok: false };
-  const params = PARAMS[slug]();
+  const lab = getLab(slug);
+  const chosen = typeof level === "number" && lab && "levels" in lab && (lab.levels as readonly number[]).includes(level) ? level : null;
+  const params = PARAMS[slug](chosen);
   return { ok: true, params, token: signParams(slug, params, secret()) };
 }
 
@@ -109,7 +114,7 @@ function grade(slug: ShellLabSlug, params: Record<string, number>, input: z.infe
     }
     case "reaction-rate": {
       const experiment = rateExperimentSchema.safeParse(input.experiment);
-      return experiment.success ? gradeRate({ ...input, experiment: experiment.data }) : null;
+      return experiment.success ? gradeRate(params, { ...input, experiment: experiment.data }) : null;
     }
   }
 }

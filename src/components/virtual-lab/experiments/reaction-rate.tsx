@@ -7,6 +7,7 @@ import { RATE_META, type RateEquipment } from "@/features/virtual-lab/experiment
 import {
   bothChanged,
   CONCENTRATIONS,
+  gammaOf,
   halfLife,
   isValidRun,
   MAX_RUNS,
@@ -19,7 +20,7 @@ import {
 import type { Locale } from "@/i18n/routing";
 import { formatDecimal, formatShort } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import type { ExperimentProps, LabModule, LabTexts, LabValue, ObservationProps } from "../module";
+import type { ExperimentProps, LabModule, LabParams, LabTexts, LabValue, ObservationProps } from "../module";
 import { ModelBadge } from "../parts";
 import { ObservationTable } from "../step-forms";
 
@@ -32,18 +33,29 @@ const ANIMATION_MS = 5000;
 const runsOf = (value: LabValue): Run[] =>
   Array.isArray(value.runs) ? value.runs.filter((r): r is Run => typeof r === "object" && r !== null && isValidRun(r as Run)).slice(0, MAX_RUNS) : [];
 
-function useTexts(): LabTexts {
+function useTexts(params?: LabParams): LabTexts {
   const t = useTranslations(LAB);
-  const revealKeys = ["vMaxMl", "gamma", "violations"] as const;
+  const advanced = params?.level === 10;
+  const revealKeys = ["level", "vMaxMl", "gamma", "predictHalfLife", "violations"] as const;
   return {
-    goal: t("goal"),
-    theory: t("theory"),
+    goal: advanced ? t("advanced.goal") : t("goal"),
+    // 10-сыныптың теориясы — бөлек абзац
+    theory: advanced ? `${t("theory")}
+
+${t("advanced.theory")}` : t("theory"),
+    levels: ([9, 10] as const).map((level) => ({ value: level, label: t(`levels.${level}.label`), text: t(`levels.${level}.text`) })),
     safety: (["flammable", "acid", "vent", "model"] as const).map((rule) => t(`safety.${rule}`)),
     predictionQuestion: t("prediction.question"),
     predictions: RATE_META.predictions.map((value) => ({ value, label: t(`prediction.options.${value}`) })),
     equipment: RATE_META.equipment.map((id) => ({ id, label: t(`equipment.${id}`) })),
     equipmentLabel: (id) => t(`equipment.${id as RateEquipment}`),
-    questions: [
+    questions: advanced
+      ? [
+          { id: "gammaFound", kind: "number", label: t("advanced.questions.gammaFound") },
+          { id: "order", kind: "number", label: t("advanced.questions.order") },
+          { id: "predictHalfLife", kind: "number", label: t("advanced.questions.predictHalfLife"), unit: "с" },
+        ]
+      : [
       { id: "tempFactor", kind: "number", label: t("questions.tempFactor.label") },
       {
         id: "halfLife",
@@ -61,13 +73,14 @@ function useTexts(): LabTexts {
         })),
       },
     ],
-    conclusionHint: t("conclusionHint"),
+    conclusionHint: advanced ? t("advanced.conclusionHint") : t("conclusionHint"),
     revealLabel: (key) => ((revealKeys as readonly string[]).includes(key) ? t(`reveal.${key as (typeof revealKeys)[number]}`) : null),
+    formatRevealValue: (key, value) => (key === "level" && (value === 9 || value === 10) ? t(`levels.${value}.short`) : null),
   };
 }
 
 /** V(t) графигі: әр жүгіртілім өз түсімен; t = 30 с — пунктир (оқушы V(30 с) мәнін осыдан оқиды) */
-function Graph({ runs, running }: { runs: Run[]; running: { run: Run; t: number; color: string } | null }) {
+function Graph({ runs, running, gamma }: { runs: Run[]; running: { run: Run; t: number; color: string } | null; gamma: number }) {
   const t = useTranslations(`${LAB}.experiment`);
   const W = 340;
   const H = 210;
@@ -75,7 +88,7 @@ function Graph({ runs, running }: { runs: Run[]; running: { run: Run; t: number;
   const y = (ml: number) => H - 28 - (ml / 50) * (H - 44);
   const line = (run: Run, until: number = RATE.durationSec) =>
     Array.from({ length: Math.floor(until / 3) + 1 }, (_, i) => Math.min(i * 3, until))
-      .map((sec) => `${x(sec).toFixed(1)},${y(volumeAt(run, sec)).toFixed(1)}`)
+      .map((sec) => `${x(sec).toFixed(1)},${y(volumeAt(run, sec, gamma)).toFixed(1)}`)
       .join(" ");
 
   return (
@@ -134,7 +147,9 @@ function Apparatus({ fraction, bubbling }: { fraction: number; bubbling: boolean
   );
 }
 
-function Experiment({ value, onChange }: ExperimentProps) {
+function Experiment({ params, value, onChange }: ExperimentProps) {
+  const gamma = gammaOf(params);
+  const advanced = params.level === 10;
   const t = useTranslations(`${LAB}.experiment`);
   const locale = useLocale() as Locale;
   const runs = runsOf(value);
@@ -172,7 +187,7 @@ function Experiment({ value, onChange }: ExperimentProps) {
     frame.current = window.requestAnimationFrame(tick);
   }
 
-  const liveVolume = running ? volumeAt(current, simTime) : last ? volumeAt(last, RATE.durationSec) : 0;
+  const liveVolume = running ? volumeAt(current, simTime, gamma) : last ? volumeAt(last, RATE.durationSec, gamma) : 0;
 
   return (
     <div className="flex flex-col gap-4">
@@ -217,10 +232,10 @@ function Experiment({ value, onChange }: ExperimentProps) {
         </section>
 
         <section className="flex min-w-0 flex-col gap-2 rounded-3xl border border-line bg-panel-2/50 p-4">
-          <Graph runs={runs} running={running ? { run: current, t: simTime ?? 0, color } : null} />
+          <Graph runs={runs} gamma={gamma} running={running ? { run: current, t: simTime ?? 0, color } : null} />
           <p className="text-[0.78rem] text-muted-foreground">{t("reading")}</p>
           <p className="flex flex-wrap items-center gap-2 text-[0.78rem] text-muted-foreground">
-            <ModelBadge /> {t("gammaNote")}
+            <ModelBadge /> {advanced ? t("gammaUnknown") : t("gammaNote")}
           </p>
           <h3 className="mt-1 font-display text-[0.95rem] font-semibold">{t("runs")}</h3>
           {runs.length < 2 && <p className="text-[0.82rem] text-muted-foreground">{t("needTwo")}</p>}
@@ -228,7 +243,7 @@ function Experiment({ value, onChange }: ExperimentProps) {
             {runs.map((run, i) => (
               <li key={i} className="flex items-center gap-2 font-mono text-[0.82rem]">
                 <span aria-hidden="true" className={cn("h-1 w-5 rounded-full bg-current", RUN_COLORS[i])} />
-                №{i + 1}: {run.T} °C, {formatDecimal(run.c, locale, 2)} М · t½ = {formatShort(Math.round(halfLife(run) * 10) / 10, locale)} с
+                №{i + 1}: {run.T} °C, {formatDecimal(run.c, locale, 2)} М · t½ = {formatShort(Math.round(halfLife(run, gamma) * 10) / 10, locale)} с
               </li>
             ))}
           </ol>
@@ -239,7 +254,8 @@ function Experiment({ value, onChange }: ExperimentProps) {
 }
 
 /** 5-қадам: № · T · c · t½ (модель) · V(30 с) — оқушы графиктен оқиды */
-function Observation({ experiment, values, onChange }: ObservationProps) {
+function Observation({ params, experiment, values, onChange }: ObservationProps) {
+  const gamma = gammaOf(params);
   const t = useTranslations(LAB);
   const locale = useLocale() as Locale;
   return (
@@ -258,7 +274,7 @@ function Observation({ experiment, values, onChange }: ObservationProps) {
           n: String(i + 1),
           T: String(run.T),
           c: formatDecimal(run.c, locale, 2),
-          half: formatDecimal(halfLife(run), locale, 1),
+          half: formatDecimal(halfLife(run, gamma), locale, 1),
         },
       }))}
       values={values}
@@ -267,14 +283,16 @@ function Observation({ experiment, values, onChange }: ObservationProps) {
   );
 }
 
-function AnalysisData() {
+function AnalysisData({ params }: { params: LabParams; experiment: LabValue }) {
   const t = useTranslations(`${LAB}.data`);
+  const ta = useTranslations(`${LAB}.advanced`);
+  const advanced = params.level === 10;
   return (
     <div className="flex flex-col gap-1.5 rounded-xl bg-panel-2 px-3.5 py-2.5 text-[0.88rem]">
       <span className="flex flex-wrap items-center gap-2">
         {t("vmax")} <ModelBadge />
       </span>
-      <span className="font-mono text-[0.82rem] text-muted-foreground">{t("formula")}</span>
+      <span className="font-mono text-[0.82rem] text-muted-foreground">{advanced ? ta("formula") : t("formula")}</span>
     </div>
   );
 }
@@ -290,7 +308,9 @@ export const rateModule: LabModule = {
   formatReveal: (key, value, locale) => {
     const l = locale as Locale;
     if (key === "vMaxMl") return `${formatDecimal(value, l, 1)} мл`;
-    if (key === "gamma" || key === "violations") return String(value);
+    if (key === "predictHalfLife") return `${formatDecimal(value, l, 1)} с`;
+    if (key === "gamma") return formatShort(value, l);
+    if (key === "violations") return String(value);
     return null;
   },
 };

@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { scoreConclusion } from "../../conclusion";
 import { equipmentScore, parseNumber, PENALTY_PER_MISTAKE, totalScore, withinAbs, withinPercent, type FeedbackItem } from "../../scoring";
-import { comparisonPairs, countViolations, halfLife, isValidRun, MAX_RUNS, RATE, vMaxMl, volumeAt } from "./model";
+import { comparisonPairs, countViolations, gammaOf, halfLife, isValidRun, MAX_RUNS, PREDICT_RUN, RATE, vMaxMl, volumeAt } from "./model";
 
 /**
  * «Реакция жылдамдығы» бағалауы (docs/chemlab/CHEMLAB_SPEC.md 5.4 және 6-бөлім). ТЕК СЕРВЕРДЕ.
+ * 9-сынып: γ = 2 белгілі. 10-сынып («Реакция кинетикасы»): γ жасырын (params.g), талдау сұрақтары басқа.
  */
 export const RATE_KEY = {
   equipment: ["conical-flask", "gas-syringe", "thermometer", "stopwatch", "cylinder"],
@@ -12,6 +13,8 @@ export const RATE_KEY = {
   tempFactor: RATE.gamma,
   halfLife: "halved",
   finalVolume: "mgLimiting",
+  /** 10-сынып: модельде реакция HCl бойынша бірінші ретті (k ∝ c) */
+  order: 1,
 } as const;
 
 export const rateExperimentSchema = z.object({
@@ -40,9 +43,11 @@ export function runPoints(runs: z.infer<typeof rateExperimentSchema>["runs"]) {
   return { points: Math.max(0, base - PENALTY_PER_MISTAKE * violations), violations, ...pairs };
 }
 
-export function gradeRate(submission: RateSubmission) {
+export function gradeRate(params: Record<string, number>, submission: RateSubmission) {
   const feedback: FeedbackItem[] = [];
   const { runs } = submission.experiment;
+  const advanced = params.level === 10;
+  const gamma = gammaOf(params);
 
   const equipment = equipmentScore(submission.equipment, RATE_KEY.equipment, 10);
   if (equipment.missing.length) feedback.push({ criterion: "procedure", key: "equipmentMissing", equipment: equipment.missing });
@@ -57,18 +62,31 @@ export function gradeRate(submission: RateSubmission) {
   // Бақылау (25): әр жүгіртілімде V(30 с) графиктен оқылды (±1 мл)
   let right = 0;
   runs.forEach((r, i) => {
-    if (withinAbs(parseNumber(submission.observations[`r${i}.v30`]), volumeAt(r, RATE.readAtSec), 1)) right += 1;
+    if (withinAbs(parseNumber(submission.observations[`r${i}.v30`]), volumeAt(r, RATE.readAtSec, gamma), 1)) right += 1;
   });
   const total = Math.max(runs.length, 1);
   feedback.push({ criterion: "observation", key: right === runs.length && runs.length ? "observationAll" : "observationSome", values: { right, total } });
 
-  // Талдау (20): γ 8 + t½ 6 + соңғы көлем 6
-  const factorOk = withinPercent(parseNumber(submission.answers.tempFactor), RATE_KEY.tempFactor, 5);
-  const halfOk = submission.answers.halfLife === RATE_KEY.halfLife;
-  const finalOk = submission.answers.finalVolume === RATE_KEY.finalVolume;
-  feedback.push({ criterion: "calc", key: factorOk ? "tempFactorOk" : "tempFactorWrong" });
-  feedback.push({ criterion: "calc", key: halfOk ? "halfLifeOk" : "halfLifeWrong" });
-  feedback.push({ criterion: "calc", key: finalOk ? "finalVolumeOk" : "finalVolumeWrong" });
+  // Талдау (20). 9-сынып: γ 8 + t½ 6 + соңғы көлем 6.
+  // 10-сынып: жасырын γ-ны табу 8 + реакция реті 6 + 60 °C-тағы t½ болжамы 6 (барлығы ±5%)
+  let calc: number;
+  if (advanced) {
+    const gammaOk = withinPercent(parseNumber(submission.answers.gammaFound), gamma, 5);
+    const orderOk = withinPercent(parseNumber(submission.answers.order), RATE_KEY.order, 5);
+    const predictOk = withinPercent(parseNumber(submission.answers.predictHalfLife), halfLife(PREDICT_RUN, gamma), 5);
+    feedback.push({ criterion: "calc", key: gammaOk ? "gammaFoundOk" : "gammaFoundWrong" });
+    feedback.push({ criterion: "calc", key: orderOk ? "orderOk" : "orderWrong" });
+    feedback.push({ criterion: "calc", key: predictOk ? "predictHalfLifeOk" : "predictHalfLifeWrong" });
+    calc = (gammaOk ? 8 : 0) + (orderOk ? 6 : 0) + (predictOk ? 6 : 0);
+  } else {
+    const factorOk = withinPercent(parseNumber(submission.answers.tempFactor), RATE_KEY.tempFactor, 5);
+    const halfOk = submission.answers.halfLife === RATE_KEY.halfLife;
+    const finalOk = submission.answers.finalVolume === RATE_KEY.finalVolume;
+    feedback.push({ criterion: "calc", key: factorOk ? "tempFactorOk" : "tempFactorWrong" });
+    feedback.push({ criterion: "calc", key: halfOk ? "halfLifeOk" : "halfLifeWrong" });
+    feedback.push({ criterion: "calc", key: finalOk ? "finalVolumeOk" : "finalVolumeWrong" });
+    calc = (factorOk ? 8 : 0) + (halfOk ? 6 : 0) + (finalOk ? 6 : 0);
+  }
 
   const conclusion = scoreConclusion(submission.conclusion, {
     terms: [
@@ -76,7 +94,7 @@ export function gradeRate(submission: RateSubmission) {
       ["концентрац", "concentrat"],
       ["жылдам", "скорост", "rate", "fast"],
     ],
-    expectedNumbers: [RATE.gamma, round(vMaxMl()), 49, 34.7, 17.3, 8.7, ...runs.map((r) => round(halfLife(r)))],
+    expectedNumbers: [gamma, round(vMaxMl()), 49, round(halfLife(PREDICT_RUN, gamma)), ...runs.map((r) => round(halfLife(r, gamma)))],
   });
   if (conclusion.sentences < 2) feedback.push({ criterion: "conclusion", key: "conclusionShort" });
   if (conclusion.termsFound < conclusion.termsTotal) {
@@ -88,7 +106,7 @@ export function gradeRate(submission: RateSubmission) {
   const breakdown = totalScore({
     procedure: equipment.score + run.points,
     observation: (25 * right) / total,
-    calc: (factorOk ? 8 : 0) + (halfOk ? 6 : 0) + (finalOk ? 6 : 0),
+    calc,
     conclusion: conclusion.score,
   });
 
@@ -96,8 +114,10 @@ export function gradeRate(submission: RateSubmission) {
     breakdown,
     feedback,
     reveal: {
+      level: advanced ? 10 : 9,
       vMaxMl: round(vMaxMl()),
-      gamma: RATE.gamma,
+      gamma,
+      ...(advanced ? { predictHalfLife: round(halfLife(PREDICT_RUN, gamma)) } : {}),
       violations: run.violations,
       predictionCorrect: submission.prediction ? submission.prediction === RATE_KEY.prediction : null,
     },

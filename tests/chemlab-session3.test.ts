@@ -17,7 +17,10 @@ import {
   bothChanged,
   comparisonPairs,
   countViolations,
+  gammaFromRuns,
+  gammaOf,
   halfLife,
+  PREDICT_RUN,
   initialRate,
   rateConstant,
   vMaxMl,
@@ -159,18 +162,65 @@ describe("Реакция жылдамдығы: бағалау", () => {
   };
 
   test("мінсіз жұмыс — 100", () => {
-    const { breakdown, reveal } = gradeRate(perfect);
+    const { breakdown, reveal } = gradeRate({}, perfect);
     assert.deepEqual(breakdown, { procedure: 30, observation: 25, calc: 20, conclusion: 25, total: 100 });
     assert.equal(reveal.vMaxMl, 49.4);
   });
 
   test("V(30 с) ±1 мл рұқсатымен оқылады", () => {
     const observations = { ...perfect.observations, "r0.v30": "23,2", "r1.v30": "36" };
-    assert.equal(gradeRate({ ...perfect, observations }).breakdown.observation, Math.round((25 * 2) / 3));
+    assert.equal(gradeRate({}, { ...perfect, observations }).breakdown.observation, Math.round((25 * 2) / 3));
   });
 
   test("γ ≈ 2 (±5%) қабылданады, 3 — жоқ", () => {
-    assert.equal(gradeRate({ ...perfect, answers: { ...perfect.answers, tempFactor: "2,05" } }).breakdown.calc, 20);
-    assert.equal(gradeRate({ ...perfect, answers: { ...perfect.answers, tempFactor: "3" } }).breakdown.calc, 12);
+    assert.equal(gradeRate({}, { ...perfect, answers: { ...perfect.answers, tempFactor: "2,05" } }).breakdown.calc, 20);
+    assert.equal(gradeRate({}, { ...perfect, answers: { ...perfect.answers, tempFactor: "3" } }).breakdown.calc, 12);
+  });
+});
+
+describe("Реакция кинетикасы (10-сынып): жасырын γ", () => {
+  const params = { level: 10, g: 3 };
+  const runs = [
+    { T: 20, c: 1 },
+    { T: 30, c: 1 },
+    { T: 30, c: 2 },
+  ];
+  const t60 = halfLife(PREDICT_RUN, 3);
+  const advanced: RateSubmission = {
+    prediction: "faster",
+    equipment: [...RATE_KEY.equipment],
+    experiment: { runs },
+    observations: Object.fromEntries(runs.map((r, i) => [`r${i}.v30`, volumeAt(r, 30, 3).toFixed(1).replace(".", ",")])),
+    answers: { gammaFound: "3", order: "1", predictHalfLife: t60.toFixed(2).replace(".", ",") },
+    conclusion:
+      "Мақсатым γ мен реакция ретін анықтау болды. Тек температура өзгерген екі тәжірибеде t½ 3 есе азайды, сондықтан γ = 3; концентрацияны 2 есе арттырғанда жылдамдық 2 есе өсті, яғни реакция реті 1. Болжам бойынша 60 °C-та t½ шамамен 0,43 с.",
+  };
+
+  test("γ деректерден табылады: t½ қатынасы, ΔT ≠ 10 болса да", () => {
+    close(gammaFromRuns({ T: 20, c: 1 }, { T: 30, c: 1 }, 3)!, 3, 1e-9);
+    close(gammaFromRuns({ T: 40, c: 1 }, { T: 20, c: 1 }, 2.5)!, 2.5, 1e-9);
+    assert.equal(gammaFromRuns({ T: 20, c: 1 }, { T: 30, c: 2 }, 3), null);
+    assert.equal(gammaOf({ level: 9 }), 2);
+    assert.equal(gammaOf(params), 3);
+  });
+
+  test("мінсіз 10-сынып жұмысы — 100, ашылатын мәндерде деңгей мен γ", () => {
+    const { breakdown, reveal } = gradeRate(params, advanced);
+    assert.deepEqual(breakdown, { procedure: 30, observation: 25, calc: 20, conclusion: 25, total: 100 });
+    assert.equal(reveal.level, 10);
+    assert.equal(reveal.gamma, 3);
+    close(reveal.predictHalfLife as number, t60, 0.05);
+  });
+
+  test("V(30 с) жасырын γ бойынша тексеріледі (γ = 2 мәндері қабылданбайды)", () => {
+    const wrong = Object.fromEntries(runs.map((r, i) => [`r${i}.v30`, volumeAt(r, 30).toFixed(1).replace(".", ",")]));
+    // 20 °C-та γ әсер етпейді (бірінші жол бірдей), қалған екеуі γ-ға тәуелді
+    assert.equal(gradeRate(params, { ...advanced, observations: wrong }).breakdown.observation, Math.round(25 / 3));
+  });
+
+  test("9-сыныптың жауабы (γ = 2) 10-сыныпта қате", () => {
+    const { breakdown, feedback } = gradeRate(params, { ...advanced, answers: { gammaFound: "2", order: "2", predictHalfLife: "5" } });
+    assert.equal(breakdown.calc, 0);
+    assert.ok(feedback.some((f) => f.key === "gammaFoundWrong"));
   });
 });

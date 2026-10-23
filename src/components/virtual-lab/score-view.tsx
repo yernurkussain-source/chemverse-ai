@@ -22,7 +22,9 @@ export function ScoreView({ lab, outcome, override }: { lab: LabModule; outcome:
   const t = useTranslations("ChemLab");
   const tf = useTranslations("ChemLab.feedback");
   const locale = useLocale();
-  const texts = lab.useTexts();
+  const texts = lab.useTexts(
+    Object.fromEntries(Object.entries(outcome.reveal).filter((entry): entry is [string, number] => typeof entry[1] === "number")),
+  );
   const { feedback, reveal } = outcome;
   const breakdown = override
     ? { ...outcome.breakdown, conclusion: override.conclusion, total: outcome.breakdown.total - outcome.breakdown.conclusion + override.conclusion }

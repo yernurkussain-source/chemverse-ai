@@ -21,6 +21,8 @@ export type LabTexts = {
   revealLabel: (key: string) => string | null;
   /** Ашылған мәнді мәтінмен жазу (мысалы пробиркадағы ерітіндінің атауы); null — formatReveal қолданылады */
   formatRevealValue?: (key: string, value: number) => string | null;
+  /** Қиындық деңгейлері (мысалы 9 және 10-сынып) — мақсат қадамында таңдалады */
+  levels?: { value: number; label: string; text: string }[];
 };
 
 export type LabParams = Record<string, number>;
@@ -35,8 +37,8 @@ export type ObservationProps = {
 };
 
 export type LabModule = {
-  /** Аудармалар: компонент ішінде шақырылатын hook */
-  useTexts: () => LabTexts;
+  /** Аудармалар: компонент ішінде шақырылатын hook (params — тәжірибенің параметрлері, мысалы деңгейі) */
+  useTexts: (params?: LabParams) => LabTexts;
   initialExperiment: LabValue;
   isExperimentDone: (value: LabValue) => boolean;
   Experiment: ComponentType<ExperimentProps>;

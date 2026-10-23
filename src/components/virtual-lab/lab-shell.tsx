@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useReducer, useRef, useState, useTransition, type ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { startLab, submitLab, type LabOutcome } from "@/features/virtual-lab/actions";
@@ -25,6 +26,8 @@ type LabState = {
   answers: Record<string, string>;
   conclusion: string;
   result: (LabOutcome & { attemptId: string | null; saved: boolean }) | null;
+  /** Қиындық деңгейі (деңгейі бар тәжірибеде: 9 не 10-сынып) */
+  level: number | null;
 };
 
 type Action =
@@ -53,7 +56,6 @@ export function LabShell({ slug }: { slug: ShellLabSlug }) {
   const t = useTranslations("ChemLab");
   const locale = useLocale();
   const lab = LAB_MODULES[slug];
-  const texts = lab.useTexts();
   const router = useRouter();
   const topRef = useRef<HTMLDivElement>(null);
   const [pending, startTransition] = useTransition();
@@ -70,9 +72,16 @@ export function LabShell({ slug }: { slug: ShellLabSlug }) {
     answers: {},
     conclusion: "",
     result: null,
+    level: null,
   };
   const [state, dispatch] = useReducer(reducer, initial);
   const restored = useRef(false);
+  // Деңгей: оқушы таңдаған, әйтпесе сынып бетінің сілтемесіндегі (?level=10)
+  const urlLevel = Number(useSearchParams().get("level")) || null;
+  const level = state.level ?? urlLevel;
+  // Мәтіндер деңгейге тәуелді: тәжірибе басталғанша — таңдалған деңгей, кейін — сервер бекіткен параметрлер
+  const texts = lab.useTexts(state.session?.params ?? (level ? { level } : undefined));
+  const levels = texts.levels ?? [];
 
   // Бұрынғы күйді қалпына келтіру (бет сызылғаннан кейін — гидратация қатесі болмауы үшін)
   useEffect(() => {
@@ -109,7 +118,7 @@ export function LabShell({ slug }: { slug: ShellLabSlug }) {
   function next() {
     if (state.step === 0 && !state.session) {
       startTransition(async () => {
-        const started = await startLab(slug);
+        const started = await startLab(slug, level ?? levels[0]?.value);
         if (!started.ok) {
           setError("start");
           return;
@@ -214,10 +223,28 @@ export function LabShell({ slug }: { slug: ShellLabSlug }) {
           </section>
           <section>
             <h3 className="font-display font-semibold">{t("goalStep.theoryTitle")}</h3>
-            <p className="mt-1.5 leading-relaxed text-muted-foreground">{texts.theory}</p>
+            <p className="mt-1.5 leading-relaxed whitespace-pre-line text-muted-foreground">{texts.theory}</p>
           </section>
         </div>
         <SafetyCard title={t("goalStep.safetyTitle")} rules={texts.safety} />
+        {levels.length > 0 && (
+          <section className="md:col-span-2">
+            <h3 className="mb-2 font-display font-semibold">{t("goalStep.levelTitle")}</h3>
+            {state.session ? (
+              <p className="rounded-2xl border border-cyan-dim bg-cyan/10 px-4 py-2.5 font-semibold">
+                {levels.find((l) => l.value === state.session?.params.level)?.label}
+              </p>
+            ) : (
+              <ChoiceList
+                name="level"
+                label={t("goalStep.levelTitle")}
+                options={levels.map((l) => ({ value: String(l.value), label: `${l.label} — ${l.text}` }))}
+                value={String(level ?? levels[0].value)}
+                onChange={(value) => patch({ level: Number(value) })}
+              />
+            )}
+          </section>
+        )}
       </div>
     );
   } else if (step === "prediction") {

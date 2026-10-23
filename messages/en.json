@@ -1237,7 +1237,8 @@
     "goalStep": {
       "goalTitle": "Goal",
       "theoryTitle": "Theory in brief",
-      "safetyTitle": "Safety rules"
+      "safetyTitle": "Safety rules",
+      "levelTitle": "Level"
     },
     "predictionStep": {
       "hint": "The prediction is not scored — we compare it with the result at the end."
@@ -1355,7 +1356,13 @@
       "halfLifeWrong": "How does k change when the concentration doubles, given t½ = ln 2 / k?",
       "finalVolumeOk": "The reason for the equal final volume is correct.",
       "finalVolumeWrong": "Think: which reagent is in short supply and runs out first?",
-      "aiFeedback": "AI note:"
+      "aiFeedback": "AI note:",
+      "gammaFoundOk": "γ found correctly.",
+      "gammaFoundWrong": "Check γ: take the ratio of t½ for two runs that differ only in temperature and raise it to the power 10/ΔT.",
+      "orderOk": "The reaction order is correct.",
+      "orderWrong": "How many times smaller did t½ get when the concentration doubled? 2ⁿ equals that number.",
+      "predictHalfLifeOk": "The t½ at 60 °C is predicted correctly.",
+      "predictHalfLifeWrong": "Check the prediction: t½(60) = t½(50) / γ (or t½(20) / γ⁴)."
     },
     "resultPage": {
       "title": "Experiment result",
@@ -1807,7 +1814,8 @@
           "time": "t, s",
           "runs": "Runs",
           "needTwo": "Do at least 2 runs: change only the temperature in one and only the concentration in another.",
-          "reading": "Dashed line — t = 30 s: read V(30 s) from the graph here."
+          "reading": "Dashed line — t = 30 s: read V(30 s) from the graph here.",
+          "gammaUnknown": "At this level γ is unknown — calculate it yourself from the t½ values."
         },
         "observation": {
           "n": "No.",
@@ -1848,7 +1856,32 @@
         "reveal": {
           "vMaxMl": "Final volume V_max",
           "gamma": "Temperature coefficient γ",
-          "violations": "“Two parameters” mistakes"
+          "violations": "“Two parameters” mistakes",
+          "level": "Level",
+          "predictHalfLife": "t½ (60 °C, 1 M)"
+        },
+        "levels": {
+          "9": {
+            "label": "Grade 9: Reaction rate",
+            "text": "γ = 2 is known; compare the effects of temperature and concentration",
+            "short": "Grade 9"
+          },
+          "10": {
+            "label": "Grade 10: Reaction kinetics",
+            "text": "γ is unknown — find it from your data, determine the reaction order and predict t½",
+            "short": "Grade 10"
+          }
+        },
+        "advanced": {
+          "goal": "Use your data to find the hidden temperature coefficient (γ) and the reaction order with respect to concentration, then predict the half-time outside the model's range.",
+          "theory": "GRADE 10. Van 't Hoff's rule: v₂/v₁ = γ^((T₂ − T₁)/10). The rate is inversely proportional to t½, so γ = (t½₁ / t½₂)^(10/ΔT). Rate equation: v = k·cⁿ, where n is the reaction order. Doubling the concentration multiplies the rate by 2ⁿ. In this model γ is different every time — measure it!",
+          "formula": "γ = (t½(T) / t½(T+ΔT))^(10/ΔT);  2ⁿ = t½(c) / t½(2c);  t½(T₂) = t½(T₁) / γ^((T₂−T₁)/10)",
+          "questions": {
+            "gammaFound": "Temperature coefficient from your data γ = ?",
+            "order": "Reaction order with respect to HCl n = ?",
+            "predictHalfLife": "What is t½ at T = 60 °C and c(HCl) = 1 M? (predict it using γ — the slider only goes to 50 °C)"
+          },
+          "conclusionHint": "Tip: write how you found γ (which runs, what calculation), the reaction order and your prediction for 60 °C."
         }
       }
     },

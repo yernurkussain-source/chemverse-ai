@@ -55,7 +55,7 @@ export function LabCard({ lab, accentGrade }: { lab: LabEntry; accentGrade?: Lab
   );
   const className = "flex h-full flex-col gap-1.5 rounded-2xl border bg-panel p-4";
   return ready ? (
-    <Link href={labHref(lab)} className={cn(className, "transition-colors", accent.border)}>
+    <Link href={labHref(lab, accentGrade)} className={cn(className, "transition-colors", accent.border)}>
       {content}
     </Link>
   ) : (

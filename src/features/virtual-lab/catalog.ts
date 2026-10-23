@@ -25,7 +25,8 @@ export const LAB_CATALOG = [
   // 9-сынып
   { slug: "indicator-lab", grades: [9], status: "ready" },
   { slug: "titration", grades: [9], status: "ready" },
-  { slug: "reaction-rate", grades: [9, 10], status: "ready" },
+  // Деңгейлері бар: 9-сынып — негізгі (γ = 2), 10-сынып — «Реакция кинетикасы» (γ жасырын)
+  { slug: "reaction-rate", grades: [9, 10], status: "ready", levels: [9, 10] },
   { slug: "solubility", grades: [9], status: "soon" },
   { slug: "mass-fraction", grades: [9], status: "soon" },
   { slug: "precipitation", grades: [9], status: "soon" },
@@ -38,7 +39,14 @@ export const LAB_CATALOG = [
   { slug: "galvanic-cell", grades: [10], status: "soon" },
   { slug: "organic-builder", grades: [10], status: "soon" },
   { slug: "organic-properties", grades: [10], status: "soon" },
-] as const satisfies readonly { slug: string; grades: readonly LabGrade[]; status: "ready" | "soon"; href?: string }[];
+] as const satisfies readonly {
+  slug: string;
+  grades: readonly LabGrade[];
+  status: "ready" | "soon";
+  href?: string;
+  /** Сыныпқа қарай қиындық деңгейлері (сынып беті ?level=<сынып> сілтемесімен ашады) */
+  levels?: readonly LabGrade[];
+}[];
 
 export type LabEntry = (typeof LAB_CATALOG)[number];
 export type LabSlug = LabEntry["slug"];
@@ -59,8 +67,21 @@ export function labsForGrade(grade: LabGrade): LabEntry[] {
 
 export const isLabGrade = (value: number): value is LabGrade => (LAB_GRADES as readonly number[]).includes(value);
 
-/** Тәжірибенің адресі: сілтеме түріндегілер (периодтық кесте) өз бетіне апарады */
-export const labHref = (lab: LabEntry) => ("href" in lab ? lab.href : `/virtual-lab/${lab.slug}`);
+/**
+ * Тәжірибенің адресі: сілтеме түріндегілер (периодтық кесте) өз бетіне апарады;
+ * деңгейі бар тәжірибе сынып бетінен ашылса — сол сыныптың деңгейімен (?level=10)
+ */
+export function labHref(lab: LabEntry, grade?: LabGrade) {
+  if ("href" in lab) return lab.href;
+  const level = grade && "levels" in lab && (lab.levels as readonly number[]).includes(grade) ? `?level=${grade}` : "";
+  return `/virtual-lab/${lab.slug}${level}`;
+}
+
+/** Тәжірибенің деңгейлері (жоқ болса — бос) */
+export const labLevels = (slug: string): readonly LabGrade[] => {
+  const lab = getLab(slug);
+  return lab && "levels" in lab ? lab.levels : [];
+};
 
 /** «Ишара алу» батырмасы бар қадамдар (мақсат пен бағалау қадамында ишара жоқ) */
 export const HINT_STEPS = ["prediction", "equipment", "experiment", "observation", "analysis", "conclusion"] as const;
