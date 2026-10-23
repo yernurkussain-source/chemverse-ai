@@ -19,6 +19,8 @@ const eslintConfig = defineConfig([
     // Android және iOS жобалары (Capacitor жасайды)
     "android/**",
     "ios/**",
+    // 3D ойынның бір файлдық прототипі (салыстыру үшін сақталған, жобаның кодына кірмейді)
+    "docs/game/prototype/**",
     // Playwright есептері (npx playwright test жасайды)
     "playwright-report/**",
     "test-results/**",

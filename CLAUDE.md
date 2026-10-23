@@ -5,6 +5,7 @@
 - Жоба: CHEMVERSE AI — химияға арналған AI платформа (веб-сайт + телефонға орнатылатын PWA + Android APK).
 - Толық техникалық жоспар: `docs/BLUEPRINT.md`. Күнделікті тапсырмалар: `docs/PROMPTS.md`.
 - Дизайн үлгісі: `design/prototype.html`. Түстер, қаріптер, бөлімдер, мәтіндер осы файлдан алынады.
+- 3D ойын (Virtual Lab): docs/game/GAME_SPEC.md, жұмыс істейтін прототип: docs/game/prototype/virtual-lab.html
 
 ## Тіл
 - Маған әрқашан ҚАЗАҚША жауап бер.
