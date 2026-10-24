@@ -1,21 +1,27 @@
+import { METAL, SOLIDS, VANT_HOFF_GAMMA, vantHoff } from "@/features/chem-engine";
+
 /**
  * «Реакция жылдамдығы» моделі (docs/chemlab/CHEMLAB_SPEC.md 5.4) — таза функциялар.
  * Mg + 2HCl → MgCl₂ + H₂↑. Магний 0,05 г (шектеуші), қышқыл артық.
  * Екі деңгей: 9-сынып — γ = 2 (белгілі); 10-сынып «Реакция кинетикасы» — γ жасырын (2–4), оқушы оны
  * деректерінен табады, реакция ретін анықтайды және модель шегінен тыс t½-ті болжайды.
+ *
+ * Жылдамдық заңы мен тұрақтылар ортақ химия қозғалтқышынан (3D зертханамен бірдей):
+ * dn/dt = −k · [H⁺] · n · γ^((T − 20)/10). Мұнда колба термостатта (T тұрақты), қышқыл артық ([H⁺] ≈ c),
+ * сондықтан теңдеудің шешімі: V(t) = V_max · (1 − e^(−k·c·γ^((T−20)/10)·t)). Тест екеуінің бірдей екенін тексереді.
  */
 export const RATE = {
-  massMg: 0.05,
-  molarMg: 24.31,
+  massMg: SOLIDS.Mg.grams,
+  molarMg: METAL.Mg.M,
   /** Газдың молярлық көлемі, л/моль (20 °C, 1 атм — модель) */
   molarVolume: 24.0,
-  k0: 0.02,
-  gamma: 2,
+  k0: METAL.Mg.k,
+  gamma: VANT_HOFF_GAMMA,
   /** Тәжірибенің ұзақтығы, с */
   durationSec: 300,
   /** Оқушы графиктен оқитын уақыт, с */
   readAtSec: 30,
-} as const;
+};
 
 export const TEMPERATURES = [10, 15, 20, 25, 30, 35, 40, 45, 50] as const;
 export const CONCENTRATIONS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] as const;
@@ -34,11 +40,11 @@ export const gammaOf = (params: Record<string, number>) => (params.level === 10 
 
 export type Run = { T: number; c: number };
 
-/** Соңғы көлем: V_max = m / M(Mg) · V_m, мл */
-export const vMaxMl = () => (RATE.massMg / RATE.molarMg) * RATE.molarVolume * 1000;
+/** Соңғы көлем: V_max = n(Mg) · V_m, мл (n = m / M — қозғалтқыштағы магний таспасы) */
+export const vMaxMl = () => SOLIDS.Mg.n * RATE.molarVolume * 1000;
 
-/** Жылдамдық константасы: k = k₀ · c · γ^((T − 20)/10), с⁻¹ */
-export const rateConstant = ({ T, c }: Run, gamma: number = RATE.gamma) => RATE.k0 * c * gamma ** ((T - 20) / 10);
+/** Жылдамдық константасы: k = k₀ · c · γ^((T − 20)/10), с⁻¹ (Вант-Гофф ережесі — қозғалтқыштан) */
+export const rateConstant = ({ T, c }: Run, gamma: number = RATE.gamma) => RATE.k0 * c * vantHoff(T, gamma);
 
 /** Сутек көлемі: V(t) = V_max · (1 − e^(−k·t)), мл */
 export const volumeAt = (run: Run, t: number, gamma: number = RATE.gamma) => vMaxMl() * (1 - Math.exp(-rateConstant(run, gamma) * t));

@@ -44,21 +44,35 @@ export function uniColor(p: number): RGB {
   return UNI[UNI.length - 1][1];
 }
 
+/**
+ * Индикаторлардың түс ауысу аралығы, pH: [басы, соңы]. Бір жерде тұрады — 3D ойын да, ChemLab та
+ * осыны қолданады (фенолфталеин: 8,2-ден төмен түссіз; метилоранж: қызыл → сары; лакмус: қызыл → күлгін → көк).
+ */
+export const INDICATOR_RANGES = {
+  php: [8.2, 10],
+  mo: [3.1, 4.4],
+  lit: [4.5, 8.3],
+} as const satisfies Record<Exclude<IndicatorId, "uni">, readonly [number, number]>;
+
 /** Индикатордың берілген pH-тағы түсі (фенолфталеин 8,2-ден төмен түссіз → null) */
 export function indColor(id: IndicatorId, p: number): { c: RGB; a: number } | null {
   switch (id) {
-    case "php":
-      return p < 8.2 ? null : { c: [225, 25, 128], a: clamp01((p - 8.2) / 1.8) * 0.88 };
-    case "mo":
-      return {
-        c: p <= 3.1 ? [214, 42, 46] : p >= 4.4 ? [240, 196, 40] : lerp3([214, 42, 46], [240, 196, 40], (p - 3.1) / 1.3),
-        a: 0.72,
-      };
+    case "php": {
+      const [lo, hi] = INDICATOR_RANGES.php;
+      return p < lo ? null : { c: [225, 25, 128], a: clamp01((p - lo) / (hi - lo)) * 0.88 };
+    }
+    case "mo": {
+      const [lo, hi] = INDICATOR_RANGES.mo;
+      return { c: p <= lo ? [214, 42, 46] : p >= hi ? [240, 196, 40] : lerp3([214, 42, 46], [240, 196, 40], (p - lo) / (hi - lo)), a: 0.72 };
+    }
     case "lit": {
+      const [lo, hi] = INDICATOR_RANGES.lit;
+      const mid = (lo + hi) / 2;
+      const half = (hi - lo) / 2;
       const R: RGB = [200, 32, 44];
       const P: RGB = [124, 52, 142];
       const B: RGB = [38, 62, 190];
-      return { c: p <= 4.5 ? R : p >= 8.3 ? B : p < 6.4 ? lerp3(R, P, (p - 4.5) / 1.9) : lerp3(P, B, (p - 6.4) / 1.9), a: 0.7 };
+      return { c: p <= lo ? R : p >= hi ? B : p < mid ? lerp3(R, P, (p - lo) / half) : lerp3(P, B, (p - mid) / half), a: 0.7 };
     }
     case "uni":
       return { c: uniColor(p), a: 0.78 };

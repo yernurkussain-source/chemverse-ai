@@ -66,7 +66,8 @@ export function gradeIndicator(params: Record<string, number>, submission: Indic
       ["сілті", "негіз", "щелоч", "основ", "alkal", "base"],
       ["индикатор", "лакмус", "фенолфталеин", "indicator", "litmus"],
     ],
-    expectedNumbers: [7, 2, 12, 8.4, 8.2, 2.4],
+    // Ас содасы: қозғалтқыш бойынша 8,34 (оқушы 8,3 не 8,4 деп жазуы мүмкін)
+    expectedNumbers: [7, 2, 12, 8.34, 8.3, 8.4, 8.2, 2.4],
   });
   if (conclusion.sentences < 2) feedback.push({ criterion: "conclusion", key: "conclusionShort" });
   if (conclusion.termsFound < conclusion.termsTotal) {

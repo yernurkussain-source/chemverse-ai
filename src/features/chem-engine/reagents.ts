@@ -88,7 +88,8 @@ export type Metal = {
 };
 
 export const METAL: Record<SolidId, Metal> = {
-  Mg: { k: 0.03, ion: "Mg", dH: -466.9, M: 24.31, kCu: 0.02, kAg: 0.05, eq: "Mg + 2H⁺ → Mg²⁺ + H₂↑" },
+  // Mg: k = 0,02 — ChemLab «Реакция жылдамдығы»-мен ортақ (docs/chemlab/CHEMLAB_SPEC.md 5.4); прототипте 0,03 еді
+  Mg: { k: 0.02, ion: "Mg", dH: -466.9, M: 24.31, kCu: 0.02, kAg: 0.05, eq: "Mg + 2H⁺ → Mg²⁺ + H₂↑" },
   Zn: { k: 0.002, ion: "Zn", dH: -153.9, M: 65.38, kCu: 0.008, kAg: 0.03, eq: "Zn + 2H⁺ → Zn²⁺ + H₂↑" },
   Fe: { k: 0.0007, ion: "Fe2", dH: -89.1, M: 55.85, kCu: 0.004, kAg: 0.02, eq: "Fe + 2H⁺ → Fe²⁺ + H₂↑" },
   Cu: { k: 0, ion: "Cu", M: 63.55, kCu: 0, kAg: 0.02 },

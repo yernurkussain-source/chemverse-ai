@@ -5,13 +5,19 @@ import { METAL } from "./reagents";
 import { dryOut } from "./residue";
 import { addIon, g, gas, heat, take, type Vessel } from "./vessel";
 
+/** Вант-Гофф ережесінің әдепкі коэффициенті: температура 10 °C көтерілсе, жылдамдық 2 есе өседі */
+export const VANT_HOFF_GAMMA = 2;
+
+/** Вант-Гофф ережесі: 20 °C-пен салыстырғанда жылдамдық неше есе өзгереді — γ^((T − 20)/10) */
+export const vantHoff = (T: number, gamma: number = VANT_HOFF_GAMMA) => Math.pow(gamma, (T - 20) / 10);
+
 /**
  * Уақыт бойынша өзгерістер (dt секунд): металдардың қышқылмен және тұз ерітінділерімен реакциясы,
  * MnO₂ катализі, плиткада қыздыру, қайнау, буландыру, суу, тұнбаның шөгуі.
- * Жылдамдық Вант-Гофф ережесімен температураға тәуелді (γ = 2).
+ * Металл + H⁺: бірінші ретті, dn/dt = −k · [H⁺] · n · γ^((T − 20)/10), γ = 2.
  */
 export function step(v: Vessel, dt: number, heaterOn: boolean): void {
-  const tf = Math.pow(2, (v.T - 20) / 10);
+  const tf = vantHoff(v.T);
   if (v.V > 0.05) {
     const L = v.V / 1000;
     for (const p of v.pieces) {

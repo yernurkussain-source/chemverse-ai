@@ -1,19 +1,35 @@
+import { addLiquid, INDICATOR_RANGES, newVessel, pH, type Ions } from "@/features/chem-engine";
 import { phenolphthaleinColor } from "@/lib/chemistry/titration";
 
 /**
  * «Индикатор зертханасы» моделі (docs/chemlab/CHEMLAB_SPEC.md 5.3) — таза функциялар.
  * 6 белгісіз ерітінді A–F пробиркаларында (реті әр жолы араласады), 4 индикатор.
+ * Ерітінділердің pH-ын ортақ химия қозғалтқышы құрамы бойынша есептейді (3D зертханамен бірдей модель).
  */
+
+/** Ерітіндінің pH-ы қозғалтқыш бойынша (ions — 1 литрдегі иондар, моль/л), 2 таңбаға дейін дөңгелектелген */
+const enginePH = (ions: Ions) => {
+  const tube = newVessel("tube", 20, "tube");
+  addLiquid(tube, ions, 10);
+  return Math.round(pH(tube)! * 100) / 100;
+};
+
 export const SOLUTIONS = [
-  { id: "hcl", pH: 2.0, medium: "acid" },
+  { id: "hcl", pH: enginePH({ H: 0.01, Cl: 0.01 }), medium: "acid" },
+  // Лимон шырыны — әлсіз органикалық қышқыл (лимон қышқылы): қозғалтқыш тек күшті қышқылдарды
+  // есептейді, сондықтан мұнда өлшенген мән беріледі
   { id: "lemon", pH: 2.4, medium: "acid" },
-  { id: "water", pH: 7.0, medium: "neutral" },
-  { id: "nacl", pH: 7.0, medium: "neutral" },
-  { id: "soda", pH: 8.4, medium: "base" },
-  { id: "naoh", pH: 12.0, medium: "base" },
+  { id: "water", pH: enginePH({}), medium: "neutral" },
+  { id: "nacl", pH: enginePH({ Na: 0.1, Cl: 0.1 }), medium: "neutral" },
+  // Ас содасы — NaHCO₃ 0,1 М: гидрокарбонат ерітіндісінің pH-ы ≈ 8,34
+  { id: "soda", pH: enginePH({ Na: 0.1, HCO3: 0.1 }), medium: "base" },
+  { id: "naoh", pH: enginePH({ Na: 0.01, OH: 0.01 }), medium: "base" },
 ] as const;
 export type SolutionId = (typeof SOLUTIONS)[number]["id"];
 export type Medium = (typeof SOLUTIONS)[number]["medium"];
+
+/** Ортаның түрі pH бойынша (мектеп курсындағы жіктеу: 7-ге жақын — бейтарап), титрлеудегімен бірдей */
+export const mediumOf = (p: number): Medium => (p < 6.5 ? "acid" : p <= 7.5 ? "neutral" : "base");
 
 export const TUBES = ["A", "B", "C", "D", "E", "F"] as const;
 export const INDICATORS = ["litmus", "phenolphthalein", "methylOrange", "universal"] as const;
@@ -52,19 +68,27 @@ const RGB: Record<ColorName, string> = {
 
 const color = (name: ColorName, opacity = 0.8): IndicatorColor => ({ name, rgb: RGB[name], opacity });
 
-/** Индикатордың pH бойынша түсі (spec кестесі) */
+/**
+ * Индикатордың pH бойынша түсі (spec кестесі). Лакмус, фенолфталеин, метилоранждың ауысу аралығы —
+ * қозғалтқыштан (INDICATOR_RANGES); әмбебап индикатордың түс шкаласы — мектептегі қорапшадағы кесте.
+ */
 export function indicatorColor(indicator: Indicator, pH: number): IndicatorColor {
   switch (indicator) {
-    case "litmus":
-      return color(pH < 4.5 ? "red" : pH <= 8.3 ? "purple" : "blue");
+    case "litmus": {
+      const [lo, hi] = INDICATOR_RANGES.lit;
+      return color(pH < lo ? "red" : pH <= hi ? "purple" : "blue");
+    }
     case "phenolphthalein": {
       // 8,2–10 аралығында біртіндеп боялады (титрлеудегі функциямен бірдей)
+      const [lo, hi] = INDICATOR_RANGES.php;
       const { rgb, opacity } = phenolphthaleinColor(pH);
-      const name: ColorName = pH < 8.2 ? "colorless" : pH < 10 ? "palePink" : "crimson";
-      return { name, rgb, opacity: pH < 8.2 ? 0.25 : opacity };
+      const name: ColorName = pH < lo ? "colorless" : pH < hi ? "palePink" : "crimson";
+      return { name, rgb, opacity: pH < lo ? 0.25 : opacity };
     }
-    case "methylOrange":
-      return color(pH < 3.1 ? "red" : pH <= 4.4 ? "orange" : "yellow");
+    case "methylOrange": {
+      const [lo, hi] = INDICATOR_RANGES.mo;
+      return color(pH < lo ? "red" : pH <= hi ? "orange" : "yellow");
+    }
     case "universal":
       if (pH < 2.5) return color("red");
       if (pH < 4.5) return color("orange");

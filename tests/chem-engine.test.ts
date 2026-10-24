@@ -6,6 +6,8 @@ import {
   addPiece,
   ENGINE_EVENT_KEYS,
   engineStats,
+  indColor,
+  INDICATOR_RANGES,
   INSTANT,
   LIQUIDS,
   newVessel,
@@ -14,6 +16,7 @@ import {
   setEngineEmitter,
   step,
   transfer,
+  vantHoff,
   type EngineEvent,
   type LiquidId,
   type PptMap,
@@ -96,7 +99,8 @@ describe("Химия қозғалтқышы", () => {
       step(v, 0.1, false);
       s += 0.1;
     }
-    near(s, 18.5, 0.6, "t½");
+    // Прототипте k = 0,03 еді (t½ ≈ 18,5 с). ChemLab-пен ортақ болу үшін k = 0,02 (CHEMLAB_SPEC 5.4) — t½ ≈ 27,7 с
+    near(s, 27.7, 0.6, "t½");
   });
 
   test("Fe + CuSO₄ → мыс қабаты", () => {
@@ -147,6 +151,28 @@ describe("Химия қозғалтқышы", () => {
     near(paper.CuOH2 ?? 0, 0.005, 1e-9, "қағазда");
     assert.ok(!Object.keys(b.ppt).length);
     near(b.V, 20, 1e-9, "сүзінді");
+  });
+});
+
+describe("Қозғалтқыштың ортақ ережелері (ChemLab да қолданады)", () => {
+  test("Вант-Гофф ережесі: γ^((T − 20)/10)", () => {
+    near(vantHoff(20), 1, 1e-12, "20 °C");
+    near(vantHoff(30), 2, 1e-12, "30 °C, γ = 2");
+    near(vantHoff(10), 0.5, 1e-12, "10 °C");
+    near(vantHoff(40, 3), 9, 1e-9, "40 °C, γ = 3");
+  });
+
+  test("индикатор түсі аралықтың шетінде ауысады", () => {
+    const [phLo, phHi] = INDICATOR_RANGES.php;
+    assert.equal(indColor("php", phLo - 0.01), null, "фенолфталеин 8,2-ден төмен түссіз");
+    near(indColor("php", phHi)!.a, 0.88, 1e-9, "фенолфталеин 10-да толық боялады");
+    const [moLo, moHi] = INDICATOR_RANGES.mo;
+    assert.deepEqual(indColor("mo", moLo)!.c, [214, 42, 46], "метилоранж қызыл");
+    assert.deepEqual(indColor("mo", moHi)!.c, [240, 196, 40], "метилоранж сары");
+    const [litLo, litHi] = INDICATOR_RANGES.lit;
+    assert.deepEqual(indColor("lit", litLo)!.c, [200, 32, 44], "лакмус қызыл");
+    assert.deepEqual(indColor("lit", litHi)!.c, [38, 62, 190], "лакмус көк");
+    assert.deepEqual(indColor("lit", (litLo + litHi) / 2)!.c, [124, 52, 142], "лакмус ортасында күлгін");
   });
 });
 
