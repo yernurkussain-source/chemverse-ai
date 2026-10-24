@@ -88,5 +88,6 @@ export function checkQuests(G: Game): void {
     toast(G, tr("toast.quest", { name }));
     addLog(G, "q", tr("log.task"), "", tr("log.taskDone", { name }));
     G.snd.ding();
+    G.progress.changed();
   }
 }

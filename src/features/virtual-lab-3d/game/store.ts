@@ -78,7 +78,13 @@ export type HudState = {
   sound: boolean;
   /** «Поп» кезіндегі жарқыл: әр өсуі — бір жарқыл */
   flash: number;
+  /** Сенсорлы экран (телефон, планшет): экрандағы джойстик пен батырмалар көрсетіледі */
+  touch: boolean;
+  /** Сурет сапасы: high — көлеңкемен, low — көлеңкесіз, әлсіз құрылғыларға */
+  quality: Quality;
 };
+
+export type Quality = "high" | "low";
 
 export type HudStore = Store<HudState>;
 
@@ -102,6 +108,8 @@ export const initialHud = (): Omit<HudState, "phase"> => ({
   quests: false,
   sound: true,
   flash: 0,
+  touch: false,
+  quality: "high",
 });
 
 export const createHudStore = (): HudStore => createStore<HudState>({ phase: "loading", ...initialHud() });

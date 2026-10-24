@@ -65,6 +65,27 @@ export function LabCard({ lab, accentGrade }: { lab: LabEntry; accentGrade?: Lab
   );
 }
 
+/** «3D зертхана» (docs/game/GAME_SPEC.md): бірінші жақтан көрінетін ойын, /game бетіне апарады */
+export function Game3DCard() {
+  const t = useTranslations("ChemLab");
+  return (
+    <Link
+      href="/game"
+      className="mt-6 flex flex-col gap-3 rounded-3xl border border-cyan/40 bg-panel p-5 transition-colors hover:border-cyan sm:flex-row sm:items-center sm:gap-5"
+    >
+      <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-cyan/10 font-mono text-lg font-bold text-cyan">3D</span>
+      <span className="min-w-0 flex-1">
+        <span className="flex flex-wrap items-center gap-2">
+          <span className="font-display text-lg font-semibold">{t("game3d.title")}</span>
+          <span className="rounded-full bg-pink/15 px-2 py-0.5 font-mono text-[0.68rem] font-semibold text-pink">{t("game3d.badge")}</span>
+        </span>
+        <span className="mt-1 block text-[0.9rem] text-muted-foreground">{t("game3d.text")}</span>
+      </span>
+      <span className="shrink-0 font-semibold text-cyan">{t("game3d.cta")} →</span>
+    </Link>
+  );
+}
+
 /** «Менің жұмыстарым»: кірген оқушының соңғы ChemLab нәтижелері (кірмеген болса — ештеңе) */
 export async function MyWorks({ slug }: { slug?: string }) {
   const attempts = await getMyAttempts(slug);

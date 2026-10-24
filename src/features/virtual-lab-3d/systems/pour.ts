@@ -39,7 +39,7 @@ export function holdPose(G: Game, it: Item, left: boolean): Pose {
   if (it.type === "vessel" && it.v.kind === "tube") off.set(left ? -0.14 : 0.15, -0.15, -0.36);
   if (it.type === "splint" || it.type === "wire") off.set(left ? -0.13 : 0.13, -0.2, -0.36);
   if (left && state.pour?.intoLeft) off.set(0.0, -0.19, -0.38);
-  off.y += Math.sin(player.bob) * 0.006;
+  if (!G.reducedMotion) off.y += Math.sin(player.bob) * 0.006;
   const p = G.camera.localToWorld(off);
   qYaw.setFromAxisAngle(UP, player.yaw);
   const roll = (left ? 0.06 : -0.06) + (it.type === "splint" || it.type === "wire" ? (left ? 0.5 : -0.5) : 0);

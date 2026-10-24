@@ -11,6 +11,7 @@ import { Flash, GogglesOverlay, Journal, Quests } from "./hud/Panels";
 import { Crosshair, Prompt } from "./hud/Prompt";
 import { HUD_VARS, topButton } from "./hud/styles";
 import { TopBar } from "./hud/TopBar";
+import { TouchControls } from "./hud/TouchControls";
 import { Welcome } from "./hud/Welcome";
 
 /**
@@ -88,8 +89,19 @@ export default function LabGame() {
           <HandCard store={store} />
           <Toast store={store} />
           <Flash store={store} />
+          <TouchControls
+            store={store}
+            api={{
+              joy: (x, y) => gameRef.current?.touch.joy(x, y),
+              right: (down) => gameRef.current?.touch.right(down),
+              left: () => gameRef.current?.touch.left(),
+              back: () => gameRef.current?.touch.back(),
+            }}
+          />
           <Journal store={store} onClose={() => gameRef.current?.toggleDrawer(false)} />
-          {phase === "ready" && <Welcome store={store} onStart={() => gameRef.current?.start()} />}
+          {phase === "ready" && (
+            <Welcome store={store} onStart={() => gameRef.current?.start()} onQuality={(q) => gameRef.current?.setQuality(q)} />
+          )}
           <Quests store={store} onClose={() => gameRef.current?.setQuests(false)} />
         </>
       )}

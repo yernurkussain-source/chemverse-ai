@@ -66,6 +66,46 @@ export function requestLock(G: Game): void {
   }
 }
 
+/**
+ * Телефонда экранды саусақпен сүйреп қарау (бірнеше саусақ: бірі джойстикте, екіншісі экранда).
+ * Джойстик пен батырмалар — hud/TouchControls.tsx. Қайтарады: тыңдаушыларды алып тастайтын функция.
+ */
+export function bindTouchLook(G: Game): () => void {
+  const { canvas } = G;
+  const looks = new Map<number, { x: number; y: number }>();
+  const onDown = (e: PointerEvent) => {
+    if (!G.isTouch) return;
+    looks.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    try {
+      canvas.setPointerCapture(e.pointerId);
+    } catch {
+      // саусақ экраннан кетіп қалған
+    }
+  };
+  const onMove = (e: PointerEvent) => {
+    const l = looks.get(e.pointerId);
+    if (!l || !G.state.started || G.state.paused) return;
+    const dx = e.clientX - l.x;
+    const dy = e.clientY - l.y;
+    l.x = e.clientX;
+    l.y = e.clientY;
+    look(G, dx * 1.5, dy * 1.5);
+  };
+  const onEnd = (e: PointerEvent) => {
+    looks.delete(e.pointerId);
+  };
+  canvas.addEventListener("pointerdown", onDown);
+  canvas.addEventListener("pointermove", onMove);
+  canvas.addEventListener("pointerup", onEnd);
+  canvas.addEventListener("pointercancel", onEnd);
+  return () => {
+    canvas.removeEventListener("pointerdown", onDown);
+    canvas.removeEventListener("pointermove", onMove);
+    canvas.removeEventListener("pointerup", onEnd);
+    canvas.removeEventListener("pointercancel", onEnd);
+  };
+}
+
 /** Компьютердегі басқару. Қайтарады: тыңдаушыларды алып тастайтын функция */
 export function bindDesktop(G: Game, h: InputHandlers): () => void {
   const { canvas, state, keys } = G;

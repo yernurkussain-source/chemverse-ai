@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Eyebrow } from "@/components/landing/section";
-import { GradeCard, LabCard, MyWorks } from "@/components/virtual-lab/catalog-cards";
+import { Game3DCard, GradeCard, LabCard, MyWorks } from "@/components/virtual-lab/catalog-cards";
 import { LAB_CATALOG, LAB_GRADES } from "@/features/virtual-lab/catalog";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,6 +24,7 @@ export default function ChemLabPage() {
       <p className="mt-3 max-w-[62ch] rounded-2xl border border-line bg-panel-2/60 px-4 py-2.5 text-[0.85rem] text-muted-foreground">
         ◇ {t("modelNote")}
       </p>
+      <Game3DCard />
 
       <h2 className="mt-9 mb-3.5 font-display text-xl font-semibold">{t("gradesTitle")}</h2>
       <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4">

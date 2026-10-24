@@ -4,6 +4,7 @@ import { describe, test } from "node:test";
 import { ENGINE_EVENT_KEYS, LIQUIDS, REAG } from "@/features/chem-engine";
 import { chooseFlame } from "@/features/virtual-lab-3d/game/flame-rules";
 import { makeFmt, observationKey, plainNumber, TRANSLATED_EQUATIONS } from "@/features/virtual-lab-3d/game/i18n";
+import { sanitizeProgress } from "@/features/virtual-lab-3d/game/progress";
 import { LEVEL_COUNT, QUESTS } from "@/features/virtual-lab-3d/game/quests";
 
 type Tree = { [key: string]: string | Tree };
@@ -46,6 +47,24 @@ describe("3D зертхана: тапсырмалар", () => {
       }
       for (let i = 0; i < LEVEL_COUNT; i++) assert.equal(typeof get(lab[l], `levels.${i}`), "string", `${l}: levels.${i}`);
     }
+  });
+});
+
+describe("3D зертхана: сақталған прогресс", () => {
+  test("белгісіз тапсырмалар мен қайталанулар алынып тасталады, XP = 100 × тапсырма саны", () => {
+    const p = sanitizeProgress({ xp: 99999, safety: 70, done: ["pop", "hack", "pop", "ppe"] });
+    assert.deepEqual(p, { xp: 200, safety: 70, done: ["ppe", "pop"] });
+  });
+
+  test("Supabase жолы (quests_done) да оқылады; қауіпсіздік 0–100 аралығында", () => {
+    assert.deepEqual(sanitizeProgress({ safety: 250, quests_done: ["flame"] }), { xp: 100, safety: 100, done: ["flame"] });
+    assert.equal(sanitizeProgress({ safety: -5, done: [] })?.safety, 0);
+  });
+
+  test("бүлінген дерек — прогресс жоқ", () => {
+    assert.equal(sanitizeProgress(null), null);
+    assert.equal(sanitizeProgress("x"), null);
+    assert.deepEqual(sanitizeProgress({ done: "pop" }), { xp: 0, safety: 100, done: [] });
   });
 });
 

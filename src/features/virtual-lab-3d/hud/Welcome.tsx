@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { useStore, type HudStore } from "../game/store";
+import { useStore, type HudStore, type Quality } from "../game/store";
 import { muted } from "./styles";
 
 const kbd = (chunks: ReactNode) => <kbd className="rounded bg-white/12 px-[5px] font-mono">{chunks}</kbd>;
@@ -11,9 +11,10 @@ const strong = (chunks: ReactNode) => <b className="font-bold text-[var(--hud-te
 const underline = (chunks: ReactNode) => <u>{chunks}</u>;
 
 /** Қош келдің терезесі: зертхана туралы және басқару (компьютер / телефон) */
-export function Welcome({ store, onStart }: { store: HudStore; onStart: () => void }) {
+export function Welcome({ store, onStart, onQuality }: { store: HudStore; onStart: () => void; onQuality: (q: Quality) => void }) {
   const t = useTranslations("VirtualLab3D");
   const welcome = useStore(store, (s) => s.welcome);
+  const quality = useStore(store, (s) => s.quality);
   if (!welcome) return null;
   const rich = { kbd, b: strong, u: underline };
   const box = "rounded-xl bg-[var(--hud-2)] px-3 py-2.5 text-[0.84rem] leading-relaxed";
@@ -49,6 +50,27 @@ export function Welcome({ store, onStart }: { store: HudStore; onStart: () => vo
             <b className={cn(label, "mt-3")}>{t("welcome.toolsTitle")}</b>
             {t("welcome.tools")}
           </div>
+        </div>
+        <div className="mb-4 flex flex-wrap items-center gap-2 text-[0.84rem]">
+          <span className={muted}>{t("quality.label")}</span>
+          <div className="flex" role="group" aria-label={t("quality.label")}>
+            {(["high", "low"] as const).map((q, i) => (
+              <button
+                key={q}
+                type="button"
+                aria-pressed={quality === q}
+                onClick={() => onQuality(q)}
+                className={cn(
+                  "-ml-px border border-[var(--hud-line)] bg-[var(--hud-2)] px-3 py-1.5 font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan",
+                  i === 0 ? "ml-0 rounded-l-xl" : "rounded-r-xl",
+                  quality === q && "border-cyan bg-cyan text-on-accent",
+                )}
+              >
+                {t(`quality.${q}`)}
+              </button>
+            ))}
+          </div>
+          <span className={cn("text-[0.76rem]", muted)}>{t("quality.hint")}</span>
         </div>
         <button
           type="button"

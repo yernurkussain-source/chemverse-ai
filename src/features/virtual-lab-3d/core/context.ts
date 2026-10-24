@@ -164,6 +164,8 @@ export type Game = Base & {
   flameSeen: Set<string>;
   /** Кешіктірілген әрекеттер (тамшы, шырпы сынағы…) — ойын жабылғанда тоқтатылады */
   timers: Set<ReturnType<typeof setTimeout>>;
+  /** Прогресс өзгерді (тапсырма, айып) — сақтауды жоспарлау */
+  progress: { changed: () => void };
   player: Player;
   keys: Record<string, boolean>;
   joy: { x: number; y: number };

@@ -151,6 +151,7 @@ export function penalty(G: Game, why: string): void {
   addLog(G, "w", tr("log.safety"), "", tr("log.penalty", { why }));
   toast(G, tr("toast.penalty", { why }), true);
   G.snd.buzz();
+  G.progress.changed();
 }
 
 /** Отпен не қауіпті реактивпен көзілдіріксіз / қолғапсыз жұмыс — айып (әр затқа бір рет) */

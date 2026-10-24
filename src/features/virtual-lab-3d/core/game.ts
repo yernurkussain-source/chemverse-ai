@@ -1,15 +1,18 @@
+import * as THREE from "three";
 import { resetEngineStats, setEngineEmitter, step } from "@/features/chem-engine";
 import { soundStep } from "../audio/ambient";
 import { createSound } from "../audio/snd";
 import { makeFmt, type Tr } from "../game/i18n";
 import { addLog, installEngineEmitter } from "../game/journal";
+import { startProgress } from "../game/progress";
 import { checkQuests, renderXP } from "../game/quests";
-import { initialHud, type HudStore, type PromptView } from "../game/store";
+import { initialHud, type HudStore, type PromptView, type Quality } from "../game/store";
+import type { TouchApi } from "../hud/TouchControls";
 import { handView, primaryDown, primaryUp, renderHand, returnHome, secondaryDown } from "../interaction/actions";
 import { aim } from "../interaction/aim";
 import { decide, decideL, nm, type Decision, type DecisionL } from "../interaction/decide";
 import { populate } from "../items/populate";
-import { bindDesktop, movePlayer, requestLock } from "../player/controls";
+import { bindDesktop, bindTouchLook, movePlayer, requestLock } from "../player/controls";
 import { makeRig } from "../player/hands";
 import { buildBench } from "../scene/bench";
 import { buildBurette } from "../scene/burette";
@@ -41,8 +44,22 @@ export type GameApi = {
   toggleSound: () => void;
   /** Кез келген басу: браузер дыбысты тек содан кейін қосуға рұқсат береді */
   unlockAudio: () => void;
+  /** «Сапа»: high — көлеңкемен, low — көлеңкесіз (таңдау браузерде есте сақталады) */
+  setQuality: (q: Quality) => void;
+  /** Телефондағы джойстик пен батырмалар */
+  touch: TouchApi;
   dispose: () => void;
 };
+
+const QUALITY_KEY = "chemverse.labGame.quality";
+
+function readQuality(): Quality {
+  try {
+    return window.localStorage.getItem(QUALITY_KEY) === "low" ? "low" : "high";
+  } catch {
+    return "high";
+  }
+}
 
 /**
  * 3D зертхананы құру. Canvas осы жерде жасалады (container ішіне), сондықтан React StrictMode
@@ -94,6 +111,7 @@ export function createGame(opts: { container: HTMLElement; store: HudStore; tr: 
     snd: createSound(),
     flameSeen: new Set(),
     timers: new Set(),
+    progress: { changed: () => {} },
     player: { x: 0, z: 2.6, yaw: 0, pitch: -0.12, bob: 0, stepAcc: 0 },
     keys: {},
     joy: { x: 0, y: 0 },
@@ -112,7 +130,7 @@ export function createGame(opts: { container: HTMLElement; store: HudStore; tr: 
   const { state, renderer, scene, camera, player, snd } = G;
 
   // Жаңа ойын — таза журнал мен HUD (React әзірлеу режимінде компонентті екі рет іске қосады)
-  store.set(initialHud());
+  store.set({ ...initialHud(), touch: isTouch });
   resetEngineStats();
   installEngineEmitter(G);
   renderXP(G);
@@ -129,6 +147,26 @@ export function createGame(opts: { container: HTMLElement; store: HudStore; tr: 
   resize();
   const ro = new ResizeObserver(resize);
   ro.observe(canvas);
+
+  // Сапа: төменде көлеңке өшеді және пиксель тығыздығы 1 (әлсіз телефондар үшін)
+  const setQuality = (q: Quality) => {
+    const high = q === "high";
+    renderer.setPixelRatio(high ? Math.min(window.devicePixelRatio, isTouch ? 1.5 : 2) : 1);
+    if (renderer.shadowMap.enabled !== high) {
+      renderer.shadowMap.enabled = high;
+      // Көлеңке қосылса / өшсе, материалдардың шейдерлері қайта жиналуы керек
+      scene.traverse((o) => {
+        const m = (o as THREE.Mesh).material;
+        if (m) for (const mat of Array.isArray(m) ? m : [m]) mat.needsUpdate = true;
+      });
+    }
+    resize();
+    store.set({ quality: q });
+  };
+  setQuality(readQuality());
+
+  const progress = startProgress(G);
+  G.progress = progress;
 
   const exitLock = () => {
     if (document.pointerLockElement) document.exitPointerLock();
@@ -150,6 +188,7 @@ export function createGame(opts: { container: HTMLElement; store: HudStore; tr: 
       exitLock();
     }
   };
+  const unbindTouch = bindTouchLook(G);
   const unbind = bindDesktop(G, {
     primaryDown: () => primaryDown(G),
     primaryUp: () => primaryUp(G),
@@ -194,7 +233,8 @@ export function createGame(opts: { container: HTMLElement; store: HudStore; tr: 
     last = now;
     G.cooldown = Math.max(0, G.cooldown - rdt);
     const moved = movePlayer(G, rdt);
-    camera.position.set(player.x, 1.6 + Math.sin(player.bob * 2) * 0.012, player.z);
+    // prefers-reduced-motion: жүргенде бас тербелмейді
+    camera.position.set(player.x, 1.6 + (reducedMotion ? 0 : Math.sin(player.bob * 2) * 0.012), player.z);
     camera.rotation.set(player.pitch, player.yaw, 0);
     camera.updateMatrixWorld();
 
@@ -270,12 +310,38 @@ export function createGame(opts: { container: HTMLElement; store: HudStore; tr: 
       else snd.init();
     },
     unlockAudio: () => snd.init(),
+    setQuality: (q) => {
+      setQuality(q);
+      try {
+        window.localStorage.setItem(QUALITY_KEY, q);
+      } catch {
+        // жеке терезе — таңдау есте сақталмайды
+      }
+    },
+    touch: {
+      joy: (x, y) => {
+        G.joy.x = x;
+        G.joy.y = y;
+      },
+      right: (down) => {
+        snd.init();
+        if (down) primaryDown(G);
+        else primaryUp(G);
+      },
+      left: () => {
+        snd.init();
+        secondaryDown(G);
+      },
+      back: () => returnHome(G, !state.held && !!state.heldL),
+    },
     dispose: () => {
+      progress.dispose();
       cancelAnimationFrame(raf);
       if (debug.__lab === G) delete debug.__lab;
       G.timers.forEach((t) => clearTimeout(t));
       G.timers.clear();
       unbind();
+      unbindTouch();
       ro.disconnect();
       setEngineEmitter(null);
       snd.dispose();

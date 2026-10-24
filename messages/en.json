@@ -2105,6 +2105,12 @@
       "delete": "Delete",
       "migration": "To create assignments, run the ChemLab session 3 migration in Supabase (20261025000000_chemlab_session3.sql).",
       "open": "Open ChemLab"
+    },
+    "game3d": {
+      "badge": "New",
+      "title": "3D lab",
+      "text": "A first-person virtual lab: take reagents from the cabinets, pour solutions, test gases with a splint, titrate. 22 tasks, XP and a safety score.",
+      "cta": "Enter the lab"
     }
   },
   "VirtualLab3D": {
@@ -2345,7 +2351,8 @@
       "drop": "{name}: 1 drop",
       "solid": "Added {name} ({mass})",
       "task": "Task",
-      "taskDone": "{name} — complete (+100 XP)"
+      "taskDone": "{name} — complete (+100 XP)",
+      "restored": "Saved progress loaded: {count} tasks done"
     },
     "look": {
       "volume": "Volume",
@@ -2649,6 +2656,12 @@
         "t": "Flame test",
         "d": "Identify 3 different cations by flame colour with the nichrome wire (Na⁺, K⁺, Ca²⁺, Cu²⁺, Ba²⁺)"
       }
+    },
+    "quality": {
+      "label": "Quality",
+      "high": "High",
+      "low": "Low",
+      "hint": "Low — no shadows, for slower phones"
     }
   }
 }
