@@ -2106,5 +2106,315 @@
       "migration": "To create assignments, run the ChemLab session 3 migration in Supabase (20261025000000_chemlab_session3.sql).",
       "open": "Open ChemLab"
     }
+  },
+  "VirtualLab3D": {
+    "title": "3D lab",
+    "description": "A first-person virtual chemistry lab: take glassware and reagents from the cabinets, pour solutions and watch the reactions.",
+    "loading": "Loading the 3D lab…",
+    "webglError": "Could not show the 3D scene: your browser does not seem to support WebGL. Try another browser (Chrome, Edge, Safari).",
+    "canvasLabel": "3D chemistry lab, first-person view",
+    "brand": "Virtual Lab",
+    "exit": "Exit",
+    "speedLabel": "Time speed",
+    "help": "Controls",
+    "welcome": {
+      "title": "Welcome to the lab, researcher!",
+      "text": "The lab is empty — you set everything up yourself. Walk up close to things to reach them. First put on the goggles and gloves from the left wall. Take glassware from the “Glassware” cabinet, reagents from the “Acids and alkalis” and “Salts” cabinets and the open shelf. Bring them to the central bench and experiment. Reactions follow real chemistry.",
+      "desktopTitle": "Computer",
+      "desktop": {
+        "l1": "<kbd>W A S D</kbd> — walk, <kbd>Shift</kbd> — faster, mouse — look",
+        "l2": "<kbd>Left button</kbd> / <kbd>E</kbd> — <u>right hand</u>: take, put, open; hold — pour",
+        "l3": "<kbd>Right button</kbd> / <kbd>F</kbd> — <u>left hand</u>: take, put",
+        "l4": "With a vessel in your left hand, the right hand pours into it",
+        "l5": "<kbd>Q</kbd> / <kbd>Z</kbd> — put the right / left hand item back",
+        "l6": "<kbd>J</kbd> — journal, <kbd>T</kbd> — tasks"
+      },
+      "phoneTitle": "Phone",
+      "phone": {
+        "l1": "Joystick — walk, drag the screen — look",
+        "l2": "<b>RIGHT</b> — take, put, open; hold — pour",
+        "l3": "<b>LEFT</b> — take with the other hand, put",
+        "l4": "<b>Back</b> — put the item back"
+      },
+      "toolsTitle": "New tools",
+      "tools": "A wooden splint, a delivery tube and a funnel are on the open shelf and in the “Glassware” cabinet. On the bench: a stand with a burette, a spirit lamp and a nichrome wire",
+      "start": "Enter the lab",
+      "continue": "Continue"
+    },
+    "units": {
+      "ml": "ml",
+      "molar": "M",
+      "g": "g",
+      "mg": "mg"
+    },
+    "vessels": {
+      "beaker": "Beaker {n}",
+      "tube": "Test tube {n}",
+      "tubeShort": "T{n}",
+      "burette": "Burette",
+      "funnel": "Funnel"
+    },
+    "items": {
+      "funnel": {
+        "name": "Funnel + filter paper",
+        "full": "for filtering"
+      },
+      "dtube": {
+        "name": "Delivery tube",
+        "full": "with a stopper"
+      },
+      "splint": {
+        "name": "Wooden splint",
+        "full": "a thin stick"
+      },
+      "wire": {
+        "name": "Nichrome wire",
+        "full": "for flame tests"
+      },
+      "lampFlame": "Spirit lamp flame"
+    },
+    "scene": {
+      "cabAcids": "Acids and alkalis",
+      "cabSalts": "Salts",
+      "cabGlass": "Glassware",
+      "cabOther": "Indicators · solids",
+      "fumeHood": "Fume hood",
+      "ppe": "Personal protective equipment",
+      "waste": "Waste",
+      "wasteSub": "chemical",
+      "gloves": "Gloves",
+      "glovesSub": "nitrile · M",
+      "safetyTitle": "Safety rules",
+      "safety1": "1. Wear goggles and gloves.",
+      "safety2": "2. Never taste or sniff chemicals.",
+      "safety3": "3. Add acid to water, never the reverse.",
+      "safety4": "4. Do not touch hot glassware.",
+      "safety5": "5. Pour waste into the waste container.",
+      "safety6": "6. Be careful with flames, tie hair back.",
+      "periodicTitle": "Periodic table of the elements"
+    },
+    "prompt": {
+      "doorOpen": "Open cabinet: {name}",
+      "doorClose": "Close cabinet: {name}",
+      "heaterOn": "Turn the hot plate on",
+      "heaterOff": "Turn the hot plate off",
+      "pick": "Take: {name}",
+      "pickFull": "Take: {name} · {full}",
+      "place": "Put it here",
+      "heaterPlace": "Put on the hot plate",
+      "heaterOnlyBeaker": "Only a beaker can go on the hot plate",
+      "rackPlace": "Put in the rack",
+      "rackOnlyTubes": "Only test tubes go in the rack",
+      "tubeToRack": "Put the test tube in a rack",
+      "pour": "Hold to pour: {from} → {to}",
+      "pouring": "Pouring: {from} → {to}",
+      "funnel": "funnel",
+      "funnelOn": "funnel ({name})",
+      "stoppered": "The test tube is stoppered",
+      "waste": "Empty into waste: {name}",
+      "wastePaper": "Throw away the filter paper and insert a new one",
+      "wasteReagent": "Do not pour reagents into waste — put it back (Q)",
+      "unlinkFirst": "Disconnect the delivery tube first"
+    },
+    "touch": {
+      "right": "RIGHT",
+      "left": "LEFT",
+      "back": "Back"
+    },
+    "toast": {
+      "noRoom": "Not enough room here — pick another spot",
+      "heaterBusy": "Another beaker is already on the hot plate",
+      "rackFull": "The rack is full",
+      "vesselFull": "The vessel is full",
+      "buretteFull": "The burette is full",
+      "emptied": "{name} is empty",
+      "cleaned": "{name} washed",
+      "newPaper": "New filter paper inserted"
+    },
+    "log": {
+      "lab": "Lab",
+      "start": "The lab is open. Put on your protective equipment first, then take what you need from the cabinets.",
+      "heater": "Hot plate",
+      "heaterOn": "On (350 W)",
+      "heaterOff": "Off",
+      "onHeater": "Placed on the hot plate",
+      "pouredReagent": "Poured {f}: {amount} ml",
+      "pouredVessel": "Poured from {name}: {amount} ml",
+      "funnelTo": "Funnel → {name}",
+      "temp": "Temperature {from} → {to} °C ({delta} °C)",
+      "waste": "Waste poured into the waste container, glassware washed",
+      "newPaper": "Filter paper replaced"
+    },
+    "look": {
+      "volume": "Volume",
+      "temp": "t, °C",
+      "ph": "pH",
+      "onlyWater": "water only",
+      "empty": "empty",
+      "onHeater": "on the hot plate",
+      "stopperTo": "stopper → {name}",
+      "tubeFrom": "tube ← {name}",
+      "residue": "residue {f} {g} g",
+      "noResidue": "no residue",
+      "copperCoat": "copper coating",
+      "silver": "silver",
+      "inFunnel": "In the funnel {v} ml",
+      "onPaper": "on the filter {f} {mg} mg",
+      "paperClean": "filter paper clean",
+      "buretteSub": "50 ml · tap: {state}",
+      "cock0": "closed",
+      "cock1": "dropwise",
+      "cock2": "stream",
+      "reading": "Reading",
+      "inside": "Inside",
+      "buretteHint": "The scale reads from the top down: 0 means full"
+    },
+    "hand": {
+      "right": "Right hand",
+      "left": "Left hand",
+      "returnHint": "Q / Z — put back",
+      "wireSample": "sample: {ions}",
+      "wireAcid": "dipped in HCl"
+    },
+    "splintState": {
+      "unlit": "unlit",
+      "burning": "burning",
+      "smolder": "glowing",
+      "burnt": "burnt out"
+    },
+    "rxEq": {
+      "noCu": "Cu + H⁺ → no reaction",
+      "cat": "2H₂O₂ → 2H₂O + O₂↑ (MnO₂ — catalyst)",
+      "dry": "H₂O(l) → H₂O(g)↑"
+    },
+    "reagents": {
+      "HCl": {
+        "name": "Hydrochloric acid",
+        "note": "Acid: keep away from eyes and skin"
+      },
+      "H2SO4": {
+        "name": "Sulfuric acid (dilute)",
+        "note": "Acid: keep away from eyes and skin"
+      },
+      "NaOH": {
+        "name": "Sodium hydroxide",
+        "note": "Alkali: very dangerous to the eyes"
+      },
+      "CaOH2": {
+        "name": "Limewater",
+        "note": "Weak alkali"
+      },
+      "Na2CO3": {
+        "name": "Sodium carbonate"
+      },
+      "NaCl": {
+        "name": "Salt solution"
+      },
+      "KI": {
+        "name": "Potassium iodide"
+      },
+      "AgNO3": {
+        "name": "Silver nitrate",
+        "note": "Stains skin black: wear gloves"
+      },
+      "BaCl2": {
+        "name": "Barium chloride",
+        "note": "Toxic: wear gloves, do not swallow"
+      },
+      "CuSO4": {
+        "name": "Copper(II) sulfate",
+        "note": "Harmful: do not swallow, wear gloves"
+      },
+      "FeCl3": {
+        "name": "Iron(III) chloride",
+        "note": "Irritant, leaves stains"
+      },
+      "H2O": {
+        "name": "Distilled water"
+      },
+      "H2O2": {
+        "name": "Hydrogen peroxide",
+        "note": "Oxidiser: keep away from eyes and skin"
+      },
+      "php": {
+        "name": "Phenolphthalein",
+        "short": "Phph"
+      },
+      "mo": {
+        "name": "Methyl orange",
+        "short": "MO"
+      },
+      "lit": {
+        "name": "Litmus",
+        "short": "Litmus"
+      },
+      "uni": {
+        "name": "Universal indicator",
+        "short": "Univ."
+      },
+      "Mg": {
+        "name": "Magnesium ribbon"
+      },
+      "Zn": {
+        "name": "Zinc granule"
+      },
+      "Fe": {
+        "name": "Iron nail"
+      },
+      "Cu": {
+        "name": "Copper wire"
+      },
+      "CaCO3": {
+        "name": "Marble chip"
+      },
+      "MnO2": {
+        "name": "Manganese(IV) oxide"
+      }
+    },
+    "rx": {
+      "neut": "Neutralisation: heat is released",
+      "hco3": "Hydrogencarbonate forms first — no gas yet",
+      "acidCO3": "Gas bubbles are released (CO₂)",
+      "ohHCO3": "Hydrogencarbonate reacted with the alkali",
+      "dCuOH2": "The blue precipitate dissolved in the acid",
+      "dFeOH3": "The brown precipitate dissolved in the acid",
+      "dFeOH2": "The precipitate dissolved",
+      "dMgOH2": "The white precipitate dissolved",
+      "dZnOH2": "The white precipitate dissolved in the acid",
+      "dAg2O": "The brown precipitate dissolved",
+      "dCaCO3": "The precipitate fizzed and dissolved",
+      "dBaCO3": "The precipitate fizzed and dissolved",
+      "dCuCarb": "The precipitate fizzed and dissolved",
+      "dZnOH4": "Acidification",
+      "pAgCl": "White curdy precipitate (test for chloride ions)",
+      "pAgI": "Pale yellow precipitate (test for iodide ions)",
+      "pBaSO4": "White precipitate, insoluble in acid (test for sulfate ions)",
+      "pBaCO3": "White precipitate",
+      "pCaCO3": "White cloudiness",
+      "pCuCarb": "Blue-green precipitate and bubbles",
+      "pFeCarb": "Brown precipitate and bubbles",
+      "pCuOH2": "Blue gelatinous precipitate",
+      "pFeOH3": "Red-brown precipitate (test for Fe³⁺)",
+      "pFeOH2": "Grey-green precipitate (Fe²⁺)",
+      "pMgOH2": "White precipitate",
+      "pZnOH2": "White gelatinous precipitate",
+      "pAg2O": "Brown precipitate",
+      "amph": "The precipitate dissolved in excess alkali: Zn(OH)₂ is amphoteric",
+      "clear": "With excess CO₂ the cloudiness disappeared: soluble calcium hydrogencarbonate formed",
+      "lime": "The limewater turned milky — this is carbon dioxide",
+      "acid_Mg": "Vigorous bubbling, the vessel warms up",
+      "acid_Zn": "Steady bubbling (hydrogen)",
+      "acid_Fe": "Slow bubbling, the solution turns pale green",
+      "acid_CaCO3": "CO₂ bubbles on the marble surface",
+      "noCu": "Copper is below hydrogen in the reactivity series, so it does not displace hydrogen from acid",
+      "cu": "A red copper coating appeared on the metal",
+      "agCu": "Silver crystals grow on the wire, the solution turns blue",
+      "ag": "Silver deposited on the metal",
+      "cat": "Vigorous bubbling: oxygen is released, and MnO₂ is not used up",
+      "hco3boil": "On heating, the hydrogencarbonate decomposed",
+      "boil": "The solution is boiling, water evaporates",
+      "dry": "All the water evaporated. Residue: {salts}",
+      "dryNone": "All the water evaporated. No residue (it was pure water)"
+    }
   }
 }
