@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, test } from "node:test";
 import { ENGINE_EVENT_KEYS, LIQUIDS, REAG } from "@/features/chem-engine";
+import { chooseFlame } from "@/features/virtual-lab-3d/game/flame-rules";
 import { makeFmt, observationKey, plainNumber, TRANSLATED_EQUATIONS } from "@/features/virtual-lab-3d/game/i18n";
+import { LEVEL_COUNT, QUESTS } from "@/features/virtual-lab-3d/game/quests";
 
 type Tree = { [key: string]: string | Tree };
 const LOCALES = ["kk", "ru", "en"] as const;
@@ -30,6 +32,40 @@ describe("3D зертхана: мәтіндер", () => {
         if (r.kind === "liq" && LIQUIDS[r.id].haz) assert.equal(typeof get(lab[l], `reagents.${r.id}.note`), "string", `${l}: ${r.id}.note`);
       }
     }
+  });
+});
+
+describe("3D зертхана: тапсырмалар", () => {
+  test("22 тапсырма, id-лері қайталанбайды, әрқайсысының үш тілде аты мен сипаттамасы бар", () => {
+    assert.equal(QUESTS.length, 22);
+    assert.equal(new Set(QUESTS.map((q) => q.id)).size, 22);
+    for (const l of LOCALES) {
+      for (const q of QUESTS) {
+        assert.equal(typeof get(lab[l], `quests.${q.id}.t`), "string", `${l}: quests.${q.id}.t`);
+        assert.equal(typeof get(lab[l], `quests.${q.id}.d`), "string", `${l}: quests.${q.id}.d`);
+      }
+      for (let i = 0; i < LEVEL_COUNT; i++) assert.equal(typeof get(lab[l], `levels.${i}`), "string", `${l}: levels.${i}`);
+    }
+  });
+});
+
+describe("3D зертхана: жалын сынағы", () => {
+  test("Na⁺ басқа түстерді жасырады", () => {
+    assert.equal(chooseFlame(["K", "Na"], false).main, "Na");
+    assert.equal(chooseFlame(["Cu"], true).main, "Na", "сымда алдыңғы Na⁺ қалса");
+  });
+
+  test("Na⁺ жоқ кезде реті: Cu > Ba > Ca > K", () => {
+    assert.equal(chooseFlame(["K", "Ca", "Ba", "Cu"], false).main, "Cu");
+    assert.equal(chooseFlame(["K", "Ca", "Ba"], false).main, "Ba");
+    assert.equal(chooseFlame(["K", "Ca"], false).main, "Ca");
+    assert.equal(chooseFlame(["K"], false).main, "K");
+  });
+
+  test("түс бермейтін иондарда жалын өзгермейді", () => {
+    const r = chooseFlame(["Zn", "Fe3", "Ag"], false);
+    assert.equal(r.main, null);
+    assert.deepEqual(r.colored, []);
   });
 });
 

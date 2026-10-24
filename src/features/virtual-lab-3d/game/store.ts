@@ -65,19 +65,43 @@ export type HudState = {
   hand: HandView | null;
   toast: ToastView | null;
   log: LogEntry[];
+  xp: number;
+  /** Деңгей нөмірі (0 — Лаборант … 4 — Профессор) */
+  level: 0 | 1 | 2 | 3 | 4;
+  safety: number;
+  goggles: boolean;
+  gloves: boolean;
+  /** Орындалған тапсырмалардың id-лері */
+  done: string[];
+  drawer: boolean;
+  quests: boolean;
+  sound: boolean;
+  /** «Поп» кезіндегі жарқыл: әр өсуі — бір жарқыл */
+  flash: number;
 };
 
 export type HudStore = Store<HudState>;
 
-export const createHudStore = (): HudStore =>
-  createStore<HudState>({
-    phase: "loading",
-    welcome: "first",
-    speed: 1,
-    prompt: null,
-    cross: false,
-    look: null,
-    hand: null,
-    toast: null,
-    log: [],
-  });
+/** Жаңа ойынның HUD күйі (phase-тен басқасы — ойын қайта құрылғанда осыған қайтады) */
+export const initialHud = (): Omit<HudState, "phase"> => ({
+  welcome: "first",
+  speed: 1,
+  prompt: null,
+  cross: false,
+  look: null,
+  hand: null,
+  toast: null,
+  log: [],
+  xp: 0,
+  level: 0,
+  safety: 100,
+  goggles: false,
+  gloves: false,
+  done: [],
+  drawer: false,
+  quests: false,
+  sound: true,
+  flash: 0,
+});
+
+export const createHudStore = (): HudStore => createStore<HudState>({ phase: "loading", ...initialHud() });

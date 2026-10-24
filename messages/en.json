@@ -2214,7 +2214,51 @@
       "waste": "Empty into waste: {name}",
       "wastePaper": "Throw away the filter paper and insert a new one",
       "wasteReagent": "Do not pour reagents into waste — put it back (Q)",
-      "unlinkFirst": "Disconnect the delivery tube first"
+      "unlinkFirst": "Disconnect the delivery tube first",
+      "stopcock": "{action} · burette {reading} ml",
+      "stopcock0": "Open the tap: dropwise",
+      "stopcock1": "Open the tap fully",
+      "stopcock2": "Close the tap",
+      "lampOff": "Put out the spirit lamp with its cap",
+      "burEmpty": "Empty the burette into waste",
+      "burEmptyHint": "The burette is empty — pour a solution in from the top",
+      "lampBurning": "The spirit lamp is lit",
+      "lampOn": "Light the spirit lamp",
+      "lightSplintFirst": "Light the splint first",
+      "wireFlame": "Put the wire into the flame",
+      "lightLampFirst": "Light the spirit lamp first (with the splint)",
+      "vesselEmpty": "The vessel is empty",
+      "wireDip": "Dip the wire into {name}",
+      "buretteFull": "The burette is full",
+      "pourBurette": "Hold to pour into the burette: {from}",
+      "splintTest": "Hold the splint at the mouth of {name}",
+      "light": "Light the splint",
+      "blow": "Blow it out (it keeps glowing)",
+      "splintBurnt": "The splint has burnt out — take a new one with Q",
+      "funnelThere": "This vessel already has a funnel",
+      "stopperedVessel": "The vessel is stoppered",
+      "funnelAttach": "Put the funnel on: {name}",
+      "removeFunnelFirst": "Take the funnel off first",
+      "dtubeB": "Put the tube end into: {name}",
+      "stopperOnlyTube": "The stopper only fits a test tube",
+      "tubeBusy": "This test tube is in use",
+      "dtubeA": "Put the stopper on: {name} (gas comes out of it)",
+      "funnelOnlyLiquid": "Only liquids go into the funnel",
+      "drop": "Add a drop: {from} → {to}",
+      "solid": "Add: {from} → {to}",
+      "pourLeft": "Hold to pour: {from} → {to} (in your left hand)",
+      "dropLeft": "Add a drop: {from} → {to} (in your left hand)",
+      "solidLeft": "Add: {from} → {to} (in your left hand)",
+      "dtubeEnd": "Put the end of the tube into another vessel",
+      "dtubeOff": "Disconnect the delivery tube",
+      "ppe": "Put on: {name}",
+      "ppeGoggles": "safety goggles",
+      "ppeGloves": "nitrile gloves",
+      "wasteL": "Empty the left-hand item into waste",
+      "heaterPlaceL": "Put the left-hand item on the hot plate",
+      "rackPlaceL": "Put the left-hand item in the rack",
+      "placeL": "Put the left-hand item here",
+      "pickL": "Take with your left hand: {name}"
     },
     "touch": {
       "right": "RIGHT",
@@ -2229,7 +2273,25 @@
       "buretteFull": "The burette is full",
       "emptied": "{name} is empty",
       "cleaned": "{name} washed",
-      "newPaper": "New filter paper inserted"
+      "newPaper": "New filter paper inserted",
+      "leftHint": "To put down the left-hand item, look at the bench, a shelf or a rack",
+      "pourFirst": "Pour a solution into the vessel first",
+      "noSpace": "No room in the vessel",
+      "pop": "“Pop!” — hydrogen detected",
+      "relit": "The splint relit — oxygen detected",
+      "brighter": "The flame burns brighter — oxygen",
+      "out": "The flame went out — CO₂ (or another non-flammable gas)",
+      "noChange": "Nothing happened — little or no gas",
+      "tooFar": "The vessels are too far apart — move them closer",
+      "vesselFullNamed": "{name} is full",
+      "equivalence": "End point! Close the tap",
+      "lightLamp": "Light the spirit lamp first",
+      "wireCleaned": "The wire is clean",
+      "flameNoChange": "The flame colour did not change",
+      "wornGoggles": "Goggles on",
+      "wornGloves": "Gloves on",
+      "penalty": "Safety: {why} · −10",
+      "quest": "Task complete: {name} · +100 XP"
     },
     "log": {
       "lab": "Lab",
@@ -2243,7 +2305,47 @@
       "funnelTo": "Funnel → {name}",
       "temp": "Temperature {from} → {to} °C ({delta} °C)",
       "waste": "Waste poured into the waste container, glassware washed",
-      "newPaper": "Filter paper replaced"
+      "newPaper": "Filter paper replaced",
+      "splint": "Splint",
+      "newSplint": "New splint taken",
+      "lit": "Splint lit",
+      "blown": "Splint blown out — the tip is glowing",
+      "burnt": "The splint has burnt out",
+      "safety": "Safety",
+      "goggles": "Safety goggles on",
+      "gloves": "Nitrile gloves on",
+      "penalty": "{why} (−10)",
+      "pop": "A “pop” at the mouth of the vessel — this is hydrogen",
+      "relit": "The glowing splint burst into flame — this is oxygen",
+      "brighter": "The flame burns brighter — there is a lot of oxygen in the vessel",
+      "out": "The flame went out: carbon dioxide does not support burning",
+      "noGas": "The splint did not change: no detectable gas at the mouth of the vessel",
+      "funnelOn": "Funnel and filter paper set up",
+      "stopper": "Stopper with delivery tube fitted",
+      "linked": "Delivery tube connected: gas from {a} passes through {b}",
+      "unlinked": "Delivery tube disconnected",
+      "cockOpen": "Tap opened · start reading {r} ml",
+      "cockClosed": "Tap closed · final reading {r} ml · delivered {d} ml",
+      "burEmptied": "Burette emptied into waste",
+      "equivalence": "End point: the phenolphthalein stays pink. Burette reading {r} ml (delivered {d} ml)",
+      "lamp": "Spirit lamp",
+      "lampOn": "Spirit lamp lit with the splint",
+      "lampOff": "Spirit lamp put out with its cap — never blow it out",
+      "wireAcid": "Wire dipped in hydrochloric acid (now put it into the flame to clean it)",
+      "wireDipped": "Wire dipped into the solution: {ions}",
+      "noCation": "no cations",
+      "wireResidueBurnt": "The Na⁺ left on the wire burnt off — the wire is clean",
+      "wireClean": "The wire is clean: the flame colour did not change",
+      "flameTest": "Flame test",
+      "flameEq": "{ion} → {color} flame",
+      "flameColored": "The flame turned {color} → {ion}",
+      "flameMasked": "Na⁺ hides the lilac colour of K⁺ — look through blue cobalt glass",
+      "flameResidue": "Na⁺ from the previous test is still on the wire — clean it with HCl",
+      "flameNone": "The flame colour did not change — no ions that give a bright colour",
+      "drop": "{name}: 1 drop",
+      "solid": "Added {name} ({mass})",
+      "task": "Task",
+      "taskDone": "{name} — complete (+100 XP)"
     },
     "look": {
       "volume": "Volume",
@@ -2415,6 +2517,138 @@
       "boil": "The solution is boiling, water evaporates",
       "dry": "All the water evaporated. Residue: {salts}",
       "dryNone": "All the water evaporated. No residue (it was pure water)"
+    },
+    "levels": {
+      "0": "Lab assistant",
+      "1": "Young researcher",
+      "2": "Chemist",
+      "3": "Senior chemist",
+      "4": "Professor"
+    },
+    "top": {
+      "goggles": "Goggles",
+      "gloves": "Gloves",
+      "safety": "Safety",
+      "journal": "Journal",
+      "quests": "Tasks",
+      "soundOn": "Sound: on",
+      "soundOff": "Sound: off"
+    },
+    "journal": {
+      "title": "Lab journal",
+      "close": "Close",
+      "modelNote": "All numbers are calculated from the laws of chemistry (stoichiometry, pH, solubility, heat of reaction, reaction rate). This is a teaching model, not real measured data."
+    },
+    "questsPanel": {
+      "title": "Tasks",
+      "text": "Each task gives +100 XP. Do them in any order.",
+      "close": "Close",
+      "done": "done",
+      "todo": "not done"
+    },
+    "flame": {
+      "Na": "yellow-orange",
+      "K": "lilac",
+      "Ca": "brick-red",
+      "Cu": "green",
+      "Ba": "yellow-green"
+    },
+    "penalty": {
+      "fire": "Never work with flames without goggles",
+      "noGoggles": "{f} — never work without goggles",
+      "noGloves": "{f} — never work without gloves",
+      "hotWaste": "Hot solution poured away carelessly",
+      "spill": "No vessel under the burette — the solution spilled"
+    },
+    "quests": {
+      "ppe": {
+        "t": "Protective equipment",
+        "d": "Take the goggles and gloves from the left wall and put them on"
+      },
+      "glass": {
+        "t": "Set up your workspace",
+        "d": "Take a beaker from the “Glassware” cabinet and put it on the central bench"
+      },
+      "twohand": {
+        "t": "Two hands",
+        "d": "Hold a test tube in your left hand and pour a reagent into it from your right hand"
+      },
+      "neut": {
+        "t": "Neutralisation",
+        "d": "Make a solution with pH 6.5–7.5 from HCl and NaOH and check it with an indicator"
+      },
+      "agcl": {
+        "t": "Chloride ion",
+        "d": "Make a white AgCl precipitate using AgNO₃"
+      },
+      "baso4": {
+        "t": "Sulfate ion",
+        "d": "Make a BaSO₄ precipitate using BaCl₂"
+      },
+      "cuoh": {
+        "t": "Blue precipitate",
+        "d": "Make a Cu(OH)₂ precipitate"
+      },
+      "filter": {
+        "t": "Filtration",
+        "d": "Set up a funnel and filter a mixture with a precipitate: the solid must stay on the paper"
+      },
+      "feoh": {
+        "t": "Iron(III) ion",
+        "d": "Make a red-brown Fe(OH)₃ precipitate"
+      },
+      "pop": {
+        "t": "Test for hydrogen",
+        "d": "Hold a burning splint at the mouth of a Zn + HCl test tube — “pop”"
+      },
+      "o2": {
+        "t": "Test for oxygen",
+        "d": "Add MnO₂ to H₂O₂ and hold a glowing splint at the mouth"
+      },
+      "lime": {
+        "t": "Limewater test",
+        "d": "Connect a marble + HCl test tube to limewater with the delivery tube — it turns milky"
+      },
+      "co2": {
+        "t": "Carbon dioxide",
+        "d": "Release CO₂ from a carbonate"
+      },
+      "cu": {
+        "t": "Displace copper",
+        "d": "Put an iron nail into CuSO₄ solution"
+      },
+      "ag": {
+        "t": "Silver tree",
+        "d": "Put copper wire into AgNO₃ solution"
+      },
+      "salt": {
+        "t": "Evaporation",
+        "d": "Evaporate NaCl solution on the hot plate and get the crystals"
+      },
+      "amph": {
+        "t": "Amphoterism",
+        "d": "Dissolve a Zn(OH)₂ precipitate in excess alkali"
+      },
+      "nocu": {
+        "t": "Reactivity series",
+        "d": "Check that copper does not react with hydrochloric acid"
+      },
+      "h2": {
+        "t": "Hydrogen",
+        "d": "Release H₂ by reacting a metal with an acid"
+      },
+      "titr": {
+        "t": "Titration",
+        "d": "Fill the burette with NaOH, put HCl + phenolphthalein under it and find the end point drop by drop"
+      },
+      "lamp": {
+        "t": "Spirit lamp",
+        "d": "Light the spirit lamp with a burning splint"
+      },
+      "flame": {
+        "t": "Flame test",
+        "d": "Identify 3 different cations by flame colour with the nichrome wire (Na⁺, K⁺, Ca²⁺, Cu²⁺, Ba²⁺)"
+      }
     }
   }
 }

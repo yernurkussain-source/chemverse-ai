@@ -7,6 +7,7 @@ import { createGame, type GameApi } from "./core/game";
 import type { Tr } from "./game/i18n";
 import { createHudStore, useStore } from "./game/store";
 import { HandCard, LookCard, Toast } from "./hud/Cards";
+import { Flash, GogglesOverlay, Journal, Quests } from "./hud/Panels";
 import { Crosshair, Prompt } from "./hud/Prompt";
 import { HUD_VARS, topButton } from "./hud/styles";
 import { TopBar } from "./hud/TopBar";
@@ -56,6 +57,8 @@ export default function LabGame() {
     <div
       className="dark fixed inset-0 z-[60] overflow-hidden bg-[#0b1020] font-sans text-[14px] leading-[1.45] text-[var(--hud-text)] select-none"
       style={HUD_VARS}
+      // Браузер дыбысты тек пайдаланушы бірдеңе басқаннан кейін қосады
+      onPointerDownCapture={() => gameRef.current?.unlockAudio()}
     >
       {/* Canvas-ты ойын өзі осы бос контейнерге қосады */}
       <div ref={stageRef} className="absolute inset-0" />
@@ -70,13 +73,24 @@ export default function LabGame() {
         </div>
       ) : (
         <>
+          <GogglesOverlay store={store} />
           <Crosshair store={store} />
           <Prompt store={store} />
-          <TopBar store={store} onSpeed={(s) => gameRef.current?.setSpeed(s)} onHelp={() => gameRef.current?.showHelp()} />
+          <TopBar
+            store={store}
+            onSpeed={(s) => gameRef.current?.setSpeed(s)}
+            onHelp={() => gameRef.current?.showHelp()}
+            onJournal={() => gameRef.current?.toggleDrawer()}
+            onQuests={() => gameRef.current?.setQuests(true)}
+            onSound={() => gameRef.current?.toggleSound()}
+          />
           <LookCard store={store} />
           <HandCard store={store} />
           <Toast store={store} />
+          <Flash store={store} />
+          <Journal store={store} onClose={() => gameRef.current?.toggleDrawer(false)} />
           {phase === "ready" && <Welcome store={store} onStart={() => gameRef.current?.start()} />}
+          <Quests store={store} onClose={() => gameRef.current?.setQuests(false)} />
         </>
       )}
     </div>

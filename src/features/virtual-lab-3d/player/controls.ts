@@ -5,8 +5,13 @@ import { decide } from "../interaction/decide";
 export type InputHandlers = {
   primaryDown: () => void;
   primaryUp: () => void;
+  secondaryDown: () => void;
   returnHome: (left: boolean) => void;
   setSpeed: (speed: number) => void;
+  toggleDrawer: () => void;
+  openQuests: () => void;
+  /** Esc: ашық терезені (тапсырмалар, журнал) жабу */
+  closeOverlays: () => void;
 };
 
 /** Тышқанмен не саусақпен қарау: yaw — солға/оңға, pitch — жоғары/төмен (шектеулі) */
@@ -76,6 +81,11 @@ export function bindDesktop(G: Game, h: InputHandlers): () => void {
   const onContext = (e: MouseEvent) => e.preventDefault();
   const onDown = (e: MouseEvent) => {
     if (G.isTouch || !active()) return;
+    G.snd.init();
+    if (e.button === 2) {
+      h.secondaryDown();
+      return;
+    }
     if (e.button !== 0) return;
     if (state.locked) {
       h.primaryDown();
@@ -120,9 +130,15 @@ export function bindDesktop(G: Game, h: InputHandlers): () => void {
   };
   const onKeyDown = (e: KeyboardEvent) => {
     keys[e.code] = true;
+    if (e.code === "Escape") h.closeOverlays();
     if (!active()) return;
+    G.snd.init();
     if (e.code === "KeyE" && !e.repeat) h.primaryDown();
+    if (e.code === "KeyF" && !e.repeat) h.secondaryDown();
     if (e.code === "KeyQ") h.returnHome(false);
+    if (e.code === "KeyZ") h.returnHome(true);
+    if (e.code === "KeyJ") h.toggleDrawer();
+    if (e.code === "KeyT") h.openQuests();
     if (e.code === "Digit1") h.setSpeed(1);
     if (e.code === "Digit2") h.setSpeed(5);
     if (e.code === "Digit3") h.setSpeed(20);

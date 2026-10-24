@@ -2,6 +2,7 @@ import * as THREE from "three";
 import type { Vessel } from "@/features/chem-engine";
 import type { Fmt, Tr } from "../game/i18n";
 import type { HudStore } from "../game/store";
+import type { Sound } from "../audio/snd";
 import { createMaterials, type Materials } from "../items/materials";
 import type {
   Door,
@@ -158,6 +159,11 @@ export type GameStats = { pop: boolean; o2: boolean; co2splint: boolean; filter:
 export type Game = Base & {
   state: GameState;
   stats: GameStats;
+  snd: Sound;
+  /** Жалын сынағында анықталған катиондар (тапсырма: 3 түрлі) */
+  flameSeen: Set<string>;
+  /** Кешіктірілген әрекеттер (тамшы, шырпы сынағы…) — ойын жабылғанда тоқтатылады */
+  timers: Set<ReturnType<typeof setTimeout>>;
   player: Player;
   keys: Record<string, boolean>;
   joy: { x: number; y: number };
@@ -180,3 +186,12 @@ export type Game = Base & {
   rigL: Rig;
   fx: Effects;
 };
+
+/** ms миллисекундтан кейін орындау (ойын жабылса — орындалмайды) */
+export function later(G: Game, fn: () => void, ms: number): void {
+  const id = setTimeout(() => {
+    G.timers.delete(id);
+    fn();
+  }, ms);
+  G.timers.add(id);
+}

@@ -1,10 +1,13 @@
 import { resetEngineStats, setEngineEmitter, step } from "@/features/chem-engine";
+import { soundStep } from "../audio/ambient";
+import { createSound } from "../audio/snd";
 import { makeFmt, type Tr } from "../game/i18n";
 import { addLog, installEngineEmitter } from "../game/journal";
-import type { HudStore, PromptView } from "../game/store";
-import { primaryDown, primaryUp, renderHand, returnHome } from "../interaction/actions";
+import { checkQuests, renderXP } from "../game/quests";
+import { initialHud, type HudStore, type PromptView } from "../game/store";
+import { handView, primaryDown, primaryUp, renderHand, returnHome, secondaryDown } from "../interaction/actions";
 import { aim } from "../interaction/aim";
-import { decide, nm, type Decision } from "../interaction/decide";
+import { decide, decideL, nm, type Decision, type DecisionL } from "../interaction/decide";
 import { populate } from "../items/populate";
 import { bindDesktop, movePlayer, requestLock } from "../player/controls";
 import { makeRig } from "../player/hands";
@@ -14,6 +17,7 @@ import { buildCabinets } from "../scene/cabinets";
 import { buildLamp } from "../scene/lamp";
 import { buildPpe } from "../scene/ppe";
 import { buildRoom } from "../scene/room";
+import { burStep } from "../systems/burette";
 import { createEffects } from "../systems/effects";
 import { gasStep } from "../systems/gas";
 import { renderLook } from "../systems/look";
@@ -30,6 +34,13 @@ export type GameApi = {
   /** «?» — басқару туралы терезені қайта ашу (ойын тоқтайды) */
   showHelp: () => void;
   setSpeed: (speed: number) => void;
+  /** Журнал (оң жақтағы тартпа): ашу / жабу */
+  toggleDrawer: (open?: boolean) => void;
+  /** Тапсырмалар терезесі (ашық тұрғанда ойын тоқтайды) */
+  setQuests: (open: boolean) => void;
+  toggleSound: () => void;
+  /** Кез келген басу: браузер дыбысты тек содан кейін қосуға рұқсат береді */
+  unlockAudio: () => void;
   dispose: () => void;
 };
 
@@ -80,6 +91,9 @@ export function createGame(opts: { container: HTMLElement; store: HudStore; tr: 
       lockFailed: false,
     },
     stats: { pop: false, o2: false, co2splint: false, filter: false, twohand: false, titr: false, lamp: false },
+    snd: createSound(),
+    flameSeen: new Set(),
+    timers: new Set(),
     player: { x: 0, z: 2.6, yaw: 0, pitch: -0.12, bob: 0, stepAcc: 0 },
     keys: {},
     joy: { x: 0, y: 0 },
@@ -95,12 +109,13 @@ export function createGame(opts: { container: HTMLElement; store: HudStore; tr: 
     rigL: makeRig(base, -1),
     fx: createEffects(base),
   };
-  const { state, renderer, scene, camera, player } = G;
+  const { state, renderer, scene, camera, player, snd } = G;
 
   // Жаңа ойын — таза журнал мен HUD (React әзірлеу режимінде компонентті екі рет іске қосады)
-  store.set({ welcome: "first", speed: 1, prompt: null, cross: false, look: null, hand: null, toast: null, log: [] });
+  store.set(initialHud());
   resetEngineStats();
   installEngineEmitter(G);
+  renderXP(G);
   renderHand(G);
   addLog(G, "", tr("log.lab"), "", tr("log.start"));
 
@@ -115,21 +130,45 @@ export function createGame(opts: { container: HTMLElement; store: HudStore; tr: 
   const ro = new ResizeObserver(resize);
   ro.observe(canvas);
 
+  const exitLock = () => {
+    if (document.pointerLockElement) document.exitPointerLock();
+  };
   const setSpeed = (speed: number) => {
     state.speed = speed;
     store.set({ speed });
   };
+  const toggleDrawer = (open?: boolean) => {
+    const next = open ?? !store.get().drawer;
+    store.set({ drawer: next });
+    if (next) exitLock();
+  };
+  const setQuests = (open: boolean) => {
+    store.set({ quests: open });
+    state.paused = open || !!store.get().welcome;
+    if (open) {
+      primaryUp(G);
+      exitLock();
+    }
+  };
   const unbind = bindDesktop(G, {
     primaryDown: () => primaryDown(G),
     primaryUp: () => primaryUp(G),
+    secondaryDown: () => secondaryDown(G),
     returnHome: (left) => returnHome(G, left),
     setSpeed,
+    toggleDrawer: () => toggleDrawer(),
+    openQuests: () => setQuests(true),
+    closeOverlays: () => {
+      if (store.get().quests) setQuests(false);
+      else if (store.get().drawer) toggleDrawer(false);
+    },
   });
 
   // ---------- HUD-қа шығару (тек өзгергенде) ----------
   let lastPrompt = "";
+  let lastHand = "";
   const lastLook = { json: "" };
-  const updatePrompt = (dcs: Decision | null, dl: Decision | null) => {
+  const updatePrompt = (dcs: Decision | null, dl: DecisionL | null) => {
     let view: PromptView | null = null;
     if ((dcs || dl) && state.started && !state.paused) {
       view = {
@@ -148,12 +187,13 @@ export function createGame(opts: { container: HTMLElement; store: HudStore; tr: 
   // ---------- ойын циклі ----------
   let last = performance.now();
   let uiT = 0;
+  let qT = 0;
   let raf = 0;
   const tick = (now: number) => {
     const rdt = Math.min(0.05, (now - last) / 1000);
     last = now;
     G.cooldown = Math.max(0, G.cooldown - rdt);
-    movePlayer(G, rdt);
+    const moved = movePlayer(G, rdt);
     camera.position.set(player.x, 1.6 + Math.sin(player.bob * 2) * 0.012, player.z);
     camera.rotation.set(player.pitch, player.yaw, 0);
     camera.updateMatrixWorld();
@@ -168,20 +208,35 @@ export function createGame(opts: { container: HTMLElement; store: HudStore; tr: 
       gdt -= d;
     }
     updateObjects(G, rdt);
+    burStep(G, rdt);
     for (const o of G.vessels) vesselVisual(o, rdt);
+    soundStep(G, rdt, moved);
 
     G.aimRes = aim(G);
     let dcs = decide(G);
+    const dl = decideL(G);
     if (state.pour && !state.pour.dropOnly && state.held) {
       const t = state.pour.target;
       dcs = { act: "pour", text: tr("prompt.pouring", { from: nm(G, state.held), to: t.type === "funnel" ? tr("prompt.funnel") : t.name }) };
     }
-    updatePrompt(dcs, null);
+    updatePrompt(dcs, dl);
     renderer.render(scene, camera);
     uiT += rdt;
     if (uiT > 0.15) {
       uiT = 0;
       renderLook(G, lastLook);
+      // Қолдағы заттың күйі өзгеруі мүмкін (шырпы жанып бітті, сымға сынама алынды)
+      const hand = handView(G);
+      const json = JSON.stringify(hand);
+      if (json !== lastHand) {
+        lastHand = json;
+        store.set({ hand });
+      }
+    }
+    qT += rdt;
+    if (qT > 0.5) {
+      qT = 0;
+      checkQuests(G);
     }
     raf = requestAnimationFrame(tick);
   };
@@ -195,22 +250,35 @@ export function createGame(opts: { container: HTMLElement; store: HudStore; tr: 
     start: () => {
       store.set({ welcome: null });
       state.started = true;
-      state.paused = false;
+      state.paused = store.get().quests;
+      snd.init();
       requestLock(G);
     },
     showHelp: () => {
       primaryUp(G);
       state.paused = true;
       store.set({ welcome: "again" });
-      if (document.pointerLockElement) document.exitPointerLock();
+      exitLock();
     },
     setSpeed,
+    toggleDrawer,
+    setQuests,
+    toggleSound: () => {
+      snd.on = !snd.on;
+      store.set({ sound: snd.on });
+      if (!snd.on) snd.pourStop();
+      else snd.init();
+    },
+    unlockAudio: () => snd.init(),
     dispose: () => {
       cancelAnimationFrame(raf);
       if (debug.__lab === G) delete debug.__lab;
+      G.timers.forEach((t) => clearTimeout(t));
+      G.timers.clear();
       unbind();
       ro.disconnect();
       setEngineEmitter(null);
+      snd.dispose();
       if (document.pointerLockElement === canvas) document.exitPointerLock();
       disposeScene(scene);
       renderer.dispose();
