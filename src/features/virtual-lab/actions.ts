@@ -13,6 +13,7 @@ import { CONCLUSION_MAX_LENGTH } from "./conclusion";
 import { atomExperimentSchema, gradeAtom } from "./experiments/atom-builder/grade";
 import { gradeIndicator, indicatorExperimentSchema } from "./experiments/indicator-lab/grade";
 import { isValidOrder, SOLUTIONS } from "./experiments/indicator-lab/model";
+import { activityExperimentSchema, gradeActivity } from "./experiments/metal-activity/grade";
 import { gradeMixture, mixtureExperimentSchema } from "./experiments/mixture-separation/grade";
 import { gradePrecipitation, precipitationExperimentSchema } from "./experiments/precipitation/grade";
 import { gradeRate, rateExperimentSchema } from "./experiments/reaction-rate/grade";
@@ -38,6 +39,7 @@ const PARAMS: Record<ShellLabSlug, (level: number | null) => Record<string, numb
   "mixture-separation": () => ({}),
   "atom-builder": () => ({}),
   precipitation: () => ({}),
+  "metal-activity": () => ({}),
   // 9-сынып: γ = 2 белгілі; 10-сынып («Реакция кинетикасы»): γ жасырын, оқушы оны деректерінен табады
   "reaction-rate": (level): Record<string, number> =>
     level === 10 ? { level: 10, g: GAMMA_OPTIONS[randomInt(GAMMA_OPTIONS.length)] } : { level: 9 },
@@ -121,6 +123,10 @@ function grade(slug: ShellLabSlug, params: Record<string, number>, input: z.infe
     case "precipitation": {
       const experiment = precipitationExperimentSchema.safeParse(input.experiment);
       return experiment.success ? gradePrecipitation({ ...input, experiment: experiment.data }) : null;
+    }
+    case "metal-activity": {
+      const experiment = activityExperimentSchema.safeParse(input.experiment);
+      return experiment.success ? gradeActivity({ ...input, experiment: experiment.data }) : null;
     }
   }
 }

@@ -1785,7 +1785,13 @@
       "silverOk": "Correct: AgNO₃ is the test reagent for chloride ions.",
       "silverWrong": "Compare the formulas of the four salts: which ion do they share?",
       "pptMassOk": "The mass of the precipitate is correct.",
-      "pptMassWrong": "Use m = n · M: n(BaSO₄) = n(Ba²⁺)."
+      "pptMassWrong": "Use m = n · M: n(BaSO₄) = n(Ba²⁺).",
+      "activityOrderOk": "The reactivity series is correct: Mg > Zn > Fe > Cu.",
+      "activityOrderWrong": "Compare the hydrogen volumes in hydrochloric acid: which metal gave the most gas?",
+      "copperOk": "Correct: copper is below hydrogen but above silver.",
+      "copperWrong": "Compare the positions of Cu, H and Ag in the reactivity series.",
+      "h2VolumeOk": "The hydrogen volume is correct.",
+      "h2VolumeWrong": "n(H₂) = n(Mg) = m / M, and V = n · Vm."
     },
     "resultPage": {
       "title": "Experiment result",
@@ -2378,6 +2384,84 @@
         "reveal": {
           "pptCount": "Tubes with a precipitate",
           "pptMass": "Mass of BaSO₄"
+        }
+      },
+      "metal-activity": {
+        "goal": "Compare how magnesium, zinc, iron and copper react with an acid and with salt solutions, and work out their reactivity series.",
+        "theory": "Metals can be arranged in order of reactivity (the reactivity series): K, Ca, Na, Mg, Al, Zn, Fe, Ni, Sn, Pb, (H), Cu, Hg, Ag, Au. Metals above hydrogen displace hydrogen from acid solutions: Zn + 2HCl → ZnCl₂ + H₂↑. The more reactive the metal, the faster the reaction. Each metal displaces the metals below it from solutions of their salts: Fe + CuSO₄ → FeSO₄ + Cu. Metals below hydrogen (Cu, Ag) do not displace hydrogen from acids.",
+        "safety": {
+          "goggles": "Wear safety goggles and gloves.",
+          "acid": "Pour hydrochloric acid carefully; if it gets on your skin, rinse with plenty of water.",
+          "hydrogen": "Hydrogen is flammable: keep the test tubes away from flames.",
+          "silver": "AgNO₃ stains skin dark — work in gloves."
+        },
+        "prediction": {
+          "question": "What do you think will happen if you put a copper wire into AgNO₃ solution?",
+          "options": {
+            "silver": "Silver coats the wire",
+            "nothing": "Nothing happens",
+            "gas": "Hydrogen is given off",
+            "dissolve": "Copper dissolves, but nothing forms"
+          }
+        },
+        "equipment": {
+          "test-tubes": "Test tubes",
+          "rack": "Test tube rack",
+          "tweezers": "Tweezers",
+          "sandpaper": "Sandpaper (to clean the metal)",
+          "scales": "Balance",
+          "burner": "Spirit lamp",
+          "funnel": "Funnel",
+          "magnet": "Magnet",
+          "goggles": "Safety goggles"
+        },
+        "experiment": {
+          "hint": "Tap a test tube: a 0.1 g piece of metal goes into the solution and the model calculates 60 seconds. Test all 12 tubes.",
+          "corner": "metal \\ solution",
+          "log": "Tested tubes",
+          "empty": "Nothing has been added yet.",
+          "progress": "Tested: {count}/{total}",
+          "gas": "H₂: {volume} mL (60 s)"
+        },
+        "seen": {
+          "fast": "vigorous fizzing",
+          "medium": "slow fizzing",
+          "slow": "very slow fizzing",
+          "copper": "red copper coats the metal",
+          "silver": "grey silver coats the metal",
+          "none": "no change"
+        },
+        "observation": {
+          "metal": "Metal",
+          "reactions": "Solutions it reacted with",
+          "rank": "Reactivity rank (1 = most reactive)",
+          "notTested": "not tested"
+        },
+        "observationHint": "Compare the three tubes of each metal. Rank reactivity by the volume of hydrogen in hydrochloric acid.",
+        "questions": {
+          "order": {
+            "label": "Arrange the metals in order of decreasing reactivity:"
+          },
+          "copper": {
+            "label": "Why does copper not react with hydrochloric acid but displace silver from AgNO₃ solution?",
+            "options": {
+              "soft": "Copper is a soft metal",
+              "position": "In the reactivity series copper is below hydrogen but above silver",
+              "acid": "Hydrochloric acid is too weak",
+              "silver": "Silver is more reactive than copper"
+            }
+          },
+          "h2Volume": {
+            "label": "How many mL of hydrogen form if 0.1 g of magnesium reacts completely with hydrochloric acid? (M(Mg) = 24 g/mol, Vm = 24 L/mol)",
+            "unit": "mL"
+          }
+        },
+        "conclusionHint": "Tip: write the reactivity series of the metals and show with numbers which observations (hydrogen volume, displacement) prove it.",
+        "reveal": {
+          "h2Mg": "Mg: H₂, mL (60 s)",
+          "h2Zn": "Zn: H₂, mL (60 s)",
+          "h2Fe": "Fe: H₂, mL (60 s)",
+          "h2Volume": "H₂ from 0.1 g Mg, mL (complete)"
         }
       }
     },
