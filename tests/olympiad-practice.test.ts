@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { describe, test } from "node:test";
 import { GEN, type BankProblem } from "@/features/olympiad/core";
 import { adaptiveOrder, generatedProblem, rubricMax, selfCheckSet, toPublic, type PublicProblem } from "@/features/olympiad/practice";
+import { decodeFileName, encodeFileName } from "@/features/olympiad/server/file-names";
 import { MASTERED, masteryDelta, nextMastery } from "@/features/olympiad/server/mastery";
 
 const P: BankProblem[] = JSON.parse(readFileSync("docs/olympiad/PROBLEMS.json", "utf8"));
@@ -82,5 +83,14 @@ describe("Олимпиада: жаттығу реті", () => {
   test("өзін-өзі тексеру: ең көбі 5 сұрақ, тек mcq және numeric", () => {
     const set = selfCheckSet(list, [make("g1", 2), make("g2", 2), make("g3", 2)]);
     assert.deepStrictEqual(set.map((p) => p.key), ["a3", "b1", "c2", "g1", "g2"]);
+  });
+});
+
+describe("Олимпиада: жоба файлдарының атауы", () => {
+  test("қазақша атау storage кілтінде ASCII болып сақталып, қайта оқылады", () => {
+    const key = encodeFileName("Жоба нәтижесі (ақырғы).PDF", 1730000000000);
+    assert.match(key, /^1730000000000-[\w-]+\.pdf$/);
+    assert.equal(decodeFileName(`user/project/${key}`), "Жоба нәтижесі (ақырғы).pdf");
+    assert.equal(decodeFileName("user/project/README"), "README");
   });
 });

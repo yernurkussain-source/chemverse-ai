@@ -4,6 +4,7 @@ import { describe, test } from "node:test";
 import { econf, mulberry32, type BankProblem } from "@/features/olympiad/core";
 import { roundStarts, type ContestRound } from "@/features/olympiad/contest";
 import { gradeMock, pickMockProblems, weakTopics } from "@/features/olympiad/mock";
+import { buildRating } from "@/features/olympiad/rating";
 
 const read = (file: string) => JSON.parse(readFileSync(`docs/olympiad/${file}`, "utf8"));
 const P: BankProblem[] = read("PROBLEMS.json");
@@ -71,5 +72,28 @@ describe("Сайыс: раундтардың басталу орны", () => {
       { round: "experiment", from: 3 },
     ]);
     assert.deepStrictEqual(roundStarts(["x", "c"], roundOf), [{ round: "problems", from: 1 }]);
+  });
+});
+
+describe("Үйірме рейтингі", () => {
+  test("ұпай — меңгеру деңгейлерінің қосындысы, 80+ тақырыптар саналады, тең ұпайда — аты бойынша", () => {
+    const rows = buildRating(
+      [
+        { id: "a", name: "Айгерім" },
+        { id: "b", name: "Бекзат" },
+        { id: "c", name: "Әлия" },
+      ],
+      [
+        { user_id: "a", level: 85 },
+        { user_id: "a", level: 40.4 },
+        { user_id: "b", level: 90 },
+        { user_id: "b", level: 35.2 },
+      ],
+    );
+    assert.deepStrictEqual(rows.map((r) => [r.name, r.points, r.mastered]), [
+      ["Айгерім", 125, 1],
+      ["Бекзат", 125, 1],
+      ["Әлия", 0, 0],
+    ]);
   });
 });

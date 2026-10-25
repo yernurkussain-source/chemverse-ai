@@ -9,6 +9,7 @@ import { OpenReviewForm } from "@/components/olympiad/open-review-form";
 import { buttonVariants } from "@/components/ui/button";
 import { getTeacherMocks } from "@/features/olympiad/server/mocks";
 import { getOpenAnswersForTeacher } from "@/features/olympiad/server/open-answers";
+import { getTeacherProjects } from "@/features/olympiad/server/projects";
 import { getTopics } from "@/features/olympiad/server/queries";
 import { getTeacherClasses, getTeacherId } from "@/features/teacher/queries";
 import { Link, redirect } from "@/i18n/navigation";
@@ -59,7 +60,37 @@ async function Content() {
         </Link>
       </section>
       <OpenAnswers teacherId={userId} />
+      <Projects teacherId={userId} />
     </div>
+  );
+}
+
+async function Projects({ teacherId }: { teacherId: string }) {
+  const classes = await getTeacherClasses(teacherId);
+  const [projects, t] = await Promise.all([getTeacherProjects(classes.map((c) => c.id)), getTranslations("Olympiad.projects")]);
+  return (
+    <section aria-labelledby="projects" className="flex flex-col gap-3">
+      <h2 id="projects" className="font-display text-xl font-semibold">
+        {t("teacherTitle")}
+      </h2>
+      {projects.length === 0 ? (
+        <p className="rounded-2xl border border-line bg-panel-2 px-4 py-3 text-muted-foreground">{t("teacherEmpty")}</p>
+      ) : (
+        <ul className="grid gap-2 sm:grid-cols-2">
+          {projects.map((p) => (
+            <li key={p.id}>
+              <Link href={`/olympiad/projects/${p.id}`} className="flex h-full flex-col gap-1 rounded-2xl border border-line bg-panel p-4 hover:border-cyan-dim">
+                <span className="text-[0.8rem] text-muted-foreground">
+                  {p.studentName} · {t(`status.${p.status}`)}
+                </span>
+                <span className="font-semibold">{p.title}</span>
+                {p.score && <span className="font-mono text-[0.85rem] text-good">{t("scoreValue", { total: p.score.total, max: 25 })}</span>}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 

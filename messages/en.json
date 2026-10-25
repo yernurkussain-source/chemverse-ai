@@ -2928,6 +2928,100 @@
       },
       "studentNote": "When the teacher starts the contest, a code appears on the projector — type it on the “Enter code” page. Playing as a team? Join with the team name.",
       "join": "Enter code"
+    },
+    "projects": {
+      "title": "Science projects",
+      "subtitle": "Lesson 34: write up your research project, attach data and files, and send it to the teacher for review.",
+      "rubric": "Assessment",
+      "login": "Sign in to write up your project.",
+      "teacherNote": "Students' projects are on the teacher's olympiad page — grade them there.",
+      "statusLabel": "Status",
+      "status": {
+        "draft": "draft (saved)",
+        "submitted": "sent for review",
+        "graded": "graded"
+      },
+      "titleLabel": "Project topic",
+      "fields": {
+        "question": "Research question",
+        "hypothesis": "Hypothesis",
+        "method": "Method",
+        "data": "Data",
+        "result": "Result",
+        "conclusion": "Conclusion",
+        "sources": "Sources"
+      },
+      "hints": {
+        "question": "What do you want to find out? One specific question.",
+        "hypothesis": "The expected result and why.",
+        "method": "Reagents, equipment, experiment steps, safety.",
+        "data": "A table of measurements (e.g. volume, temperature, mass) and observations. Attach photos and tables as files.",
+        "result": "What the data shows: numbers, graphs, patterns.",
+        "conclusion": "Was the hypothesis confirmed? Sources of error, next step.",
+        "sources": "Textbooks, articles, websites."
+      },
+      "saveDraft": "Save",
+      "submit": "Send for review",
+      "saved": {
+        "draft": "Saved",
+        "submitted": "Sent to the teacher for review"
+      },
+      "errors": {
+        "login": "Please sign in.",
+        "missing_fields": "Enter the project topic.",
+        "unknown": "Not saved — try again."
+      },
+      "filesAfterSave": "Save the project first to attach files.",
+      "files": {
+        "title": "Files",
+        "hint": "PDF, images (PNG, JPG), Word, Excel, PowerPoint, CSV — up to 10 MB each, at most {max} files.",
+        "remove": "Remove",
+        "choose": "Choose a file",
+        "uploading": "Uploading…",
+        "errors": {
+          "login": "Please sign in.",
+          "no_project": "Save the project first.",
+          "too_big": "The file is too large (up to 10 MB).",
+          "type": "This file type isn't allowed.",
+          "too_many": "The file limit has been reached.",
+          "unknown": "Not uploaded — try again."
+        }
+      },
+      "gradeTitle": "Grading by rubric",
+      "criteria": {
+        "relevance": "Relevance",
+        "method": "Method",
+        "data": "Data quality",
+        "conclusion": "Soundness of the conclusion",
+        "defense": "Defence"
+      },
+      "comment": "Comment",
+      "saveGrade": "Save grade",
+      "graded": "Graded",
+      "gradeErrors": {
+        "forbidden": "You can't grade this project.",
+        "missing_fields": "Give 0–5 points for each criterion.",
+        "no_problems": "Not saved — try again.",
+        "unknown": "Not saved — try again."
+      },
+      "score": "Teacher's grade",
+      "scoreValue": "{total} / {max}",
+      "teacherTitle": "Science projects",
+      "teacherEmpty": "No projects in your classes yet."
+    },
+    "ratingLink": "Leaderboard",
+    "rating": {
+      "title": "Club leaderboard",
+      "subtitle": "Club members only. Points are the sum of your mastery levels across all topics. Students see their own place; the teacher sees the full table.",
+      "login": "Sign in to see the leaderboard.",
+      "noClasses": "You don't have any classes yet.",
+      "noStudents": "No students in this class yet.",
+      "student": "Student",
+      "points": "Points",
+      "mastered": "Topics mastered",
+      "noClass": "The leaderboard is calculated within the club's class — join a class with the teacher's code first (on the Profile page).",
+      "place": "Place {rank} of {total}",
+      "mine": "Your points: {points} · topics mastered: {mastered}"
     }
   }
 }

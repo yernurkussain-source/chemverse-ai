@@ -6,6 +6,7 @@ import { hasLocale } from "next-intl";
 import { insertLiveSession } from "@/features/live/server";
 import { CONTEST_PER_ROUND, CONTEST_ROUNDS, CONTEST_SECONDS, contestSlug } from "@/features/olympiad/contest";
 import { MOCK_COUNTS, MOCK_DURATIONS, pickMockProblems, type MockConfig } from "@/features/olympiad/mock";
+import { CRITERION_MAX, PROJECT_CRITERIA, type ProjectScore } from "@/features/olympiad/projects";
 import { redirect } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -131,6 +132,32 @@ export async function createMock(_prev: OlympiadTeacherState, formData: FormData
   if (error) {
     console.error("Олимпиада: сынақ құрастырылмады", error);
     return { error: "forbidden" };
+  }
+  refresh();
+  return { ok: true };
+}
+
+/** Ғылыми жобаны рубрика бойынша бағалау (5 критерий × 0–5) — тек сол сыныптың мұғалімі (RLS) */
+export async function gradeProject(_prev: OlympiadTeacherState, formData: FormData): Promise<OlympiadTeacherState> {
+  const teacher = await currentTeacher();
+  const admin = createAdminClient();
+  if (!teacher || !admin) return { error: "forbidden" };
+  const id = text(formData, "id");
+  const values = PROJECT_CRITERIA.map((c) => Number(text(formData, c)));
+  if (values.some((v) => !Number.isInteger(v) || v < 0 || v > CRITERION_MAX)) return { error: "missing_fields" };
+
+  const { data: project } = await teacher.supabase.from("olympiad_projects").select("id, user_id").eq("id", id).maybeSingle();
+  if (!project || project.user_id === teacher.userId) return { error: "forbidden" };
+  const score: ProjectScore = {
+    criteria: Object.fromEntries(PROJECT_CRITERIA.map((c, i) => [c, values[i]])) as ProjectScore["criteria"],
+    total: values.reduce((a, b) => a + b, 0),
+    comment: text(formData, "comment").slice(0, 1000) || null,
+    gradedAt: new Date().toISOString(),
+  };
+  const { error } = await admin.from("olympiad_projects").update({ score, status: "graded" }).eq("id", id);
+  if (error) {
+    console.error("Олимпиада: жоба бағасы сақталмады", error);
+    return { error: "unknown" };
   }
   refresh();
   return { ok: true };
