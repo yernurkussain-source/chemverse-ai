@@ -4,16 +4,19 @@ import { randomInt } from "node:crypto";
 import { refresh } from "next/cache";
 import { hasLocale } from "next-intl";
 import { insertLiveSession } from "@/features/live/server";
+import type { AssignmentItem, OlympiadAssignment } from "@/features/olympiad/assignments";
 import { CONTEST_PER_ROUND, CONTEST_ROUNDS, CONTEST_SECONDS, contestSlug } from "@/features/olympiad/contest";
+import { GEN } from "@/features/olympiad/core";
 import { MOCK_COUNTS, MOCK_DURATIONS, pickMockProblems, type MockConfig } from "@/features/olympiad/mock";
 import { CRITERION_MAX, PROJECT_CRITERIA, type ProjectScore } from "@/features/olympiad/projects";
+import { isRealDate, LESSON_COUNT, parseHolidays, scheduleLessons, SCHOOL_YEAR_START } from "@/features/olympiad/schedule";
 import { redirect } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 /** Мұғалімнің олимпиада әрекеттері (OLYMPIAD_SPEC 9-бөлім) */
-export type OlympiadTeacherState = { ok?: boolean; error?: "forbidden" | "missing_fields" | "no_problems" | "unknown" } | null;
+export type OlympiadTeacherState = { ok?: boolean; error?: "forbidden" | "missing_fields" | "no_problems" | "invalid_holidays" | "unknown" } | null;
 
 /** «Жас химик-дарын» сайысы: таңдалған раундтардан Live сессия (раунд ішінде сұрақтар араласады) */
 export async function createContest(_prev: OlympiadTeacherState, formData: FormData): Promise<OlympiadTeacherState> {
@@ -114,7 +117,7 @@ export async function createMock(_prev: OlympiadTeacherState, formData: FormData
   }
 
   const [{ data: problems }, { data: topicRows }] = await Promise.all([
-    admin.from("olympiad_problems").select("id, topic, level, type").eq("status", "published"),
+    admin.from("olympiad_problems").select("id, topic, level, type").eq("status", "published").or(`author_id.is.null,author_id.eq.${teacher.userId}`),
     teacher.supabase.from("olympiad_topics").select("n, block"),
   ]);
   const blockOf = new Map((topicRows ?? []).map((t) => [t.n as number, t.block as string]));
@@ -158,6 +161,125 @@ export async function gradeProject(_prev: OlympiadTeacherState, formData: FormDa
   if (error) {
     console.error("Олимпиада: жоба бағасы сақталмады", error);
     return { error: "unknown" };
+  }
+  refresh();
+  return { ok: true };
+}
+
+/** Күнтізбе: 34 сабақты апта күні бойынша оқу жылына тарату (бар сабақтардың күні жаңартылады — журнал сақталады) */
+export async function saveSchedule(_prev: OlympiadTeacherState, formData: FormData): Promise<OlympiadTeacherState> {
+  const teacher = await currentTeacher();
+  if (!teacher) return { error: "forbidden" };
+  const classId = text(formData, "classId");
+  const weekday = Number(text(formData, "weekday"));
+  const time = text(formData, "time");
+  const start = text(formData, "start") || SCHOOL_YEAR_START;
+  const holidays = parseHolidays(text(formData, "holidays"));
+  if (!classId || !(weekday >= 1 && weekday <= 6) || !/^\d{2}:\d{2}$/.test(time) || !isRealDate(start)) return { error: "missing_fields" };
+  if (!holidays) return { error: "invalid_holidays" };
+
+  const dates = scheduleLessons({ start, weekday, holidays });
+  // RLS: тек өз сыныбына (is_class_teacher)
+  const { error } = await teacher.supabase.from("olympiad_sessions").upsert(
+    dates.map((date, i) => ({ class_id: classId, topic: i + 1, date, lesson_time: time })),
+    { onConflict: "class_id,topic" },
+  );
+  if (error) {
+    console.error("Олимпиада: күнтізбе сақталмады", error);
+    return { error: "forbidden" };
+  }
+  refresh();
+  return { ok: true };
+}
+
+/** Күнді қолмен жылжыту: өзгерген сабақтар ғана жаңартылады */
+export async function updateSessionDates(_prev: OlympiadTeacherState, formData: FormData): Promise<OlympiadTeacherState> {
+  const teacher = await currentTeacher();
+  if (!teacher) return { error: "forbidden" };
+  const classId = text(formData, "classId");
+  const changes = Array.from({ length: LESSON_COUNT }, (_, i) => i + 1)
+    .map((topic) => ({ topic, date: text(formData, `date_${topic}`), was: text(formData, `was_${topic}`) }))
+    .filter((c) => c.date && c.date !== c.was);
+  if (!classId || changes.some((c) => !isRealDate(c.date))) return { error: "missing_fields" };
+  for (const c of changes) {
+    const { error } = await teacher.supabase.from("olympiad_sessions").update({ date: c.date }).eq("class_id", classId).eq("topic", c.topic);
+    if (error) {
+      console.error("Олимпиада: сабақ күні сақталмады", error);
+      return { error: "unknown" };
+    }
+  }
+  refresh();
+  return { ok: true };
+}
+
+/** Журнал: сабақтағы қатысу мен үй тапсырмасы (+ үй тапсырмасының мәтіні) */
+export async function saveJournal(_prev: OlympiadTeacherState, formData: FormData): Promise<OlympiadTeacherState> {
+  const teacher = await currentTeacher();
+  if (!teacher) return { error: "forbidden" };
+  const sessionId = text(formData, "sessionId");
+  const students = formData.getAll("students").map(String);
+  // RLS: тек сол сыныптың мұғалімі
+  const { error: noteError, data: session } = await teacher.supabase
+    .from("olympiad_sessions")
+    .update({ note: text(formData, "note").slice(0, 1000) || null })
+    .eq("id", sessionId)
+    .select("id")
+    .maybeSingle();
+  if (noteError || !session) return { error: "forbidden" };
+  if (students.length) {
+    const { error } = await teacher.supabase.from("olympiad_journal").upsert(
+      students.map((userId) => ({
+        session_id: sessionId,
+        user_id: userId,
+        present: formData.get(`present_${userId}`) === "on",
+        homework: formData.get(`homework_${userId}`) === "on",
+      })),
+      { onConflict: "session_id,user_id" },
+    );
+    if (error) {
+      console.error("Олимпиада: журнал сақталмады", error);
+      return { error: "unknown" };
+    }
+  }
+  refresh();
+  return { ok: true };
+}
+
+/** Олимпиада тапсырмасы: бүкіл тақырып не таңдалған есептер + генератор есептері бекітілген seed-пен (бәріне бірдей сандар) */
+export async function createOlympiadAssignment(_prev: OlympiadTeacherState, formData: FormData): Promise<OlympiadTeacherState> {
+  const teacher = await currentTeacher();
+  const admin = createAdminClient();
+  if (!teacher || !admin) return { error: "forbidden" };
+  const classId = text(formData, "classId");
+  const topic = Number(text(formData, "topic"));
+  const chosen = formData.getAll("problems").map(String);
+  const due = text(formData, "due");
+  if (!classId || !(Number.isInteger(topic) && topic >= 1 && topic <= 32) || (due && !isRealDate(due))) return { error: "missing_fields" };
+
+  // Ашық есептер кірмейді: оларды мұғалім бағалайды, «орындалды» белгісін код қоя алмайды
+  const [{ data: problems }, { data: topicRow }] = await Promise.all([
+    admin.from("olympiad_problems").select("id, type").eq("topic", topic).eq("status", "published").or(`author_id.is.null,author_id.eq.${teacher.userId}`).order("id"),
+    teacher.supabase.from("olympiad_topics").select("data").eq("n", topic).maybeSingle<{ data: { generators: string[] } }>(),
+  ]);
+  const pool = (problems ?? []).filter((p) => p.type !== "open").map((p) => p.id as string);
+  const items: AssignmentItem[] = [
+    ...(text(formData, "mode") === "set" ? pool.filter((id) => chosen.includes(id)) : pool).map((problemId) => ({ problemId })),
+    ...(formData.get("generators") === "on" ? (topicRow?.data.generators ?? []) : [])
+      .filter((id) => Object.hasOwn(GEN, id))
+      .map((generator) => ({ generator, seed: randomInt(1, 2 ** 31) })),
+  ];
+  if (!items.length) return { error: "no_problems" };
+
+  const olympiad: OlympiadAssignment = { topic, items };
+  const { error } = await teacher.supabase.from("assignments").insert({
+    class_id: classId,
+    title: text(formData, "title").slice(0, 120) || null,
+    due_at: due ? `${due}T23:59:00+05:00` : null,
+    olympiad,
+  });
+  if (error) {
+    console.error("Олимпиада: тапсырма берілмеді", error);
+    return { error: "forbidden" };
   }
   refresh();
   return { ok: true };

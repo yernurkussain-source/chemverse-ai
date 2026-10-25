@@ -2809,7 +2809,8 @@
           "forbidden": "You can't grade this answer.",
           "missing_fields": "Enter a score between 0 and the maximum.",
           "unknown": "Not saved — try again.",
-          "no_problems": "Not saved — try again."
+          "no_problems": "Not saved — try again.",
+          "invalid_holidays": "Not saved — try again."
         }
       },
       "mocks": {
@@ -2837,7 +2838,8 @@
           "forbidden": "You can't build a mock round for this class.",
           "missing_fields": "Fill in every field (pick at least one topic in topic mode).",
           "no_problems": "The selected topics have no auto-checked problems.",
-          "unknown": "Not saved — try again."
+          "unknown": "Not saved — try again.",
+          "invalid_holidays": "Not saved — try again."
         },
         "info": "{count} problems · {minutes} min",
         "noResults": "Nobody has taken it yet.",
@@ -2849,6 +2851,93 @@
         "title": "“Zhas khimik-daryn” contest",
         "text": "A 3-round contest on the Live Class engine: quick questions, problems, experiment. Projector screen and leaderboard.",
         "open": "Set up the contest"
+      },
+      "navLabel": "Sections",
+      "classPicker": "Class",
+      "nav": {
+        "calendar": "Calendar",
+        "heatmap": "Mastery map",
+        "assignments": "Assignments",
+        "mocks": "Mock round",
+        "contest": "Contest",
+        "open-answers": "Open answers",
+        "projects": "Projects",
+        "problems": "Problem bank"
+      },
+      "errors": {
+        "forbidden": "Not allowed — only this class's teacher can change it.",
+        "missing_fields": "Fill in the fields correctly.",
+        "no_problems": "This topic has no problems to assign.",
+        "invalid_holidays": "Write holidays as YYYY-MM-DD: one date or a range per line.",
+        "unknown": "Not saved — try again."
+      },
+      "calendar": {
+        "title": "Calendar",
+        "subtitle": "The 34 lessons are spread over the 2026–2027 school year by weekday, skipping holidays. You can move any date by hand.",
+        "weekday": "Weekday",
+        "days": {
+          "d1": "Monday",
+          "d2": "Tuesday",
+          "d3": "Wednesday",
+          "d4": "Thursday",
+          "d5": "Friday",
+          "d6": "Saturday"
+        },
+        "time": "Time",
+        "start": "Start date",
+        "holidays": "Holidays and days off",
+        "holidaysHint": "One date (2026-12-16) or a range (2026-10-27 — 2026-11-02) per line. Can be left empty.",
+        "generate": "Spread the 34 lessons",
+        "saved": "Saved",
+        "dateOf": "Date of lesson {n}",
+        "journal": "Register",
+        "saveDates": "Save dates",
+        "regenerate": "Spread again (the register is kept)"
+      },
+      "journal": {
+        "title": "Register",
+        "homeworkText": "Homework",
+        "noStudents": "No students in this class yet.",
+        "student": "Student",
+        "present": "Present",
+        "homework": "Homework",
+        "save": "Save register",
+        "saved": "Saved"
+      },
+      "heatmap": {
+        "title": "Mastery map",
+        "subtitle": "Student × topic: each cell is the topic's mastery level. Hover (or long-press) to see the percentage.",
+        "empty": "No students in this class yet.",
+        "student": "Student",
+        "none": "none yet"
+      },
+      "assignments": {
+        "title": "Assignments",
+        "subtitle": "Assign a whole topic or chosen problems with a due date. Generator problems use fixed numbers — the same for every student. The assignment appears on the student's profile.",
+        "topic": "Topic",
+        "mode": "What to assign",
+        "modes": {
+          "topic": "The whole topic ({count} problems)",
+          "set": "I'll pick the problems"
+        },
+        "problems": "Problems",
+        "level": "Level {level}",
+        "generators": "Add generator problems ({count}, with fixed numbers)",
+        "titleLabel": "Title",
+        "titlePlaceholder": "Optional",
+        "due": "Due date",
+        "create": "Assign",
+        "created": "Assignment given",
+        "errors": {
+          "forbidden": "You can't assign to this class.",
+          "missing_fields": "Pick the topic and due date correctly.",
+          "no_problems": "Pick at least one problem.",
+          "invalid_holidays": "Not saved — try again.",
+          "unknown": "Not saved — try again."
+        },
+        "info": "{count} problems",
+        "dueShort": "due {date}",
+        "done": "Done: {done} / {total}"
       }
     },
     "mockLink": "Mock olympiad",
@@ -2924,7 +3013,8 @@
         "forbidden": "Only a teacher can start the contest.",
         "missing_fields": "Pick at least one round.",
         "no_problems": "Contest questions aren't loaded yet: run npm run seed:olympiad.",
-        "unknown": "The contest didn't start — try again."
+        "unknown": "The contest didn't start — try again.",
+        "invalid_holidays": "The contest didn't start — try again."
       },
       "studentNote": "When the teacher starts the contest, a code appears on the projector — type it on the “Enter code” page. Playing as a team? Join with the team name.",
       "join": "Enter code"
@@ -3002,7 +3092,8 @@
         "forbidden": "You can't grade this project.",
         "missing_fields": "Give 0–5 points for each criterion.",
         "no_problems": "Not saved — try again.",
-        "unknown": "Not saved — try again."
+        "unknown": "Not saved — try again.",
+        "invalid_holidays": "Not saved — try again."
       },
       "score": "Teacher's grade",
       "scoreValue": "{total} / {max}",
@@ -3022,6 +3113,9 @@
       "noClass": "The leaderboard is calculated within the club's class — join a class with the teacher's code first (on the Profile page).",
       "place": "Place {rank} of {total}",
       "mine": "Your points: {points} · topics mastered: {mastered}"
-    }
+    },
+    "assignmentTitle": "Olympiad: topic {n}",
+    "assignmentPage": "Olympiad assignment",
+    "toProfile": "Profile"
   }
 }

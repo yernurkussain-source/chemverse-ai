@@ -22,6 +22,22 @@ export type Topic = {
 export const TOPIC_COUNT = 34;
 export const newSeed = () => randomInt(1, 2 ** 31);
 
+/**
+ * Мұғалім қосқан есептерді кім көреді: банк есептері (author жоқ) барлығына, ал мұғалімнің есебі — өзіне және
+ * оның сыныбының оқушыларына ғана (мұғалім рөлін кез келген адам ала алады — ортақ мазмұнды бұзбауы үшін).
+ */
+export async function authorFilter(supabase: Awaited<ReturnType<typeof createClient>>) {
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) return "author_id.is.null";
+  const { data } = await supabase
+    .from("class_members")
+    .select("classes(teacher_id)")
+    .eq("user_id", auth.user.id)
+    .returns<{ classes: { teacher_id: string } | null }[]>();
+  const ids = [auth.user.id, ...(data ?? []).flatMap((r) => (r.classes ? [r.classes.teacher_id] : []))];
+  return `author_id.is.null,author_id.in.(${ids.join(",")})`;
+}
+
 /** Адрестегі тақырып нөмірі "7" → 7 (1–34 болмаса — null) */
 export const parseTopicN = (value: string) => {
   const n = Number(value);
@@ -51,6 +67,7 @@ export async function getTopicView(n: number): Promise<TopicView | null> {
   await connection();
   const supabase = await createClient();
   const admin = createAdminClient();
+  const visible = await authorFilter(supabase);
   const [{ data: topicRow }, problemsResult] = await Promise.all([
     supabase.from("olympiad_topics").select("data").eq("n", n).maybeSingle<{ data: Topic }>(),
     admin
@@ -59,6 +76,7 @@ export async function getTopicView(n: number): Promise<TopicView | null> {
           .select("body")
           .eq("topic", n)
           .eq("status", "published")
+          .or(visible)
           .order("id")
           .returns<{ body: BankProblem }[]>()
       : Promise.resolve({ data: [] as { body: BankProblem }[] }),

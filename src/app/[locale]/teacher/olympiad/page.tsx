@@ -6,6 +6,7 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import { Eyebrow } from "@/components/landing/section";
 import { MockCreateForm } from "@/components/olympiad/mock-create-form";
 import { OpenReviewForm } from "@/components/olympiad/open-review-form";
+import { ClassTools } from "@/components/olympiad/teacher-class-tools";
 import { buttonVariants } from "@/components/ui/button";
 import { getTeacherMocks } from "@/features/olympiad/server/mocks";
 import { getOpenAnswersForTeacher } from "@/features/olympiad/server/open-answers";
@@ -20,8 +21,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title") };
 }
 
-// Мұғалімнің олимпиада беті (OLYMPIAD_SPEC 9-бөлім): сынақ олимпиадалар, ашық жауаптар, сайыс, жобалар
-export default function TeacherOlympiadPage() {
+type SearchParams = PageProps<"/[locale]/teacher/olympiad">["searchParams"];
+
+const SECTIONS = ["calendar", "heatmap", "assignments", "mocks", "contest", "open-answers", "projects"] as const;
+
+// Мұғалімнің олимпиада беті (OLYMPIAD_SPEC 9-бөлім): күнтізбе, журнал, меңгеру картасы, тапсырмалар, сынақ, сайыс, ашық жауаптар, жобалар
+export default function TeacherOlympiadPage({ searchParams }: PageProps<"/[locale]/teacher/olympiad">) {
   const t = useTranslations("Olympiad.teacher");
   return (
     <div className="page-wrap py-8 md:py-12">
@@ -30,15 +35,22 @@ export default function TeacherOlympiadPage() {
       </Link>
       <Eyebrow className="mt-5">{t("eyebrow")}</Eyebrow>
       <h1 className="mt-2.5 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold">{t("title")}</h1>
-      <p className="mt-2 mb-8 max-w-[62ch] text-muted-foreground">{t("subtitle")}</p>
+      <p className="mt-2 mb-5 max-w-[62ch] text-muted-foreground">{t("subtitle")}</p>
+      <nav aria-label={t("navLabel")} className="mb-8 flex flex-wrap gap-2">
+        {SECTIONS.map((id) => (
+          <a key={id} href={`#${id}`} className="rounded-full border border-line px-3 py-1 text-[0.85rem] hover:border-cyan-dim">
+            {t(`nav.${id}`)}
+          </a>
+        ))}
+      </nav>
       <Suspense fallback={<p className="text-muted-foreground">{t("loading")}</p>}>
-        <Content />
+        <Content searchParams={searchParams} />
       </Suspense>
     </div>
   );
 }
 
-async function Content() {
+async function Content({ searchParams }: { searchParams: SearchParams }) {
   const value = await rootLocale();
   const locale: Locale = hasLocale(routing.locales, value) ? value : routing.defaultLocale;
   const { userId, isTeacher } = await getTeacherId();
@@ -46,9 +58,11 @@ async function Content() {
     redirect({ href: "/teacher", locale });
     return null;
   }
-  const t = await getTranslations("Olympiad.teacher.contest");
+  const [{ class: classParam }, classes, t] = await Promise.all([searchParams, getTeacherClasses(userId), getTranslations("Olympiad.teacher.contest")]);
+  const selected = classes.find((c) => c.id === classParam) ?? classes[0];
   return (
     <div className="flex flex-col gap-12">
+      {selected && <ClassTools classes={classes} selected={selected} teacherId={userId} />}
       <Mocks teacherId={userId} />
       <section aria-labelledby="contest" className="flex flex-col items-start gap-3 rounded-3xl border border-cyan-dim bg-panel p-5">
         <h2 id="contest" className="font-display text-xl font-semibold">

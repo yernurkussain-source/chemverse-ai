@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
+import { isAssignmentDone, type OlympiadAssignment } from "@/features/olympiad/assignments";
 import { isShellLab } from "@/features/virtual-lab/catalog";
 import type { Locale } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
@@ -157,7 +158,8 @@ export async function getClassDetail(classId: string, teacherId: string, locale:
 
   // Тапсырма орындалды: тапсырма берілгеннен кейін сол тест аяқталған / сол тәжірибе тапсырылған
   const labTitle = await labTitles(locale);
-  const assignmentRows: AssignmentRow[] = (assignments ?? []).map((a) => {
+  // Олимпиада тапсырмалары (тест те, тәжірибе де емес) — олардың прогресі /teacher/olympiad бетінде
+  const assignmentRows: AssignmentRow[] = (assignments ?? []).filter((a) => a.exam_id || a.experiment_id).map((a) => {
     const labSlug = a.experiment_id ?? null;
     const done = new Set(
       labSlug
@@ -207,7 +209,8 @@ export async function getStudentAssignments(userId: string, locale: Locale): Pro
   const { data: assignments } = await withLabColumn((extra) =>
     supabase
       .from("assignments")
-      .select(`id, title, exam_id, due_at, created_at, classes(name), exams(title_kk, title_ru, title_en)${extra}`)
+      // olympiad бағаны — олимпиада 4-сессиясының миграциясы (жоқ болса, withLabColumn ескі сұрауға қайтады)
+      .select(`id, title, exam_id, due_at, created_at, classes(name), exams(title_kk, title_ru, title_en)${extra}${extra ? ", olympiad" : ""}`)
       .order("created_at", { ascending: false })
       .limit(10)
       .returns<
@@ -216,6 +219,7 @@ export async function getStudentAssignments(userId: string, locale: Locale): Pro
           title: string | null;
           exam_id: string | null;
           experiment_id?: string | null;
+          olympiad?: OlympiadAssignment | null;
           due_at: string | null;
           created_at: string;
           classes: { name: string } | null;
@@ -225,22 +229,31 @@ export async function getStudentAssignments(userId: string, locale: Locale): Pro
   );
   if (!assignments?.length) return [];
 
-  const [{ data: sessions }, { data: labs }] = await Promise.all([
+  const tOlympiad = await getTranslations({ locale, namespace: "Olympiad" });
+  const [{ data: sessions }, { data: labs }, { data: attempts }] = await Promise.all([
     supabase.from("exam_sessions").select("exam_id, finished_at").eq("user_id", userId).neq("status", "in_progress"),
     supabase.from("lab_attempts").select("experiment_id, created_at").eq("user_id", userId),
+    assignments.some((a) => a.olympiad)
+      ? supabase.from("olympiad_attempts").select("problem_id, seed, correct, created_at").eq("user_id", userId).eq("correct", true)
+      : Promise.resolve({ data: [] as { problem_id: string; seed: number | null; correct: boolean; created_at: string }[] }),
   ]);
   const labTitle = await labTitles(locale);
 
   const now = Date.now();
   return assignments.map((a) => {
     const labSlug = a.experiment_id ?? null;
-    const done = labSlug
-      ? (labs ?? []).some((l) => l.experiment_id === labSlug && l.created_at >= a.created_at)
-      : (sessions ?? []).some((s) => s.exam_id === a.exam_id && s.finished_at && s.finished_at >= a.created_at);
+    const olympiad = a.olympiad ?? null;
+    const done = olympiad
+      ? isAssignmentDone(olympiad.items, attempts ?? [], a.created_at)
+      : labSlug
+        ? (labs ?? []).some((l) => l.experiment_id === labSlug && l.created_at >= a.created_at)
+        : (sessions ?? []).some((s) => s.exam_id === a.exam_id && s.finished_at && s.finished_at >= a.created_at);
     return {
       id: a.id,
-      title: a.title || (labSlug ? labTitle(labSlug) : a.exams ? pick(a.exams, "title", locale) : ""),
-      href: labSlug ? `/virtual-lab/${labSlug}` : "/exam/unt",
+      title:
+        a.title ||
+        (olympiad ? tOlympiad("assignmentTitle", { n: olympiad.topic }) : labSlug ? labTitle(labSlug) : a.exams ? pick(a.exams, "title", locale) : ""),
+      href: olympiad ? `/olympiad/assignment/${a.id}` : labSlug ? `/virtual-lab/${labSlug}` : "/exam/unt",
       className: a.classes?.name ?? "",
       dueAt: a.due_at,
       done,
