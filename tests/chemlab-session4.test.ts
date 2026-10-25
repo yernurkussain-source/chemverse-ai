@@ -6,6 +6,8 @@ import { CELLS, mix } from "@/features/virtual-lab/experiments/precipitation/mod
 import { ACTIVITY_KEY, gradeActivity, type ActivitySubmission } from "@/features/virtual-lab/experiments/metal-activity/grade";
 import { ACTIVITY_META } from "@/features/virtual-lab/experiments/metal-activity/meta";
 import { CELLS as METAL_CELLS, metalSummary, runTube } from "@/features/virtual-lab/experiments/metal-activity/model";
+import { gradeUnknown, SEED_MAX, UNKNOWN_KEY, unknownIndex, type UnknownSubmission } from "@/features/virtual-lab/experiments/unknown-substance/grade";
+import { CANDIDATES, molarMass, observe, revealedIon, TESTS } from "@/features/virtual-lab/experiments/unknown-substance/model";
 
 describe("Тұнба түзілуі: модель (ортақ қозғалтқыш)", () => {
   test("12 пробирка: 8 тұнба, Ba(OH)₂ мен сульфаттар ериді", () => {
@@ -110,5 +112,73 @@ describe("Металдардың белсенділігі: бағалау", () =
   test("клиент сипаттамасы: 6 дұрыс + 3 алаңдатқыш құрал", () => {
     assert.equal(ACTIVITY_META.equipment.length, 9);
     assert.ok(ACTIVITY_KEY.equipment.every((id) => (ACTIVITY_META.equipment as readonly string[]).includes(id)));
+  });
+});
+
+describe("Белгісіз затты анықтау: модель", () => {
+  test("сынақтар: жалын, NaOH, AgNO₃ + HNO₃, BaCl₂, HCl", () => {
+    assert.deepEqual(
+      Object.fromEntries(CANDIDATES.map((c, x) => [c.id, TESTS.map((test) => observe(x, test))])),
+      {
+        NaCl: ["flameNa", "none", "white", "none", "none"],
+        KI: ["flameK", "none", "yellow", "none", "none"],
+        BaCl2: ["flameBa", "none", "white", "none", "none"],
+        CuSO4: ["flameCu", "blue", "none", "white", "none"],
+        FeCl3: ["flameNone", "brown", "white", "none", "none"],
+        Na2CO3: ["flameNa", "none", "gas", "white", "gas"],
+        Na2SO4: ["flameNa", "none", "none", "white", "none"],
+      },
+    );
+  });
+
+  test("әр заттың сынақтар жиынтығы бірегей — X-ті бір мәнді анықтауға болады", () => {
+    const signatures = CANDIDATES.map((_, x) => TESTS.map((test) => observe(x, test)).join());
+    assert.equal(new Set(signatures).size, CANDIDATES.length);
+  });
+
+  test("сынақ көрсететін ион және молярлық масса", () => {
+    assert.deepEqual(TESTS.map((test) => revealedIon(5, test)), ["Na", "none", "CO3", "CO3", "CO3"]);
+    assert.deepEqual(TESTS.map((test) => revealedIon(4, test)), ["none", "Fe3", "Cl", "none", "none"]);
+    assert.deepEqual(CANDIDATES.map((_, x) => Math.round(molarMass(x))), [58, 166, 208, 160, 162, 106, 142]);
+  });
+
+  test("X құпия кілтпен есептеледі: кілтсіз seed жауапты бермейді, барлық 7 зат кездеседі", () => {
+    assert.equal(unknownIndex(12345, "a"), unknownIndex(12345, "a"));
+    const seen = new Set(Array.from({ length: 200 }, (_, i) => unknownIndex(i + 1, "secret")));
+    assert.equal(seen.size, CANDIDATES.length);
+    assert.ok(Array.from({ length: 50 }, (_, i) => unknownIndex(i + 1, "a") !== unknownIndex(i + 1, "b")).some(Boolean));
+    assert.ok(SEED_MAX > 1e9);
+  });
+});
+
+describe("Белгісіз затты анықтау: бағалау", () => {
+  const x = 3; // CuSO₄
+  const perfect: UnknownSubmission = {
+    prediction: "cation",
+    equipment: [...UNKNOWN_KEY.equipment],
+    experiment: { tests: TESTS.map((test) => ({ test, seen: observe(x, test) })) },
+    observations: Object.fromEntries(TESTS.map((test, i) => [`r${i}.ion`, revealedIon(x, test)])),
+    answers: { formula: "CuSO4", molarMass: "160", hno3: "carbonate" },
+    conclusion:
+      "Жалын жасыл түске боялды және NaOH көгілдір тұнба берді, демек катион — Cu²⁺. BaCl₂ ақ тұнба берді, ал HCl газ бермеді, демек анион — SO₄²⁻. X — мыс сульфаты CuSO₄, молярлық массасы 160 г/моль.",
+  };
+
+  test("мінсіз жұмыс — 100", () => {
+    const { breakdown, reveal } = gradeUnknown(x, perfect);
+    assert.deepEqual(breakdown, { procedure: 30, observation: 25, calc: 20, conclusion: 25, total: 100 });
+    assert.equal(reveal.unknown, x);
+    assert.equal(reveal.predictionCorrect, true);
+  });
+
+  test("клиент «seen»-ді өзгертсе де бағалау X бойынша; басқа зат таңдалса — формула мен масса 0", () => {
+    const forged = { ...perfect, experiment: { tests: TESTS.map((test) => ({ test, seen: "none" as const })) } };
+    assert.equal(gradeUnknown(x, forged).breakdown.observation, 25);
+    const wrong = gradeUnknown(x, { ...perfect, answers: { formula: "Na2SO4", molarMass: "142", hno3: "carbonate" } });
+    assert.equal(wrong.breakdown.calc, 6);
+  });
+
+  test("тек 2 сынақ жасалды", () => {
+    const { breakdown } = gradeUnknown(x, { ...perfect, experiment: { tests: perfect.experiment.tests.slice(0, 2) } });
+    assert.equal(breakdown.procedure, 10 + 8);
   });
 });

@@ -1791,7 +1791,14 @@
       "copperOk": "Correct: copper is below hydrogen but above silver.",
       "copperWrong": "Compare the positions of Cu, H and Ag in the reactivity series.",
       "h2VolumeOk": "The hydrogen volume is correct.",
-      "h2VolumeWrong": "n(H₂) = n(Mg) = m / M, and V = n · Vm."
+      "h2VolumeWrong": "n(H₂) = n(Mg) = m / M, and V = n · Vm.",
+      "testsDone": "Tests done: {count}/{total}.",
+      "unknownFormulaOk": "The substance is identified correctly.",
+      "unknownFormulaWrong": "Identify the cation and the anion separately: the flame and NaOH show the cation, while AgNO₃, BaCl₂ and HCl show the anion.",
+      "molarMassOk": "The molar mass is correct.",
+      "molarMassWrong": "M is the sum of the masses of all atoms in the formula (remember the subscripts).",
+      "hno3Ok": "Correct: in acid, carbonate escapes as CO₂, so it cannot be mistaken for AgCl.",
+      "hno3Wrong": "Recall how carbonate reacts with acid: what false precipitate would AgNO₃ give without HNO₃?"
     },
     "resultPage": {
       "title": "Experiment result",
@@ -2462,6 +2469,108 @@
           "h2Zn": "Zn: H₂, mL (60 s)",
           "h2Fe": "Fe: H₂, mL (60 s)",
           "h2Volume": "H₂ from 0.1 g Mg, mL (complete)"
+        }
+      },
+      "unknown-substance": {
+        "goal": "Use qualitative tests to find the cation and anion in solution X and work out the formula of the unknown substance.",
+        "theory": "Every ion has its own “signature” — a qualitative test. Many metal cations colour a flame: Na⁺ yellow, K⁺ lilac, Ba²⁺ yellow-green, Cu²⁺ green. With an alkali, Cu²⁺ gives a blue precipitate and Fe³⁺ a red-brown one. Anions are identified by precipitates and gases: Cl⁻ gives a white precipitate with AgNO₃ (AgCl), I⁻ a yellow one (AgI), SO₄²⁻ a white precipitate with BaCl₂ (BaSO₄), and CO₃²⁻ releases CO₂ gas with an acid. One test may not be enough — compare the results of several.",
+        "safety": {
+          "goggles": "Wear safety goggles and gloves.",
+          "flame": "Light the spirit lamp with a match and put it out with its cap; tie your hair back.",
+          "unknown": "Treat an unknown substance as dangerous: never taste or smell it.",
+          "toxic": "AgNO₃ and BaCl₂ are toxic — work in gloves only."
+        },
+        "prediction": {
+          "question": "Which ion do you think a flame test helps to identify?",
+          "options": {
+            "cation": "The metal cation",
+            "anion": "The anion",
+            "both": "Both",
+            "none": "Neither"
+          }
+        },
+        "equipment": {
+          "test-tubes": "Test tubes",
+          "rack": "Test tube rack",
+          "dropper": "Dropper",
+          "nichrome": "Nichrome wire",
+          "burner": "Spirit lamp",
+          "thermometer": "Thermometer",
+          "funnel": "Funnel",
+          "magnet": "Magnet",
+          "goggles": "Safety goggles"
+        },
+        "tests": {
+          "flame": "Flame test",
+          "naoh": "+ NaOH",
+          "agno3": "+ AgNO₃ (with HNO₃)",
+          "bacl2": "+ BaCl₂",
+          "hcl": "+ HCl"
+        },
+        "experiment": {
+          "hint": "Do five tests on solution X — each one with a fresh sample. Compare the results and work out what X is made of.",
+          "bottle": "Solution X (0.1 M)",
+          "run": "Run test",
+          "running": "Testing…",
+          "progress": "Tests done: {count}/{total}",
+          "error": "The test failed — try again."
+        },
+        "seen": {
+          "white": "white precipitate",
+          "yellow": "yellow precipitate",
+          "blue": "blue precipitate",
+          "brown": "red-brown precipitate",
+          "gas": "gas bubbles",
+          "none": "no change",
+          "flameNa": "yellow flame",
+          "flameK": "lilac flame",
+          "flameCa": "brick-red flame",
+          "flameBa": "yellow-green flame",
+          "flameCu": "green flame",
+          "flameNone": "flame colour unchanged"
+        },
+        "observation": {
+          "test": "Test",
+          "seen": "Observed",
+          "ion": "Ion identified",
+          "none": "none",
+          "notTested": "not done"
+        },
+        "observationHint": "Choose which ion each test shows. If nothing changed, choose “none”.",
+        "names": {
+          "NaCl": "sodium chloride",
+          "KI": "potassium iodide",
+          "BaCl2": "barium chloride",
+          "CuSO4": "copper(II) sulfate",
+          "FeCl3": "iron(III) chloride",
+          "Na2CO3": "sodium carbonate",
+          "Na2SO4": "sodium sulfate"
+        },
+        "data": {
+          "atomic": "Relative atomic masses:"
+        },
+        "questions": {
+          "formula": {
+            "label": "Which substance is X?"
+          },
+          "molarMass": {
+            "label": "Calculate the molar mass of the substance you identified.",
+            "unit": "g/mol"
+          },
+          "hno3": {
+            "label": "Why is nitric acid (HNO₃) added to the silver nitrate?",
+            "options": {
+              "faster": "To speed up the reaction",
+              "carbonate": "So that other ions such as CO₃²⁻ do not give a false precipitate with silver",
+              "color": "To colour the precipitate",
+              "dissolve": "To dissolve the AgCl precipitate"
+            }
+          }
+        },
+        "conclusionHint": "Tip: write which test showed the cation and which showed the anion, and give the formula and molar mass of X.",
+        "reveal": {
+          "unknown": "Substance X",
+          "molarMass": "Molar mass, g/mol"
         }
       }
     },

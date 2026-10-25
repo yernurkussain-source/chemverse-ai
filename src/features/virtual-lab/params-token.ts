@@ -9,6 +9,9 @@ import { createHash, createHmac, timingSafeEqual } from "node:crypto";
  */
 export const TOKEN_TTL_MS = 6 * 60 * 60 * 1000;
 
+/** Қолтаңба кілті. Supabase бапталмаған жергілікті нұсқада нәтиже бәрібір сақталмайды */
+export const labSecret = () => process.env.SUPABASE_SECRET_KEY || "chemverse-local-dev";
+
 type Payload = { s: string; p: Record<string, number>; t: number };
 
 function key(secret: string) {

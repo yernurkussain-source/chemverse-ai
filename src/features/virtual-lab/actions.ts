@@ -19,8 +19,9 @@ import { gradePrecipitation, precipitationExperimentSchema } from "./experiments
 import { gradeRate, rateExperimentSchema } from "./experiments/reaction-rate/grade";
 import { GAMMA_OPTIONS } from "./experiments/reaction-rate/model";
 import { gradeTitration, titrationExperimentSchema } from "./experiments/titration/grade";
+import { gradeUnknown, SEED_MAX, unknownExperimentSchema, unknownIndex } from "./experiments/unknown-substance/grade";
 import { CONCENTRATION_RANGE } from "./experiments/titration/model";
-import { signParams, verifyParams } from "./params-token";
+import { labSecret as secret, signParams, verifyParams } from "./params-token";
 import { totalScore, type FeedbackItem, type ScoreBreakdown } from "./scoring";
 
 /**
@@ -28,8 +29,6 @@ import { totalScore, type FeedbackItem, type ScoreBreakdown } from "./scoring";
  * Бағалау тек осында: жауап кілттері (experiments/<slug>/grade.ts) клиентке жіберілмейді.
  */
 
-// Қолтаңба кілті. Supabase бапталмаған жергілікті нұсқада нәтиже бәрібір сақталмайды
-const secret = () => process.env.SUPABASE_SECRET_KEY || "chemverse-local-dev";
 
 /** Әр тәжірибенің жасырын параметрлері (сервер кездейсоқ таңдайды); level — деңгейі бар тәжірибеде сынып */
 const PARAMS: Record<ShellLabSlug, (level: number | null) => Record<string, number>> = {
@@ -40,6 +39,8 @@ const PARAMS: Record<ShellLabSlug, (level: number | null) => Record<string, numb
   "atom-builder": () => ({}),
   precipitation: () => ({}),
   "metal-activity": () => ({}),
+  // Тек seed: X-ті одан тек сервер есептей алады (жауап клиентке берілмейді)
+  "unknown-substance": () => ({ s: randomInt(1, SEED_MAX) }),
   // 9-сынып: γ = 2 белгілі; 10-сынып («Реакция кинетикасы»): γ жасырын, оқушы оны деректерінен табады
   "reaction-rate": (level): Record<string, number> =>
     level === 10 ? { level: 10, g: GAMMA_OPTIONS[randomInt(GAMMA_OPTIONS.length)] } : { level: 9 },
@@ -127,6 +128,11 @@ function grade(slug: ShellLabSlug, params: Record<string, number>, input: z.infe
     case "metal-activity": {
       const experiment = activityExperimentSchema.safeParse(input.experiment);
       return experiment.success ? gradeActivity({ ...input, experiment: experiment.data }) : null;
+    }
+    case "unknown-substance": {
+      const experiment = unknownExperimentSchema.safeParse(input.experiment);
+      if (!experiment.success || !Number.isInteger(params.s)) return null;
+      return gradeUnknown(unknownIndex(params.s, secret()), { ...input, experiment: experiment.data });
     }
   }
 }

@@ -6,6 +6,7 @@ import { mixtureModule } from "./experiments/mixture-separation";
 import { precipitationModule } from "./experiments/precipitation";
 import { rateModule } from "./experiments/reaction-rate";
 import { titrationModule } from "./experiments/titration";
+import { unknownModule } from "./experiments/unknown-substance";
 import type { LabModule } from "./module";
 
 /** slug → клиенттік модуль (жаңа тәжірибе осында қосылады) */
@@ -17,4 +18,5 @@ export const LAB_MODULES: Record<ShellLabSlug, LabModule> = {
   "reaction-rate": rateModule,
   precipitation: precipitationModule,
   "metal-activity": activityModule,
+  "unknown-substance": unknownModule,
 };
