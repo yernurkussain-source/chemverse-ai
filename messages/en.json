@@ -2808,9 +2808,88 @@
         "errors": {
           "forbidden": "You can't grade this answer.",
           "missing_fields": "Enter a score between 0 and the maximum.",
-          "unknown": "Not saved — try again."
+          "unknown": "Not saved — try again.",
+          "no_problems": "Not saved — try again."
         }
+      },
+      "mocks": {
+        "title": "Mock olympiad",
+        "subtitle": "Build one automatically (up to 2 level 2–3 problems from each block) or pick the topics yourself. Students take it under “Olympiad → Mock olympiad”.",
+        "noClasses": "Create a class (club) first to build a mock round.",
+        "toClasses": "Go to classes",
+        "class": "Class",
+        "titleLabel": "Title",
+        "defaultTitle": "Mock olympiad",
+        "mode": "Choosing problems",
+        "modes": {
+          "auto": "Automatic: up to 2 level 2–3 problems from each block",
+          "topics": "I'll pick the topics"
+        },
+        "topics": "Topics",
+        "count": "Number of problems",
+        "duration": "Time",
+        "minutes": "{n} min",
+        "startsAt": "Start time",
+        "startsAtHint": "Leave empty to open right away",
+        "create": "Build",
+        "created": "Mock round built",
+        "errors": {
+          "forbidden": "You can't build a mock round for this class.",
+          "missing_fields": "Fill in every field (pick at least one topic in topic mode).",
+          "no_problems": "The selected topics have no auto-checked problems.",
+          "unknown": "Not saved — try again."
+        },
+        "info": "{count} problems · {minutes} min",
+        "noResults": "Nobody has taken it yet.",
+        "results": "Taken: {count} · average result {avg}%",
+        "resultsList": "Results",
+        "print": "Print / PDF"
       }
+    },
+    "mockLink": "Mock olympiad",
+    "mock": {
+      "title": "Mock olympiad",
+      "subtitle": "A timed mock round built by the teacher across several topics. The server checks the answers; the result shows a per-topic breakdown.",
+      "login": "Sign in to take the mock olympiad.",
+      "empty": "No mock rounds yet. When the teacher builds one it will appear here (join the club's class first).",
+      "info": "{count} problems · {minutes} min",
+      "resultShort": "Result: {score} / {max}",
+      "continue": "Continue",
+      "start": "Start",
+      "startNote": "The timer starts when you begin: {minutes} minutes. When time runs out, your answers are sent automatically.",
+      "answered": "Answered: {count} / {total}",
+      "timeLeft": "Time left",
+      "problemOf": "Problem {n} / {total} · {points} pt",
+      "prev": "Back",
+      "next": "Next",
+      "finish": "Finish",
+      "navigator": "Problems",
+      "goTo": "Go to problem {n}",
+      "confirmUnanswered": "{count} unanswered. Finish anyway?",
+      "confirmAll": "You've answered every problem. Finish?",
+      "confirmFinish": "Yes, finish",
+      "cancel": "Cancel",
+      "sending": "Sending…",
+      "submitError": "Not sent — check the internet and try again. Your answers are saved.",
+      "scoreNote": "A correct problem earns as many points as its level (1–3).",
+      "late": "Submitted after the time ran out.",
+      "byTopic": "Per-topic breakdown",
+      "review": "Recommended for review",
+      "problems": "Problems",
+      "right": "Correct",
+      "wrong": "Wrong"
+    },
+    "print": {
+      "title": "Mock olympiad — print",
+      "button": "Print / PDF",
+      "info": "{count} problems · {minutes} minutes · {max} points total",
+      "name": "Name",
+      "class": "Class",
+      "points": "{points} pt",
+      "econfLine": "Electron configuration",
+      "unpairedLine": "Unpaired electrons",
+      "answerLine": "Answer",
+      "key": "Answer key (for the teacher)"
     }
   }
 }

@@ -4,9 +4,13 @@ import { locale as rootLocale } from "next/root-params";
 import { hasLocale, useTranslations } from "next-intl";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Eyebrow } from "@/components/landing/section";
+import { MockCreateForm } from "@/components/olympiad/mock-create-form";
 import { OpenReviewForm } from "@/components/olympiad/open-review-form";
+import { buttonVariants } from "@/components/ui/button";
+import { getTeacherMocks } from "@/features/olympiad/server/mocks";
 import { getOpenAnswersForTeacher } from "@/features/olympiad/server/open-answers";
-import { getTeacherId } from "@/features/teacher/queries";
+import { getTopics } from "@/features/olympiad/server/queries";
+import { getTeacherClasses, getTeacherId } from "@/features/teacher/queries";
 import { Link, redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 
@@ -15,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title") };
 }
 
-// Мұғалімнің олимпиада беті (OLYMPIAD_SPEC 9-бөлім): ашық жауаптар, сынақ олимпиадалар, сайыс, жобалар
+// Мұғалімнің олимпиада беті (OLYMPIAD_SPEC 9-бөлім): сынақ олимпиадалар, ашық жауаптар, сайыс, жобалар
 export default function TeacherOlympiadPage() {
   const t = useTranslations("Olympiad.teacher");
   return (
@@ -41,8 +45,82 @@ async function Content() {
     redirect({ href: "/teacher", locale });
     return null;
   }
+  return (
+    <div className="flex flex-col gap-12">
+      <Mocks teacherId={userId} />
+      <OpenAnswers teacherId={userId} />
+    </div>
+  );
+}
+
+async function Mocks({ teacherId }: { teacherId: string }) {
+  const [classes, topics, t, format] = await Promise.all([
+    getTeacherClasses(teacherId),
+    getTopics(),
+    getTranslations("Olympiad.teacher.mocks"),
+    getFormatter(),
+  ]);
+  const className = new Map(classes.map((c) => [c.id, c.name]));
+  const mocks = await getTeacherMocks(classes.map((c) => c.id));
+
+  return (
+    <section aria-labelledby="mocks" className="flex flex-col gap-3">
+      <h2 id="mocks" className="font-display text-xl font-semibold">
+        {t("title")}
+      </h2>
+      <p className="text-[0.9rem] text-muted-foreground">{t("subtitle")}</p>
+      {classes.length === 0 ? (
+        <p className="rounded-2xl border border-line bg-panel-2 px-4 py-3">
+          {t("noClasses")}{" "}
+          <Link href="/teacher" className="font-semibold text-cyan underline">
+            {t("toClasses")}
+          </Link>
+        </p>
+      ) : (
+        <MockCreateForm classes={classes.map(({ id, name }) => ({ id, name }))} topics={topics.filter((topic) => topic.n <= 32).map(({ n, title }) => ({ n, title }))} />
+      )}
+      {mocks.length > 0 && (
+        <ul className="grid gap-3 lg:grid-cols-2">
+          {mocks.map(({ mock, results }) => {
+            const avg = results.length ? Math.round((results.reduce((s, r) => s + (r.max ? r.score / r.max : 0), 0) / results.length) * 100) : null;
+            return (
+              <li key={mock.id} className="flex flex-col gap-2 rounded-3xl border border-line bg-panel p-5">
+                <p className="font-display font-semibold">{mock.title}</p>
+                <p className="text-[0.85rem] text-muted-foreground">
+                  {className.get(mock.class_id)} · {t("info", { count: mock.config.problems.length, minutes: mock.duration_min })}
+                  {mock.starts_at && ` · ${format.dateTime(new Date(mock.starts_at), { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`}
+                </p>
+                <p className="text-[0.9rem]">{avg === null ? t("noResults") : t("results", { count: results.length, avg })}</p>
+                {results.length > 0 && (
+                  <details className="text-[0.88rem]">
+                    <summary className="cursor-pointer font-semibold">{t("resultsList")}</summary>
+                    <ol className="mt-2 flex flex-col gap-1">
+                      {results.map((r, i) => (
+                        <li key={i} className="flex justify-between gap-2">
+                          <span>{r.name}</span>
+                          <span className="font-mono">
+                            {r.score} / {r.max}
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                  </details>
+                )}
+                <Link href={`/olympiad/mock/${mock.id}/print`} className={`${buttonVariants({ variant: "panel", size: "pill-sm" })} self-start`}>
+                  🖨 {t("print")}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+async function OpenAnswers({ teacherId }: { teacherId: string }) {
   const [answers, t, tRoot, format] = await Promise.all([
-    getOpenAnswersForTeacher(userId),
+    getOpenAnswersForTeacher(teacherId),
     getTranslations("Olympiad.teacher.open"),
     getTranslations("Olympiad"),
     getFormatter(),

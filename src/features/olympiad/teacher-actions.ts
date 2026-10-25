@@ -1,11 +1,12 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { MOCK_COUNTS, MOCK_DURATIONS, pickMockProblems, type MockConfig } from "@/features/olympiad/mock";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 /** Мұғалімнің олимпиада әрекеттері (OLYMPIAD_SPEC 9-бөлім) */
-export type OlympiadTeacherState = { ok?: boolean; error?: "forbidden" | "missing_fields" | "unknown" } | null;
+export type OlympiadTeacherState = { ok?: boolean; error?: "forbidden" | "missing_fields" | "no_problems" | "unknown" } | null;
 
 const text = (formData: FormData, key: string) => String(formData.get(key) ?? "").trim();
 
@@ -39,6 +40,52 @@ export async function reviewOpenAnswer(_prev: OlympiadTeacherState, formData: Fo
   if (error) {
     console.error("Олимпиада: ашық жауап бағасы сақталмады", error);
     return { error: "unknown" };
+  }
+  refresh();
+  return { ok: true };
+}
+
+/** Сынақ олимпиада құрастыру: автоматты (әр блоктан 2–3-деңгейлі 2 есеп) не таңдалған тақырыптардан */
+export async function createMock(_prev: OlympiadTeacherState, formData: FormData): Promise<OlympiadTeacherState> {
+  const teacher = await currentTeacher();
+  const admin = createAdminClient();
+  if (!teacher || !admin) return { error: "forbidden" };
+  const classId = text(formData, "classId");
+  const title = text(formData, "title").slice(0, 80);
+  const mode = text(formData, "mode") === "topics" ? "topics" : "auto";
+  const topics = formData.getAll("topics").map(Number).filter(Number.isInteger);
+  const count = Number(text(formData, "count"));
+  const duration = Number(text(formData, "duration"));
+  const startsAt = text(formData, "startsAt");
+  if (
+    !classId ||
+    !title ||
+    !(MOCK_DURATIONS as readonly number[]).includes(duration) ||
+    (mode === "topics" && (!topics.length || !(MOCK_COUNTS as readonly number[]).includes(count))) ||
+    (startsAt && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(startsAt))
+  ) {
+    return { error: "missing_fields" };
+  }
+
+  const [{ data: problems }, { data: topicRows }] = await Promise.all([
+    admin.from("olympiad_problems").select("id, topic, level, type").eq("status", "published"),
+    teacher.supabase.from("olympiad_topics").select("n, block"),
+  ]);
+  const blockOf = new Map((topicRows ?? []).map((t) => [t.n as number, t.block as string]));
+  const config: MockConfig = { mode, problems: pickMockProblems(problems ?? [], blockOf, { mode, topics, count }) };
+  if (!config.problems.length) return { error: "no_problems" };
+
+  // RLS: тек өз сыныбына (is_class_teacher). Уақыт Қазақстан бойынша (UTC+5)
+  const { error } = await teacher.supabase.from("olympiad_mocks").insert({
+    class_id: classId,
+    title,
+    config,
+    starts_at: startsAt ? `${startsAt}:00+05:00` : null,
+    duration_min: duration,
+  });
+  if (error) {
+    console.error("Олимпиада: сынақ құрастырылмады", error);
+    return { error: "forbidden" };
   }
   refresh();
   return { ok: true };

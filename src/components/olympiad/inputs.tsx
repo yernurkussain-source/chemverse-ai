@@ -3,19 +3,62 @@
 import { Fragment } from "react";
 import { useTranslations } from "next-intl";
 import { CAPS, ORDER, splitEq } from "@/features/olympiad/core";
+import { prettyFormula, type PublicProblem } from "@/features/olympiad/practice";
 import { cn } from "@/lib/utils";
 
 export type EconfAnswer = { occ: Record<string, number>; unpaired: number };
+export type Answer = string | number | null | number[] | EconfAnswer;
 
-const SUB = "₀₁₂₃₄₅₆₇₈₉";
+export function initialAnswer(p: PublicProblem): Answer {
+  if (p.type === "mcq") return null;
+  if (p.type === "balance") {
+    const { L, R } = splitEq(p.equation!);
+    return [...L, ...R].map(() => 1);
+  }
+  if (p.type === "econf") return { occ: {}, unpaired: 0 };
+  return "";
+}
+
+/** Жауап толық енгізілді ме (тексеру батырмасы сонда ғана белсенді) */
+export function isReady(p: PublicProblem, a: Answer) {
+  if (p.type === "numeric" || p.type === "open") return typeof a === "string" && a.trim() !== "";
+  if (p.type === "mcq") return a !== null;
+  if (p.type === "econf") return Object.values((a as EconfAnswer).occ).some((n) => n > 0);
+  return true;
+}
+
+/** Есеп түріне қарай енгізу өрісі (жаттығу мен сынақта ортақ) */
+export function AnswerInput({ problem, answer, disabled, onChange }: { problem: PublicProblem; answer: Answer; disabled?: boolean; onChange: (answer: Answer) => void }) {
+  const t = useTranslations("Olympiad.problem");
+  switch (problem.type) {
+    case "numeric":
+      return <NumericInput value={answer as string} unit={problem.unit} disabled={disabled} onChange={onChange} />;
+    case "mcq":
+      return <McqInput choices={problem.choices ?? []} value={answer as number | null} disabled={disabled} onChange={onChange} />;
+    case "balance":
+      return <BalanceInput equation={problem.equation ?? ""} value={answer as number[]} disabled={disabled} onChange={onChange} />;
+    case "econf":
+      return <EconfInput value={answer as EconfAnswer} disabled={disabled} onChange={onChange} />;
+    default:
+      return (
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[0.85rem] font-semibold text-muted-foreground">{t("openAnswer")}</span>
+          <textarea
+            value={answer as string}
+            disabled={disabled}
+            maxLength={4000}
+            rows={7}
+            onChange={(e) => onChange(e.target.value)}
+            className="min-h-40 rounded-2xl border border-line bg-panel-2 px-4 py-3 text-foreground"
+          />
+          <span className="text-[0.8rem] text-muted-foreground">{t("openNote")}</span>
+        </label>
+      );
+  }
+}
+
 const SUP = "⁰¹²³⁴⁵⁶⁷⁸⁹";
 const sup = (n: number) => String(n).replace(/\d/g, (d) => SUP[+d]);
-
-/** Теңдеудегі формула: "MnO4^-" → "MnO₄⁻", "Fe^3+" → "Fe³⁺" (алдымен заряд, сосын индекстер) */
-export const prettyFormula = (f: string) =>
-  f
-    .replace(/\^(\d*)([+-])$/, (_, n: string, sign: string) => n.replace(/\d/g, (d) => SUP[+d]) + (sign === "+" ? "⁺" : "⁻"))
-    .replace(/\d/g, (d) => SUB[+d]);
 
 const STEP_BUTTON =
   "grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-panel font-mono text-xl font-semibold transition-colors hover:border-cyan-dim disabled:opacity-35";

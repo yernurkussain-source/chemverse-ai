@@ -21,6 +21,15 @@ export type PublicProblem = {
   equation?: string;
 };
 
+const SUB = "₀₁₂₃₄₅₆₇₈₉";
+const SUP = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+
+/** Теңдеудегі формула: "MnO4^-" → "MnO₄⁻", "Fe^3+" → "Fe³⁺" (алдымен заряд, сосын индекстер) */
+export const prettyFormula = (f: string) =>
+  f
+    .replace(/\^(\d*)([+-])$/, (_, n: string, sign: string) => n.replace(/\d/g, (d) => SUP[+d]) + (sign === "+" ? "⁺" : "⁻"))
+    .replace(/\d/g, (d) => SUB[+d]);
+
 /** Генератор есептерінің деңгейі (банкте 1–3) */
 export const GENERATOR_LEVEL = 2;
 

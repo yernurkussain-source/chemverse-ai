@@ -39,9 +39,14 @@ async function TopicMap() {
     <>
       <div className="mb-8">
         {me ? (
-          <Link href="/olympiad/mistakes" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
-            📒 {t("mistakesLink")}
-          </Link>
+          <nav className="flex flex-wrap gap-2">
+            <Link href="/olympiad/mistakes" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
+              📒 {t("mistakesLink")}
+            </Link>
+            <Link href="/olympiad/mock" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
+              ⏱ {t("mockLink")}
+            </Link>
+          </nav>
         ) : (
           <p className="rounded-2xl border border-line bg-panel-2 px-4 py-3 text-[0.9rem]">
             {t("guestNote")}{" "}

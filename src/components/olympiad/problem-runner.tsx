@@ -4,34 +4,14 @@ import { useState, type FormEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { CheckResponse } from "@/app/api/olympiad/check/route";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { splitEq } from "@/features/olympiad/core";
 import type { PublicProblem } from "@/features/olympiad/practice";
 import { Link, useRouter } from "@/i18n/navigation";
 import { HintLadder, StepReveal } from "./hint-ladder";
-import { BalanceInput, EconfInput, McqInput, NumericInput, type EconfAnswer } from "./inputs";
+import { AnswerInput, initialAnswer, isReady, type Answer } from "./inputs";
 
-type Answer = string | number | null | number[] | EconfAnswer;
 type Status = "idle" | "checking" | "wrong" | "correct" | "revealed" | "submitted";
 const ERRORS = ["network", "not_found", "bad_request", "not_configured", "login_required"] as const;
 type ErrorCode = (typeof ERRORS)[number];
-
-function initialAnswer(p: PublicProblem): Answer {
-  if (p.type === "mcq") return null;
-  if (p.type === "balance") {
-    const { L, R } = splitEq(p.equation!);
-    return [...L, ...R].map(() => 1);
-  }
-  if (p.type === "econf") return { occ: {}, unpaired: 0 };
-  return "";
-}
-
-/** Жауап толық енгізілді ме (тексеру батырмасы сонда ғана белсенді) */
-function isReady(p: PublicProblem, a: Answer) {
-  if (p.type === "numeric" || p.type === "open") return typeof a === "string" && a.trim() !== "";
-  if (p.type === "mcq") return a !== null;
-  if (p.type === "econf") return Object.values((a as EconfAnswer).occ).some((n) => n > 0);
-  return true;
-}
 
 /** Есептер тізбегі: бір есеп → тексеру → келесі; соңында қорытынды */
 export function ProblemRunner({ problems, showTopic = false }: { problems: PublicProblem[]; showTopic?: boolean }) {
@@ -151,24 +131,7 @@ function ProblemCard({ problem, n, total, showTopic, onNext }: { problem: Public
       </h2>
 
       <form onSubmit={onSubmit} className="flex flex-col gap-5">
-        {problem.type === "numeric" && <NumericInput value={answer as string} unit={problem.unit} disabled={finished} onChange={setAnswer} />}
-        {problem.type === "mcq" && <McqInput choices={problem.choices ?? []} value={answer as number | null} disabled={finished} onChange={setAnswer} />}
-        {problem.type === "balance" && <BalanceInput equation={problem.equation ?? ""} value={answer as number[]} disabled={finished} onChange={setAnswer} />}
-        {problem.type === "econf" && <EconfInput value={answer as EconfAnswer} disabled={finished} onChange={setAnswer} />}
-        {problem.type === "open" && (
-          <label className="flex flex-col gap-1.5">
-            <span className="text-[0.85rem] font-semibold text-muted-foreground">{t("openAnswer")}</span>
-            <textarea
-              value={answer as string}
-              disabled={finished}
-              maxLength={4000}
-              rows={7}
-              onChange={(e) => setAnswer(e.target.value)}
-              className="min-h-40 rounded-2xl border border-line bg-panel-2 px-4 py-3 text-foreground"
-            />
-            <span className="text-[0.8rem] text-muted-foreground">{t("openNote")}</span>
-          </label>
-        )}
+        <AnswerInput problem={problem} answer={answer} disabled={finished} onChange={setAnswer} />
 
         <div aria-live="polite" className="flex flex-col gap-2 empty:hidden">
           {status === "correct" && (
