@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { LabAssignmentForm } from "@/components/virtual-lab/teacher-forms";
 import { deleteAssignment } from "@/features/teacher/actions";
 import { getTeacherId } from "@/features/teacher/queries";
+import { QUEST_IDS } from "@/features/virtual-lab-3d/game/quest-ids";
 import { SHELL_LABS } from "@/features/virtual-lab/catalog";
 import { getLabOverview, type LabClass } from "@/features/virtual-lab/teacher-queries";
 import { Link, redirect } from "@/i18n/navigation";
@@ -148,6 +149,8 @@ async function ClassResults({ cls }: { cls: LabClass }) {
         )}
       </div>
 
+      {cls.students.length > 0 && <GameResults cls={cls} />}
+
       <div>
         <h3 className="mb-2 font-display font-semibold">{t("teacherLabs.assignmentsTitle")}</h3>
         {cls.assignments.length === 0 ? (
@@ -175,5 +178,79 @@ async function ClassResults({ cls }: { cls: LabClass }) {
         )}
       </div>
     </section>
+  );
+}
+
+/** 3D зертхана: әр оқушының тапсырмалары, XP, қауіпсіздік ұпайы; атын басса — орындалған тапсырмалар тізімі */
+async function GameResults({ cls }: { cls: LabClass }) {
+  const t = await getTranslations("ChemLab.teacherLabs");
+  const tq = await getTranslations("VirtualLab3D.quests");
+  const played = cls.students.filter((s) => s.game);
+  return (
+    <div>
+      <h3 className="mb-2 font-display font-semibold">{t("gameTitle")}</h3>
+      {played.length === 0 ? (
+        <p className="text-[0.9rem] text-muted-foreground">{t("gameEmpty")}</p>
+      ) : (
+        <div className="overflow-x-auto rounded-2xl border border-line bg-panel">
+          <table className="w-full min-w-[30rem] text-[0.88rem]">
+            <thead>
+              <tr className="border-b border-line text-left text-[0.78rem] text-muted-foreground">
+                <th scope="col" className="px-3 py-2.5 font-semibold">
+                  {t("student")}
+                </th>
+                <th scope="col" className="px-2 py-2.5 text-center font-semibold">
+                  {t("gameQuests")}
+                </th>
+                <th scope="col" className="px-2 py-2.5 text-center font-semibold">
+                  XP
+                </th>
+                <th scope="col" className="px-2 py-2.5 text-center font-semibold">
+                  {t("gameSafety")}
+                </th>
+                <th scope="col" className="px-2 py-2.5 text-center font-semibold">
+                  {t("gameUpdated")}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {cls.students.map((student) => {
+                const game = student.game;
+                return (
+                  <tr key={student.id} className="border-b border-line align-top last:border-0">
+                    <th scope="row" className="px-3 py-2.5 text-left font-semibold">
+                      {game && game.done.length > 0 ? (
+                        <details>
+                          <summary className="cursor-pointer hover:text-cyan">{student.name}</summary>
+                          <ul className="mt-1.5 flex flex-col gap-0.5 text-[0.8rem] font-normal text-muted-foreground">
+                            {game.done.map((id) => (
+                              <li key={id}>✓ {tq(`${id}.t`)}</li>
+                            ))}
+                          </ul>
+                        </details>
+                      ) : (
+                        student.name
+                      )}
+                    </th>
+                    {game ? (
+                      <>
+                        <td className="px-2 py-2.5 text-center font-mono">{t("gameDone", { done: game.done.length, total: QUEST_IDS.length })}</td>
+                        <td className="px-2 py-2.5 text-center font-mono">{game.xp}</td>
+                        <td className={cn("px-2 py-2.5 text-center font-mono font-semibold", scoreColor(game.safety))}>{game.safety}</td>
+                        <td className="px-2 py-2.5 text-center font-mono text-[0.8rem]">{game.updatedAt.slice(0, 10)}</td>
+                      </>
+                    ) : (
+                      <td colSpan={4} className="px-2 py-2.5 text-center text-muted-foreground">
+                        {t("gameNone")}
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
 }

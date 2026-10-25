@@ -2868,7 +2868,14 @@
       "done": "Выполнили {done}/{total}",
       "delete": "Удалить",
       "migration": "Чтобы выдавать задания, запустите в Supabase миграцию ChemLab 3-й сессии (20261025000000_chemlab_session3.sql).",
-      "open": "Открыть ChemLab"
+      "open": "Открыть ChemLab",
+      "gameTitle": "3D-лаборатория",
+      "gameEmpty": "Ученики класса ещё не играли в 3D-лаборатории (прогресс сохраняется только у вошедших в систему).",
+      "gameQuests": "Задания",
+      "gameSafety": "Безопасность",
+      "gameUpdated": "Последний раз",
+      "gameNone": "ещё не играл(а)",
+      "gameDone": "{done}/{total}"
     },
     "game3d": {
       "badge": "Новое",

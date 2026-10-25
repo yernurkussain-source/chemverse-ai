@@ -2868,7 +2868,14 @@
       "done": "{done}/{total} орындады",
       "delete": "Жою",
       "migration": "Тапсырма беру үшін Supabase-те ChemLab 3-сессиясының миграциясын (20261025000000_chemlab_session3.sql) іске қосыңыз.",
-      "open": "ChemLab-ты ашу"
+      "open": "ChemLab-ты ашу",
+      "gameTitle": "3D зертхана",
+      "gameEmpty": "Сынып оқушылары 3D зертханада әлі ойнаған жоқ (прогресс тек жүйеге кірген оқушыда сақталады).",
+      "gameQuests": "Тапсырмалар",
+      "gameSafety": "Қауіпсіздік",
+      "gameUpdated": "Соңғы рет",
+      "gameNone": "әлі ойнаған жоқ",
+      "gameDone": "{done}/{total}"
     },
     "game3d": {
       "badge": "Жаңа",

@@ -1,30 +1,9 @@
 import { engineStats, g, pH } from "@/features/chem-engine";
 import type { Game } from "../core/context";
 import { addLog, toast } from "./journal";
+import type { QuestId } from "./quest-ids";
 
-export type QuestId =
-  | "ppe"
-  | "glass"
-  | "twohand"
-  | "neut"
-  | "agcl"
-  | "baso4"
-  | "cuoh"
-  | "filter"
-  | "feoh"
-  | "pop"
-  | "o2"
-  | "lime"
-  | "co2"
-  | "cu"
-  | "ag"
-  | "salt"
-  | "amph"
-  | "nocu"
-  | "h2"
-  | "titr"
-  | "lamp"
-  | "flame";
+export type { QuestId };
 
 /** Тапсырма: id (аты мен сипаттамасы messages → VirtualLab3D.quests.<id>), ok — орындалды ма */
 type Quest = { id: QuestId; ok: (G: Game) => boolean };

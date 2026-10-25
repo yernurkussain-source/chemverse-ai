@@ -1,16 +1,21 @@
 import { connection } from "next/server";
+import { QUEST_IDS, type QuestId } from "@/features/virtual-lab-3d/game/quest-ids";
 import { createClient } from "@/lib/supabase/server";
 import { SHELL_LABS, type ShellLabSlug } from "./catalog";
 import type { ScoreBreakdown } from "./scoring";
 
 /**
  * /teacher/labs деректері: әр сыныптың оқушылары × ChemLab тәжірибелері (ең жақсы ұпай)
- * және ChemLab тапсырмалары. Барлығы мұғалімнің өз сессиясымен (RLS) оқылады.
+ * ChemLab тапсырмалары және 3D зертхана прогресі. Барлығы мұғалімнің өз сессиясымен (RLS) оқылады.
  */
 export type LabCell = { score: number; attemptId: string; attempts: number };
-export type LabStudent = { id: string; name: string; labs: Partial<Record<ShellLabSlug, LabCell>> };
+/** 3D зертханадағы прогресс (lab_game_progress): орындалған тапсырмалар ойындағы ретімен */
+export type GameProgress = { xp: number; safety: number; done: QuestId[]; updatedAt: string };
+export type LabStudent = { id: string; name: string; labs: Partial<Record<ShellLabSlug, LabCell>>; game: GameProgress | null };
 export type LabAssignment = { id: string; slug: ShellLabSlug; title: string | null; dueAt: string | null; createdAt: string; done: number };
 export type LabClass = { id: string; name: string; students: LabStudent[]; assignments: LabAssignment[] };
+
+type GameRow = { user_id: string; xp: number; safety: number; quests_done: unknown; updated_at: string };
 
 type AttemptRow = { id: string; user_id: string; experiment_id: string; created_at: string; score_total: number | null; result: { breakdown?: ScoreBreakdown } };
 
@@ -41,14 +46,25 @@ export async function getLabOverview(teacherId: string): Promise<{ classes: LabC
   const migrated = !assignmentsResult.error;
 
   const studentIds = [...new Set((members ?? []).map((m) => m.user_id))];
-  const { data: attempts } = studentIds.length
-    ? await supabase
-        .from("lab_attempts")
-        .select("id, user_id, experiment_id, created_at, score_total, result")
-        .in("user_id", studentIds)
-        .order("created_at", { ascending: false })
-        .returns<AttemptRow[]>()
-    : { data: [] as AttemptRow[] };
+  // 3D прогресі: кесте жоқ болса (миграция іске қосылмаған) — қате, ойын бағаны бос қалады
+  const [{ data: attempts }, { data: games }] = studentIds.length
+    ? await Promise.all([
+        supabase
+          .from("lab_attempts")
+          .select("id, user_id, experiment_id, created_at, score_total, result")
+          .in("user_id", studentIds)
+          .order("created_at", { ascending: false })
+          .returns<AttemptRow[]>(),
+        supabase.from("lab_game_progress").select("user_id, xp, safety, quests_done, updated_at").in("user_id", studentIds).returns<GameRow[]>(),
+      ])
+    : [{ data: [] as AttemptRow[] }, { data: [] as GameRow[] }];
+
+  const gameOf = (userId: string): GameProgress | null => {
+    const row = (games ?? []).find((g) => g.user_id === userId);
+    if (!row) return null;
+    const list = Array.isArray(row.quests_done) ? row.quests_done : [];
+    return { xp: row.xp, safety: row.safety, done: QUEST_IDS.filter((id) => list.includes(id)), updatedAt: row.updated_at };
+  };
 
   const scoreOf = (a: AttemptRow) => a.score_total ?? a.result.breakdown?.total ?? null;
 
@@ -69,7 +85,7 @@ export async function getLabOverview(teacherId: string): Promise<{ classes: LabC
               attempts: (current?.attempts ?? 0) + 1,
             };
           }
-          return { id: m.user_id, name: m.profiles?.full_name || "—", labs };
+          return { id: m.user_id, name: m.profiles?.full_name || "—", labs, game: gameOf(m.user_id) };
         })
         .sort((a, b) => a.name.localeCompare(b.name));
 

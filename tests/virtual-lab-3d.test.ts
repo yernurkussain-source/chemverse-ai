@@ -5,6 +5,7 @@ import { ENGINE_EVENT_KEYS, LIQUIDS, REAG } from "@/features/chem-engine";
 import { chooseFlame } from "@/features/virtual-lab-3d/game/flame-rules";
 import { makeFmt, observationKey, plainNumber, TRANSLATED_EQUATIONS } from "@/features/virtual-lab-3d/game/i18n";
 import { sanitizeProgress } from "@/features/virtual-lab-3d/game/progress";
+import { QUEST_IDS } from "@/features/virtual-lab-3d/game/quest-ids";
 import { LEVEL_COUNT, QUESTS } from "@/features/virtual-lab-3d/game/quests";
 
 type Tree = { [key: string]: string | Tree };
@@ -40,6 +41,8 @@ describe("3D зертхана: тапсырмалар", () => {
   test("22 тапсырма, id-лері қайталанбайды, әрқайсысының үш тілде аты мен сипаттамасы бар", () => {
     assert.equal(QUESTS.length, 22);
     assert.equal(new Set(QUESTS.map((q) => q.id)).size, 22);
+    // Мұғалім беті мен дерекқор осы тізімді қолданады — реті ойындағыдай
+    assert.deepEqual(QUESTS.map((q) => q.id), [...QUEST_IDS]);
     for (const l of LOCALES) {
       for (const q of QUESTS) {
         assert.equal(typeof get(lab[l], `quests.${q.id}.t`), "string", `${l}: quests.${q.id}.t`);

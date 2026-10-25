@@ -2868,7 +2868,14 @@
       "done": "{done}/{total} done",
       "delete": "Delete",
       "migration": "To create assignments, run the ChemLab session 3 migration in Supabase (20261025000000_chemlab_session3.sql).",
-      "open": "Open ChemLab"
+      "open": "Open ChemLab",
+      "gameTitle": "3D lab",
+      "gameEmpty": "No one in this class has played the 3D lab yet (progress is saved only for signed-in students).",
+      "gameQuests": "Tasks",
+      "gameSafety": "Safety",
+      "gameUpdated": "Last played",
+      "gameNone": "not played yet",
+      "gameDone": "{done}/{total}"
     },
     "game3d": {
       "badge": "New",
