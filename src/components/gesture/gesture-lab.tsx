@@ -6,9 +6,12 @@ import { Button } from "@/components/ui/button";
 import { MoleculeViewer, VIEW_STYLES, type MoleculeViewerApi, type ViewStyle } from "@/components/molecules/molecule-viewer";
 import { classifyHand, smoothHands, type Gesture, type Point } from "@/features/gesture/classify";
 import { useHandTracking } from "@/features/gesture/use-hand-tracking";
-import { MOLECULES } from "@/lib/chemistry/molecules";
+import { MOLECULES as ALL_MOLECULES } from "@/lib/chemistry/molecules";
 import { cn } from "@/lib/utils";
 
+// Қол қимылымен ауыстыруға ыңғайлы болуы үшін — алғашқы 10 молекула (жұдырықпен 46-ны айналып шығу ұзақ)
+const LAB_IDS = ["h2o", "co2", "ch4", "nh3", "ethanol", "benzene", "nacl", "h2so4", "glucose", "caffeine"];
+const MOLECULES = ALL_MOLECULES.filter((m) => LAB_IDS.includes(m.id));
 const LEGEND: Exclude<Gesture, "none">[] = ["point", "pinch", "fist", "open", "victory"];
 const SMOOTHING_FRAMES = 5;
 const HOLD_MS = { fist: 500, open: 400, victory: 400 } as const;

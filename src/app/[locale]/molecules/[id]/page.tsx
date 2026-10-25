@@ -7,8 +7,8 @@ import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { MoleculeDetailViewer } from "@/components/molecules/molecule-detail-viewer";
 import { getElement } from "@/lib/chemistry/elements";
-import { getMolecule, MOLECULES, molarMass } from "@/lib/chemistry/molecules";
-import { formatDecimal, formatShort } from "@/lib/format";
+import { formatMoleculeAngle, getMolecule, MOLECULES, molarMass } from "@/lib/chemistry/molecules";
+import { formatDecimal, formatPlain } from "@/lib/format";
 
 export function generateStaticParams() {
   return MOLECULES.map((m) => ({ id: m.id }));
@@ -51,7 +51,8 @@ async function MoleculeContent({ params }: { params: Params }) {
   const tm = await getTranslations("Molecules");
   const tv = await getTranslations("Viewer");
   const tAr = await getTranslations("Ar");
-  const angle = `${molecule.angle.approx ? "≈" : ""}${formatShort(molecule.angle.degrees, locale)}°`;
+  const angle = formatMoleculeAngle(molecule, locale);
+  const name = tm(`${molecule.id}.name`);
 
   return (
     <>
@@ -61,13 +62,13 @@ async function MoleculeContent({ params }: { params: Params }) {
         <div className="flex min-w-0 flex-col gap-5">
           <div>
             <p className="font-mono text-3xl font-semibold text-cyan">{molecule.formula}</p>
-            <h1 className="mt-1 text-[clamp(1.5rem,3vw,2.2rem)] font-bold">{tm(`${molecule.id}.name`)}</h1>
+            <h1 className="mt-1 text-[clamp(1.5rem,3vw,2.2rem)] font-bold">{name}</h1>
             <p className="mt-3 text-foreground-2">{tm(`${molecule.id}.description`)}</p>
           </div>
 
           <dl className="m-0 grid grid-cols-2 gap-2.5">
             <Fact label={tv("facts.mass")} value={`${formatDecimal(molarMass(molecule.atoms), locale)} ${tv("massUnit")}`} />
-            <Fact label={tv("facts.angle")} value={angle} />
+            {angle && <Fact label={tv("facts.angle")} value={angle} />}
             <Fact label={tv("facts.shape")} value={tm(`${molecule.id}.shape`)} wide />
           </dl>
 
@@ -93,10 +94,18 @@ async function MoleculeContent({ params }: { params: Params }) {
             <Link href="/gesture-lab" className={buttonVariants({ variant: "panel", size: "pill" })}>
               {tAr("gestureLink")}
             </Link>
+            <Link
+              href={{ pathname: "/ai-tutor", query: { q: t("askAiQuestion", { name, formula: molecule.formula }) } }}
+              className={buttonVariants({ variant: "panel", size: "pill" })}
+            >
+              ✦ {t("askAi")}
+            </Link>
           </div>
 
           <p className="font-mono text-[0.78rem] text-muted-foreground">
-            {molecule.pubchemCid ? t("source", { cid: molecule.pubchemCid }) : t("sourceGenerated")}
+            {molecule.pubchemCid
+              ? t("source", { cid: molecule.pubchemCid })
+              : t("sourceGenerated", { bond: molecule.generated!.bond, length: formatPlain(molecule.generated!.length, locale) })}
           </p>
         </div>
       </div>

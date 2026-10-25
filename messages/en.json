@@ -117,6 +117,186 @@
       "name": "Caffeine",
       "shape": "Planar fused rings",
       "description": "An alkaloid found in tea and coffee. A flat structure of two fused rings with four nitrogen atoms."
+    },
+    "h2": {
+      "name": "Hydrogen",
+      "shape": "Linear (diatomic)",
+      "description": "The lightest gas. Two H atoms share one electron pair — a nonpolar covalent bond."
+    },
+    "o2": {
+      "name": "Oxygen",
+      "shape": "Linear (diatomic)",
+      "description": "The gas needed for breathing and burning. The atoms are joined by a double bond; each O has two lone pairs."
+    },
+    "n2": {
+      "name": "Nitrogen",
+      "shape": "Linear (diatomic)",
+      "description": "78 % of air. The triple bond is very strong, so nitrogen is quite unreactive."
+    },
+    "cl2": {
+      "name": "Chlorine",
+      "shape": "Linear (diatomic)",
+      "description": "A yellow-green toxic gas. Two Cl atoms are joined by a single bond, each with three lone pairs."
+    },
+    "o3": {
+      "name": "Ozone",
+      "shape": "Bent",
+      "description": "An allotrope of oxygen. Earth's ozone layer absorbs the Sun's UV light. A lone pair on the central atom bends the molecule."
+    },
+    "hcl": {
+      "name": "Hydrogen chloride",
+      "shape": "Linear (diatomic)",
+      "description": "Its solution in water is hydrochloric acid (also found in stomach juice). The H–Cl bond is polar: electron density shifts toward chlorine."
+    },
+    "h2o2": {
+      "name": "Hydrogen peroxide",
+      "shape": "Open-book shape",
+      "description": "Used to disinfect wounds. The O–O bond is weak, so it easily decomposes and releases oxygen."
+    },
+    "co": {
+      "name": "Carbon monoxide",
+      "shape": "Linear (diatomic)",
+      "description": "A colorless, odorless, very toxic gas that binds tightly to hemoglobin. One of its three bonds is a dative (donor–acceptor) bond."
+    },
+    "so2": {
+      "name": "Sulfur dioxide",
+      "shape": "Bent",
+      "description": "A pungent gas that causes acid rain. A lone pair on sulfur bends the molecule."
+    },
+    "hno3": {
+      "name": "Nitric acid",
+      "shape": "Planar (nitrogen at the center of a triangle)",
+      "description": "A strong acid and oxidizer used to make fertilizers and explosives."
+    },
+    "h3po4": {
+      "name": "Phosphoric acid",
+      "shape": "Tetrahedral (phosphorus at the center)",
+      "description": "A moderately strong triprotic acid used in phosphate fertilizers and soft drinks."
+    },
+    "ethane": {
+      "name": "Ethane",
+      "shape": "Tetrahedral carbons",
+      "description": "The second alkane, found in natural gas. Groups can rotate around the C–C bond."
+    },
+    "propane": {
+      "name": "Propane",
+      "shape": "Zigzag chain",
+      "description": "Fuel in gas cylinders. Because of tetrahedral angles the carbon chain is a zigzag, not a straight line."
+    },
+    "butane": {
+      "name": "Butane",
+      "shape": "Unbranched zigzag chain",
+      "description": "The gas in lighters. Same formula as isobutane (C₄H₁₀) but with an unbranched chain — structural isomerism."
+    },
+    "isobutane": {
+      "name": "Isobutane (2-methylpropane)",
+      "shape": "Branched chain",
+      "description": "An isomer of butane: three CH₃ groups are attached to a central carbon. Used as a refrigerant."
+    },
+    "ethylene": {
+      "name": "Ethylene (ethene)",
+      "shape": "Planar",
+      "description": "The simplest hydrocarbon with a double bond; the raw material for polyethylene, it speeds up fruit ripening."
+    },
+    "acetylene": {
+      "name": "Acetylene (ethyne)",
+      "shape": "Linear",
+      "description": "A hydrocarbon with a triple bond. Its flame in oxygen reaches 3000 °C, so it is used for welding."
+    },
+    "methanol": {
+      "name": "Methanol",
+      "shape": "Tetrahedral carbon",
+      "description": "The simplest alcohol; very toxic (a small dose can cause blindness). Used as a solvent and fuel."
+    },
+    "dimethyl-ether": {
+      "name": "Dimethyl ether",
+      "shape": "Bent (oxygen in the middle)",
+      "description": "An isomer of ethanol (C₂H₆O) without an –OH group: oxygen sits between two carbons. That is why it is a gas at room temperature."
+    },
+    "glycerol": {
+      "name": "Glycerol",
+      "shape": "Tetrahedral carbons",
+      "description": "An alcohol with three –OH groups. A sweet, syrupy liquid used in cosmetics and medicines."
+    },
+    "formaldehyde": {
+      "name": "Formaldehyde (methanal)",
+      "shape": "Trigonal planar",
+      "description": "The simplest aldehyde. Its water solution (formalin) preserves biological specimens; toxic."
+    },
+    "acetic-acid": {
+      "name": "Acetic acid",
+      "shape": "Planar carboxyl group",
+      "description": "The basis of table vinegar. The –COOH (carboxyl) group makes it an acid."
+    },
+    "acetone": {
+      "name": "Acetone (propanone)",
+      "shape": "Planar carbonyl group",
+      "description": "The simplest ketone and a good solvent (nail-polish remover). An isomer of propanal: the C=O group is in the middle of the chain."
+    },
+    "propanal": {
+      "name": "Propanal",
+      "shape": "Planar carbonyl group",
+      "description": "An aldehyde: the C=O group is at the end of the chain. Same formula as acetone (C₃H₆O) — functional-group isomerism."
+    },
+    "phenol": {
+      "name": "Phenol",
+      "shape": "Planar ring",
+      "description": "A benzene ring with an –OH group. An antiseptic and a raw material for plastics; toxic."
+    },
+    "sucrose": {
+      "name": "Sucrose",
+      "shape": "Two rings (glucose + fructose)",
+      "description": "Table sugar. A disaccharide made of glucose and fructose units; obtained from sugar beet and sugar cane."
+    },
+    "urea": {
+      "name": "Urea",
+      "shape": "Nearly planar",
+      "description": "A product of nitrogen metabolism. The first organic compound made in a lab (Wöhler, 1828); a nitrogen fertilizer."
+    },
+    "glycine": {
+      "name": "Glycine",
+      "shape": "Tetrahedral α-carbon",
+      "description": "The simplest amino acid: it has both an –NH₂ (basic) and a –COOH (acidic) group. A building block of proteins."
+    },
+    "alanine": {
+      "name": "Alanine",
+      "shape": "Tetrahedral α-carbon",
+      "description": "A protein amino acid. Its α-carbon carries four different groups, so it has two mirror-image forms (L and D) — chirality."
+    },
+    "aspirin": {
+      "name": "Aspirin (acetylsalicylic acid)",
+      "shape": "Planar ring + side groups",
+      "description": "A pain and fever reliever. The molecule has a benzene ring, a carboxyl group and an ester group."
+    },
+    "vitamin-c": {
+      "name": "Vitamin C (ascorbic acid)",
+      "shape": "Five-membered ring",
+      "description": "A vitamin needed for immunity and a strong reducing agent (antioxidant). Rich in citrus fruit and rose hips."
+    },
+    "diamond": {
+      "name": "Diamond",
+      "shape": "Tetrahedral atomic lattice",
+      "description": "An allotrope of carbon. Each atom is bonded to four neighbors (sp³), which makes diamond the hardest natural substance."
+    },
+    "graphite": {
+      "name": "Graphite",
+      "shape": "Layered hexagonal lattice",
+      "description": "An allotrope of carbon. Atoms in each layer form hexagons (sp²) and the layers are only weakly held together, so graphite is soft and conducts electricity."
+    },
+    "ice": {
+      "name": "Ice",
+      "shape": "Tetrahedral network (hydrogen bonds)",
+      "description": "Each water molecule forms hydrogen bonds (dashed lines) with four neighbors. The lattice has a lot of empty space, so ice is lighter than water and floats."
+    },
+    "iron": {
+      "name": "Iron",
+      "shape": "Body-centered cubic lattice",
+      "description": "A metallic lattice: free electrons (an “electron sea”) move between positive ions, so metals conduct electricity and heat well."
+    },
+    "copper": {
+      "name": "Copper",
+      "shape": "Face-centered cubic lattice",
+      "description": "One of the most tightly packed metal lattices. Copper is ductile and, after silver, the best electrical conductor — used for wires."
     }
   },
   "Modules": {
@@ -558,17 +738,56 @@
     "atomHint": "Tap an atom to see its properties",
     "atomMass": "Atomic mass",
     "electronegativity": "Electronegativity",
-    "closeAtom": "Close"
+    "closeAtom": "Close",
+    "tools": "3D tools",
+    "labels": "Atom labels",
+    "measure": "Measure",
+    "lonePairs": "Electron pairs",
+    "polarity": "Polarity",
+    "png": "PNG image",
+    "measureHint": "Tap two atoms to see the bond length, three atoms to see the angle.",
+    "lonePairsHint": "Yellow clouds are lone electron pairs. They push the bonds apart and set the molecule's shape (VSEPR).",
+    "polarityHint": "Red δ− has more electron density, blue δ+ has less. The yellow arrow is the dipole (δ+ → δ−).",
+    "hbonds": "Dashed line — hydrogen bond",
+    "hybridization": "Hybridization",
+    "lonePairsCount": "Lone pairs"
   },
   "MoleculesPage": {
     "title": "3D Lab: molecules",
-    "subtitle": "10 molecules and a crystal: rotate, zoom and tap atoms to see their properties.",
+    "subtitle": "{count} molecules and crystals: rotate, zoom, tap atoms, and measure bond lengths and angles.",
     "open": "Open 3D",
     "back": "All molecules",
     "source": "Structure source: PubChem (CID {cid})",
-    "sourceGenerated": "Structure: a fragment of the NaCl crystal lattice (Na–Cl = 2.82 Å)",
+    "sourceGenerated": "Structure computed by the program ({bond} = {length} Å)",
     "periodicLink": "Periodic table",
-    "composition": "Composition"
+    "composition": "Composition",
+    "all": "All",
+    "searchLabel": "Find a molecule",
+    "searchPlaceholder": "Name or formula: water, H₂O, alcohol",
+    "none": "Nothing found",
+    "bonds": "Bonds",
+    "deltaEn": "ΔEN",
+    "kinds": {
+      "nonpolar": "nonpolar covalent",
+      "polar": "polar covalent",
+      "ionic": "ionic",
+      "metallic": "metallic"
+    },
+    "centralAtom": "Central atom",
+    "centralValue": "{symbol} · {hybridization} · lone pairs: {count}",
+    "polarity": "Polarity",
+    "polar": "Polar molecule",
+    "nonpolar": "Nonpolar molecule",
+    "askAi": "Ask the AI tutor",
+    "askAiQuestion": "Tell me about {name} ({formula}): structure, molecular shape, bonds, properties and uses.",
+    "groups": {
+      "simple": "Simple substances",
+      "inorganic": "Inorganic compounds",
+      "hydrocarbon": "Hydrocarbons",
+      "organic": "Oxygen-containing organics",
+      "bio": "Life and everyday",
+      "crystal": "Crystals"
+    }
   },
   "PeriodicTable": {
     "title": "Periodic table",
@@ -692,7 +911,8 @@
       "gl": "g/L",
       "pm": "pm",
       "ev": "eV"
-    }
+    },
+    "molecules": "3D molecules with this element"
   },
   "GestureLab": {
     "title": "Gesture control",

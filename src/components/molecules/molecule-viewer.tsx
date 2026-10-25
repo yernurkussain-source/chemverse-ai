@@ -26,10 +26,11 @@ function styleSpec(style: ViewStyle, hasBonds: boolean) {
   }
 }
 
-/** Молекуланы рамкаға сыйдыру: 3Dmol атом центрлерін ғана есептейді, көлемді шарларға қосымша орын керек */
-function fitToView(viewer: GLViewer, style: ViewStyle) {
+/** Молекуланы рамкаға сыйдыру: 3Dmol атом центрлерін ғана есептейді, көлемді шарларға (және байланыссыз тордың үлкен шарларына) қосымша орын керек */
+function fitToView(viewer: GLViewer, style: ViewStyle, hasBonds: boolean) {
   viewer.zoomTo();
   if (style === "spaceFill") viewer.zoom(0.7);
+  else if (!hasBonds) viewer.zoom(0.8);
 }
 
 /** Сырттан басқару (қол қимылы үшін) */
@@ -134,7 +135,7 @@ export function MoleculeViewer({ molecule, apiRef, viewStyle, onCycleStyle, clas
         hasBondsRef.current = model.selectedAtoms({}).some((a: AtomSpec) => (a.bonds?.length ?? 0) > 0);
         viewer.setStyle({}, styleSpec(viewStyleRef.current, hasBondsRef.current));
         viewer.setClickable({}, true, (atom: AtomSpec) => setAtomSymbol(atom.elem ?? null));
-        fitToView(viewer, viewStyleRef.current);
+        fitToView(viewer, viewStyleRef.current, hasBondsRef.current);
         viewer.render();
         setAtomSymbol(null);
         setStatus("ok");
@@ -155,7 +156,7 @@ export function MoleculeViewer({ molecule, apiRef, viewStyle, onCycleStyle, clas
     if (!viewer || status !== "ok") return;
     viewer.setStyle({}, styleSpec(viewStyle, hasBondsRef.current));
     // Көлемді стильде шарлар үлкейеді — молекула рамкаға сыюы үшін қайта сыйдырамыз
-    fitToView(viewer, viewStyle);
+    fitToView(viewer, viewStyle, hasBondsRef.current);
     viewer.render();
   }, [viewStyle, status]);
 
@@ -170,7 +171,7 @@ export function MoleculeViewer({ molecule, apiRef, viewStyle, onCycleStyle, clas
 
   const zoom = (factor: number) => viewerRef.current?.zoom(factor, 250);
   const reset = () => {
-    if (viewerRef.current) fitToView(viewerRef.current, viewStyleRef.current);
+    if (viewerRef.current) fitToView(viewerRef.current, viewStyleRef.current, hasBondsRef.current);
     setAtomSymbol(null);
   };
 

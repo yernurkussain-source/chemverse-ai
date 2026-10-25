@@ -2,7 +2,7 @@
 // Іске қосу: npm run glb   (нәтиже: public/molecules/glb/<id>.glb)
 //
 // Модель метрмен өлшенеді: ең үлкен өлшемі ~22 см болатындай масштабталады (үстелге ыңғайлы).
-// Түстер — CPK: H ақ, C сұр, N көк, O қызыл, S сары, Cl жасыл, Na күлгін.
+// Түстер — CPK: H ақ, C сұр, N көк, O қызыл, S сары, P қызғылт сары, Cl жасыл, Na күлгін, Fe/Cu — металл реңктері.
 import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import * as THREE from "three";
@@ -18,6 +18,9 @@ const ELEMENT_STYLE = {
   N: { color: 0x3050f8, radius: 0.39 },
   O: { color: 0xff0d0d, radius: 0.38 },
   S: { color: 0xffff30, radius: 0.5 },
+  P: { color: 0xff8000, radius: 0.5 },
+  Fe: { color: 0xe06633, radius: 0.5 },
+  Cu: { color: 0xc88033, radius: 0.5 },
   Na: { color: 0xab5cf2, radius: 0.55 },
   Cl: { color: 0x1ff01f, radius: 0.62 },
 };

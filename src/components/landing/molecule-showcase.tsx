@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { MoleculeViewer, VIEW_STYLES, type ViewStyle } from "@/components/molecules/molecule-viewer";
-import { FEATURED_MOLECULES, molarMass, type MoleculeId } from "@/lib/chemistry/molecules";
-import { formatDecimal, formatShort } from "@/lib/format";
+import { FEATURED_MOLECULES, formatMoleculeAngle, molarMass, type MoleculeId } from "@/lib/chemistry/molecules";
+import { formatDecimal } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 /** Басты беттегі 3D молекула (прототиптегі «viewer» блогы) */
@@ -18,7 +18,7 @@ export function MoleculeShowcase() {
 
   // Сандар тілге сай: kk/ru — 18,02; en — 18.02
   const mass = formatDecimal(molarMass(molecule.atoms), locale);
-  const angle = `${molecule.angle.approx ? "≈" : ""}${formatShort(molecule.angle.degrees, locale)}°`;
+  const angle = formatMoleculeAngle(molecule, locale) ?? "—";
   const cycleStyle = () => setViewStyle((s) => VIEW_STYLES[(VIEW_STYLES.indexOf(s) + 1) % VIEW_STYLES.length]);
 
   return (

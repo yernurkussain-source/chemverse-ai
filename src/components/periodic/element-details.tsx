@@ -10,6 +10,7 @@ import { formatAtomicMass, formatElectronegativity } from "@/lib/chemistry/eleme
 import { elementProperties } from "@/lib/chemistry/element-properties";
 import { elementUses } from "@/lib/chemistry/element-uses";
 import type { ChemicalElement, ElementCategory } from "@/lib/chemistry/elements";
+import { moleculesWith } from "@/lib/chemistry/molecules";
 import { formatPlain, formatShort } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -115,6 +116,7 @@ export function ElementDetails({ element }: { element: ChemicalElement | null })
                   {elementUses(z, locale)}
                 </p>
                 {!element.stable && <p className="mt-2 text-[0.75rem] text-muted-foreground">[ ] — {t("radioactive")}</p>}
+                <ElementMolecules symbol={element.symbol} />
               </>
             )}
 
@@ -168,6 +170,32 @@ export function ElementDetails({ element }: { element: ChemicalElement | null })
       </div>
       {showAtom && <AtomModel element={element} onClose={() => setShowAtom(false)} />}
     </>
+  );
+}
+
+/** Осы элемент кіретін 3D молекулалар (сілтемелер) */
+function ElementMolecules({ symbol }: { symbol: string }) {
+  const t = useTranslations("PeriodicTable");
+  const tm = useTranslations("Molecules");
+  const molecules = moleculesWith(symbol);
+  if (!molecules.length) return null;
+  return (
+    <div className="mt-3">
+      <p className="mb-1.5 text-[0.8rem] text-muted-foreground">{t("molecules")}</p>
+      <ul className="flex flex-wrap gap-1.5">
+        {molecules.map((m) => (
+          <li key={m.id}>
+            <Link
+              href={`/molecules/${m.id}`}
+              title={tm(`${m.id}.name`)}
+              className="inline-flex min-h-8 items-center rounded-full border border-line bg-panel-2 px-3 font-mono text-[0.8rem] hover:border-cyan-dim"
+            >
+              {m.formula}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
