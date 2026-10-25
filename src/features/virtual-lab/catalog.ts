@@ -29,7 +29,7 @@ export const LAB_CATALOG = [
   { slug: "reaction-rate", grades: [9, 10], status: "ready", levels: [9, 10] },
   { slug: "solubility", grades: [9], status: "soon" },
   { slug: "mass-fraction", grades: [9], status: "soon" },
-  { slug: "precipitation", grades: [9], status: "soon" },
+  { slug: "precipitation", grades: [9], status: "ready" },
   { slug: "metal-activity", grades: [9], status: "soon" },
   { slug: "unknown-substance", grades: [9, 10], status: "soon" },
   // 10-сынып
@@ -52,7 +52,7 @@ export type LabEntry = (typeof LAB_CATALOG)[number];
 export type LabSlug = LabEntry["slug"];
 
 /** 8 қадамдық LabShell-де жұмыс істейтін тәжірибелер (сынып ретімен) */
-export const SHELL_LABS = ["mixture-separation", "atom-builder", "indicator-lab", "titration", "reaction-rate"] as const satisfies readonly LabSlug[];
+export const SHELL_LABS = ["mixture-separation", "atom-builder", "indicator-lab", "titration", "reaction-rate", "precipitation"] as const satisfies readonly LabSlug[];
 export type ShellLabSlug = (typeof SHELL_LABS)[number];
 
 export const isShellLab = (slug: string): slug is ShellLabSlug => (SHELL_LABS as readonly string[]).includes(slug);

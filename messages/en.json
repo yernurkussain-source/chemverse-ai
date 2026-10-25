@@ -1779,7 +1779,13 @@
       "orderOk": "The reaction order is correct.",
       "orderWrong": "How many times smaller did t½ get when the concentration doubled? 2ⁿ equals that number.",
       "predictHalfLifeOk": "The t½ at 60 °C is predicted correctly.",
-      "predictHalfLifeWrong": "Check the prediction: t½(60) = t½(50) / γ (or t½(20) / γ⁴)."
+      "predictHalfLifeWrong": "Check the prediction: t½(60) = t½(50) / γ (or t½(20) / γ⁴).",
+      "ionicOk": "The ionic equation is correct: the precipitate is formed by Ba²⁺ and SO₄²⁻.",
+      "ionicWrong": "Check the ionic equation: which ions form an insoluble substance? Na⁺ and Cl⁻ stay in solution.",
+      "silverOk": "Correct: AgNO₃ is the test reagent for chloride ions.",
+      "silverWrong": "Compare the formulas of the four salts: which ion do they share?",
+      "pptMassOk": "The mass of the precipitate is correct.",
+      "pptMassWrong": "Use m = n · M: n(BaSO₄) = n(Ba²⁺)."
     },
     "resultPage": {
       "title": "Experiment result",
@@ -2299,6 +2305,79 @@
             "predictHalfLife": "What is t½ at T = 60 °C and c(HCl) = 1 M? (predict it using γ — the slider only goes to 50 °C)"
           },
           "conclusionHint": "Tip: write how you found γ (which runs, what calculation), the reaction order and your prediction for 60 °C."
+        }
+      },
+      "precipitation": {
+        "goal": "Add reagents to salt solutions, find out when a precipitate forms and write net ionic equations for the exchange reactions.",
+        "theory": "When electrolyte solutions are mixed, their ions swap partners. An exchange reaction goes to completion if one of the products is a precipitate (an insoluble substance), a gas or water. The solubility table shows which substances dissolve: BaSO₄ and AgCl are insoluble, while NaCl and NaNO₃ dissolve well. A net ionic equation shows only the ions that form the precipitate: Ba²⁺ + SO₄²⁻ → BaSO₄↓. The colour of a precipitate also helps to identify it: Cu(OH)₂ is blue, Fe(OH)₃ is red-brown, AgCl, BaSO₄ and Mg(OH)₂ are white.",
+        "safety": {
+          "goggles": "Wear safety goggles and gloves.",
+          "silver": "AgNO₃ stains skin dark — work in gloves only.",
+          "noTaste": "Never taste or smell the solutions.",
+          "waste": "Pour waste with a precipitate into the special container, not the sink."
+        },
+        "prediction": {
+          "question": "What do you think you will see if you add NaOH to CuCl₂ solution?",
+          "options": {
+            "bluePpt": "A blue precipitate forms",
+            "whitePpt": "A white precipitate forms",
+            "gas": "A gas is given off",
+            "nothing": "Nothing changes"
+          }
+        },
+        "equipment": {
+          "test-tubes": "Test tubes",
+          "rack": "Test tube rack",
+          "dropper": "Dropper",
+          "burner": "Spirit lamp",
+          "thermometer": "Thermometer",
+          "scales": "Balance",
+          "goggles": "Safety goggles",
+          "gloves": "Gloves"
+        },
+        "experiment": {
+          "hint": "Tap a test tube: the reagent (column) is added to the salt solution (row). Test all 12 pairs.",
+          "corner": "salt \\ reagent",
+          "log": "Tested pairs",
+          "empty": "Nothing has been added yet.",
+          "progress": "Tested: {count}/{total}"
+        },
+        "seen": {
+          "white": "white precipitate",
+          "blue": "blue precipitate",
+          "brown": "red-brown precipitate",
+          "none": "no change"
+        },
+        "observation": {
+          "pair": "Pair",
+          "seen": "Observed",
+          "ppt": "Precipitate (formula)",
+          "none": "No precipitate",
+          "notTested": "not tested"
+        },
+        "observationHint": "Use the colour of the precipitate and the ions that met to choose its formula. If there is no precipitate, choose “No precipitate”.",
+        "questions": {
+          "ionic": {
+            "label": "What is the net ionic equation for BaCl₂ + Na₂SO₄?"
+          },
+          "silver": {
+            "label": "Why did AgNO₃ give a white precipitate in all four tubes?",
+            "options": {
+              "silver": "Silver forms a precipitate with any metal",
+              "chloride": "All four salts contain the Cl⁻ ion — AgCl is insoluble",
+              "nitrate": "Nitrates are insoluble in water",
+              "water": "Ag⁺ reacts with water"
+            }
+          },
+          "pptMass": {
+            "label": "0.01 mol of Ba²⁺ turned completely into BaSO₄ precipitate. What is the mass of the precipitate? (M(BaSO₄) = 233 g/mol)",
+            "unit": "g"
+          }
+        },
+        "conclusionHint": "Tip: write how many tubes gave a precipitate, which ions formed it and why some pairs did not react.",
+        "reveal": {
+          "pptCount": "Tubes with a precipitate",
+          "pptMass": "Mass of BaSO₄"
         }
       }
     },

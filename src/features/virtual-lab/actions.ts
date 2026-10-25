@@ -14,6 +14,7 @@ import { atomExperimentSchema, gradeAtom } from "./experiments/atom-builder/grad
 import { gradeIndicator, indicatorExperimentSchema } from "./experiments/indicator-lab/grade";
 import { isValidOrder, SOLUTIONS } from "./experiments/indicator-lab/model";
 import { gradeMixture, mixtureExperimentSchema } from "./experiments/mixture-separation/grade";
+import { gradePrecipitation, precipitationExperimentSchema } from "./experiments/precipitation/grade";
 import { gradeRate, rateExperimentSchema } from "./experiments/reaction-rate/grade";
 import { GAMMA_OPTIONS } from "./experiments/reaction-rate/model";
 import { gradeTitration, titrationExperimentSchema } from "./experiments/titration/grade";
@@ -36,6 +37,7 @@ const PARAMS: Record<ShellLabSlug, (level: number | null) => Record<string, numb
   // Бұларда жасырын параметр жоқ (spec-тегі тұрақты деректер); токен тек уақыт пен тәжірибені бекітеді
   "mixture-separation": () => ({}),
   "atom-builder": () => ({}),
+  precipitation: () => ({}),
   // 9-сынып: γ = 2 белгілі; 10-сынып («Реакция кинетикасы»): γ жасырын, оқушы оны деректерінен табады
   "reaction-rate": (level): Record<string, number> =>
     level === 10 ? { level: 10, g: GAMMA_OPTIONS[randomInt(GAMMA_OPTIONS.length)] } : { level: 9 },
@@ -115,6 +117,10 @@ function grade(slug: ShellLabSlug, params: Record<string, number>, input: z.infe
     case "reaction-rate": {
       const experiment = rateExperimentSchema.safeParse(input.experiment);
       return experiment.success ? gradeRate(params, { ...input, experiment: experiment.data }) : null;
+    }
+    case "precipitation": {
+      const experiment = precipitationExperimentSchema.safeParse(input.experiment);
+      return experiment.success ? gradePrecipitation({ ...input, experiment: experiment.data }) : null;
     }
   }
 }
