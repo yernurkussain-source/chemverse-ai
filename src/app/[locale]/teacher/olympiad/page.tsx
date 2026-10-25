@@ -42,6 +42,9 @@ export default function TeacherOlympiadPage({ searchParams }: PageProps<"/[local
             {t(`nav.${id}`)}
           </a>
         ))}
+        <Link href="/teacher/olympiad/problems" className="rounded-full border border-cyan-dim px-3 py-1 text-[0.85rem] font-semibold text-cyan hover:bg-cyan/10">
+          {t("nav.problems")} →
+        </Link>
       </nav>
       <Suspense fallback={<p className="text-muted-foreground">{t("loading")}</p>}>
         <Content searchParams={searchParams} />

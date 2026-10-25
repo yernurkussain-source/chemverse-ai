@@ -1,13 +1,14 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { getFormatter, getTranslations } from "next-intl/server";
 import { Eyebrow } from "@/components/landing/section";
 import { ProjectFiles, ProjectForm } from "@/components/olympiad/project-forms";
 import { ProjectScoreView } from "@/components/olympiad/project-view";
 import { buttonVariants } from "@/components/ui/button";
 import { PROJECT_CRITERIA } from "@/features/olympiad/projects";
 import { getMyProject } from "@/features/olympiad/server/projects";
+import { getMyOlympiad } from "@/features/olympiad/server/queries";
 import { getTeacherId } from "@/features/teacher/queries";
 import { Link } from "@/i18n/navigation";
 
@@ -63,9 +64,15 @@ async function MyProject() {
       </div>
     );
   }
-  const project = await getMyProject(userId);
+  const [project, me, format] = await Promise.all([getMyProject(userId), getMyOlympiad(), getFormatter()]);
+  const defense = me?.nextLesson.get(34);
   return (
     <>
+      {defense && (
+        <p className="rounded-2xl border border-cyan-dim bg-cyan/5 px-4 py-2.5 font-semibold">
+          🗓 {t("projects.defense", { date: format.dateTime(new Date(defense), { day: "numeric", month: "long", timeZone: "UTC" }) })}
+        </p>
+      )}
       {project && (
         <p className="text-[0.9rem]">
           {t("projects.statusLabel")}: <span className="font-semibold text-cyan">{t(`projects.status.${project.status}`)}</span>

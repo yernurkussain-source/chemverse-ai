@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, test } from "node:test";
 import { isAssignmentDone, itemKey, type AssignmentItem } from "@/features/olympiad/assignments";
+import { validateProblem } from "@/features/olympiad/bank";
 import { LESSON_COUNT, parseHolidays, scheduleLessons } from "@/features/olympiad/schedule";
 
 describe("Үйірме күнтізбесі", () => {
@@ -41,5 +43,29 @@ describe("Олимпиада тапсырмасы", () => {
     assert.ok(!isAssignmentDone(items, [at("T05-01", null, true, "2026-10-02"), at("gen:faraday", 7, true, "2026-10-03")], since));
     assert.ok(!isAssignmentDone(items, [at("T05-01", null, false, "2026-10-02"), at("gen:faraday", 42, true, "2026-10-03")], since));
     assert.ok(!isAssignmentDone([], [], since));
+  });
+});
+
+describe("Есеп редакторы мен импорт: тексергіш", () => {
+  const P = JSON.parse(readFileSync("docs/olympiad/PROBLEMS.json", "utf8")) as Record<string, unknown>[];
+  const base = { id: "U-test", topic: 5, level: 2, kk: "Теңестір: ...", solution: ["1-қадам"], hints: ["a", "b", "c"] };
+
+  test("банктің 94 есебі тексергіштен өтеді", () => {
+    const failed = P.map((p) => [p.id, validateProblem(p)] as const).filter(([, r]) => !r.ok);
+    assert.deepStrictEqual(failed, []);
+  });
+
+  test("қате есептер себебімен тоқтатылады", () => {
+    const reason = (raw: unknown) => {
+      const r = validateProblem(raw);
+      return r.ok ? null : r.reason;
+    };
+    assert.match(reason({ ...base, type: "balance", equation: "H2 + O2 = H2O", coeffs: [1, 1, 1] }) ?? "", /2, 1, 2/);
+    assert.match(reason({ ...base, type: "balance", equation: "H2 + Xq = H2O", coeffs: [1, 1, 1] }) ?? "", /оқылмады|теңестіру|Атомдық/);
+    assert.match(reason({ ...base, type: "econf", Z: 26, unpaired: 2 }) ?? "", /4/);
+    assert.ok(reason({ ...base, type: "mcq", choices: ["a", "b"], correct: 2 }));
+    assert.ok(reason({ ...base, type: "open", rubric: ["бір", "екі", "үш"] }));
+    assert.ok(reason({ ...base, hints: ["a"], type: "numeric", answer: { value: 1, unit: "" } }));
+    assert.equal(reason({ ...base, type: "econf", Z: 24, unpaired: 6 }), null);
   });
 });

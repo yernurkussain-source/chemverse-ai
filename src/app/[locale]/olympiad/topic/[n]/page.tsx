@@ -9,7 +9,9 @@ import { MasteryBar } from "@/components/olympiad/mastery-bar";
 import { ProblemRunner } from "@/components/olympiad/problem-runner";
 import { buttonVariants } from "@/components/ui/button";
 import { selfCheckSet } from "@/features/olympiad/practice";
-import { getMyOlympiad, getTopicView, parseTopicN, TOPIC_COUNT, type Topic } from "@/features/olympiad/server/queries";
+import { Markdown } from "@/components/ai/markdown";
+import { TheoryForm } from "@/components/olympiad/content-forms";
+import { getMyOlympiad, getTopicNotes, getTopicView, parseTopicN, TOPIC_COUNT, type Topic } from "@/features/olympiad/server/queries";
 import { getLab, labHref } from "@/features/virtual-lab/catalog";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -53,7 +55,7 @@ function Block({ title, children, accent }: { title: string; children: ReactNode
 async function TopicContent({ params }: { params: Params }) {
   const n = parseTopicN((await params).n);
   if (!n) notFound();
-  const [view, me, t] = await Promise.all([getTopicView(n), getMyOlympiad(), getTranslations("Olympiad")]);
+  const [view, me, notes, t] = await Promise.all([getTopicView(n), getMyOlympiad(), getTopicNotes(n), getTranslations("Olympiad")]);
   if (!view) notFound();
 
   const { topic, example, problems, generated } = view;
@@ -87,6 +89,12 @@ async function TopicContent({ params }: { params: Params }) {
             </li>
           ))}
         </ul>
+        {notes.shown && (
+          <div className="mt-4 border-t border-line pt-4">
+            <Markdown>{notes.shown}</Markdown>
+          </div>
+        )}
+        {notes.editable.length > 0 && <TheoryForm topic={n} classes={notes.editable} />}
       </Block>
 
       <Block title={`🏆 ${t("topic.tip")}`} accent>

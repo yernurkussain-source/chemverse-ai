@@ -1,12 +1,13 @@
 "use server";
 
-import { randomInt } from "node:crypto";
+import { randomBytes, randomInt } from "node:crypto";
 import { refresh } from "next/cache";
 import { hasLocale } from "next-intl";
 import { insertLiveSession } from "@/features/live/server";
 import type { AssignmentItem, OlympiadAssignment } from "@/features/olympiad/assignments";
 import { CONTEST_PER_ROUND, CONTEST_ROUNDS, CONTEST_SECONDS, contestSlug } from "@/features/olympiad/contest";
-import { GEN } from "@/features/olympiad/core";
+import { validateProblem } from "@/features/olympiad/bank";
+import { balance, econf, GEN } from "@/features/olympiad/core";
 import { MOCK_COUNTS, MOCK_DURATIONS, pickMockProblems, type MockConfig } from "@/features/olympiad/mock";
 import { CRITERION_MAX, PROJECT_CRITERIA, type ProjectScore } from "@/features/olympiad/projects";
 import { isRealDate, LESSON_COUNT, parseHolidays, scheduleLessons, SCHOOL_YEAR_START } from "@/features/olympiad/schedule";
@@ -283,4 +284,130 @@ export async function createOlympiadAssignment(_prev: OlympiadTeacherState, form
   }
   refresh();
   return { ok: true };
+}
+
+/** Тақырып теориясы (Markdown + KaTeX) — мұғалімнің өз сыныбына (RLS); бос мәтін — өшіру */
+export async function saveTopicTheory(_prev: OlympiadTeacherState, formData: FormData): Promise<OlympiadTeacherState> {
+  const teacher = await currentTeacher();
+  if (!teacher) return { error: "forbidden" };
+  const classId = text(formData, "classId");
+  const topic = Number(text(formData, "topic"));
+  const theory = text(formData, "theory").slice(0, 8000);
+  if (!classId || !(Number.isInteger(topic) && topic >= 1 && topic <= 34)) return { error: "missing_fields" };
+  const notes = teacher.supabase.from("olympiad_topic_notes");
+  const { error } = theory
+    ? await notes.upsert({ class_id: classId, topic, theory, updated_at: new Date().toISOString() }, { onConflict: "class_id,topic" })
+    : await notes.delete().eq("class_id", classId).eq("topic", topic);
+  if (error) {
+    console.error("Олимпиада: теория сақталмады", error);
+    return { error: "forbidden" };
+  }
+  refresh();
+  return { ok: true };
+}
+
+export type ProblemEditorState = { ok?: boolean; id?: string; reason?: string; error?: "forbidden" | "invalid" | "unknown" } | null;
+
+const lines = (value: string) => value.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+
+/** Есеп редакторы: жариялау алдында тексергіш (теңестіру мен жұпталмаған электрондарды код өзі есептейді) */
+export async function createProblem(_prev: ProblemEditorState, formData: FormData): Promise<ProblemEditorState> {
+  const teacher = await currentTeacher();
+  const admin = createAdminClient();
+  if (!teacher || !admin) return { error: "forbidden" };
+  const type = text(formData, "type");
+  const equation = text(formData, "equation");
+  const Z = Number(text(formData, "Z"));
+  const safe = <T,>(fn: () => T, fallback: T) => {
+    try {
+      return fn();
+    } catch {
+      return fallback;
+    }
+  };
+  const fields: Record<string, unknown> =
+    type === "numeric"
+      ? { answer: { value: Number(text(formData, "value").replace(",", ".")), unit: text(formData, "unit"), tol: Number(text(formData, "tolPct").replace(",", ".") || "1") / 100 } }
+      : type === "mcq"
+        ? { choices: formData.getAll("choices").map(String).map((c) => c.trim()).filter(Boolean), correct: Number(text(formData, "correct")) }
+        : type === "balance"
+          ? { equation, coeffs: safe(() => balance(equation), null) ?? [] }
+          : type === "econf"
+            ? { Z, unpaired: safe(() => econf(Z).unpaired, -1) }
+            : { rubric: lines(text(formData, "rubric")) };
+  const check = validateProblem({
+    id: `U${randomBytes(4).toString("hex")}`,
+    topic: Number(text(formData, "topic")),
+    level: Number(text(formData, "level")),
+    type,
+    kk: text(formData, "kk"),
+    solution: lines(text(formData, "solution")),
+    hints: [1, 2, 3].map((i) => text(formData, `hint${i}`)),
+    ...fields,
+  });
+  if (!check.ok) return { error: "invalid", reason: check.reason };
+  const p = check.problem;
+  const { error } = await admin
+    .from("olympiad_problems")
+    .insert({ id: p.id, topic: p.topic, level: p.level, type: p.type, body: p, author_id: teacher.userId, status: "published" });
+  if (error) {
+    console.error("Олимпиада: есеп сақталмады", error);
+    return { error: "unknown" };
+  }
+  refresh();
+  return { ok: true, id: p.id };
+}
+
+/** Өз есебін жасыру / қайта көрсету (банк есептерін ешкім жасыра алмайды) */
+export async function toggleProblem(formData: FormData) {
+  const teacher = await currentTeacher();
+  const admin = createAdminClient();
+  if (!teacher || !admin) return;
+  const status = text(formData, "status") === "hidden" ? "hidden" : "published";
+  await admin.from("olympiad_problems").update({ status }).eq("id", text(formData, "id")).eq("author_id", teacher.userId);
+  refresh();
+}
+
+export type ImportState = { imported?: number; skipped?: { id: string; reason: string }[]; error?: "forbidden" | "file" } | null;
+
+/** JSON импорт: әр есеп тексергіштен өтеді; мұғалімнің өз есебі болып сақталады (банк id-лері өткізіледі) */
+export async function importProblems(_prev: ImportState, formData: FormData): Promise<ImportState> {
+  const teacher = await currentTeacher();
+  const admin = createAdminClient();
+  if (!teacher || !admin) return { error: "forbidden" };
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0 || file.size > 1_000_000) return { error: "file" };
+  let raw: unknown;
+  try {
+    raw = JSON.parse(await file.text());
+  } catch {
+    return { error: "file" };
+  }
+  if (!Array.isArray(raw) || raw.length > 300) return { error: "file" };
+
+  // Біреудің есебін қайта жазбау үшін: id-лер мұғалімнің префиксімен (қайта импорт — өз есебін жаңартады)
+  const prefix = `U${teacher.userId.slice(0, 6)}-`;
+  const ids = raw.map((p) => String((p as { id?: unknown })?.id ?? ""));
+  const { data: existing } = await admin.from("olympiad_problems").select("id, author_id").in("id", [...ids, ...ids.map((id) => prefix + id)]);
+  const owner = new Map((existing ?? []).map((r) => [r.id as string, r.author_id as string | null]));
+  const skipped: { id: string; reason: string }[] = [];
+  const rows: { id: string; topic: number; level: number; type: string; body: unknown; author_id: string; status: string }[] = [];
+  raw.forEach((p, i) => {
+    const original = ids[i];
+    const id = original.startsWith(prefix) ? original : prefix + original;
+    const check = validateProblem({ ...(p as object), id });
+    if (owner.has(original) && owner.get(original) === null) skipped.push({ id: original, reason: "банкте бар" });
+    else if (owner.has(id) && owner.get(id) !== teacher.userId) skipped.push({ id: original, reason: "id бос емес" });
+    else if (!check.ok) skipped.push({ id: original, reason: check.reason });
+    else rows.push({ id, topic: check.problem.topic, level: check.problem.level, type: check.problem.type, body: check.problem, author_id: teacher.userId, status: "published" });
+  });
+  if (rows.length) {
+    const { error } = await admin.from("olympiad_problems").upsert(rows, { onConflict: "id" });
+    if (error) {
+      console.error("Олимпиада: импорт сақталмады", error);
+      return { error: "file" };
+    }
+  }
+  refresh();
+  return { imported: rows.length, skipped: skipped.slice(0, 20) };
 }

@@ -21,6 +21,7 @@ describe("Олимпиада: дұрыс жауап клиентке жібер�
 
   test("ашық есептің ең жоғары ұпайы рубрикадан есептеледі", () => {
     assert.equal(rubricMax(["Бірінші қадам — 2 ұпай", "Екінші — 1,5 ұпай", "ұпайсыз жол"]), 3.5);
+    assert.equal(rubricMax(["Уравнение — 2 балла", "Вывод — 1 балл", "Equation — 2 pts"]), 5);
     for (const p of P) if (p.type === "open") assert.equal(rubricMax(p.rubric), 8, p.id);
   });
 

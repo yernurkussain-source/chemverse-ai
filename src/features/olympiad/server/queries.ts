@@ -160,3 +160,21 @@ export async function getMistakes(userId: string): Promise<PublicProblem[]> {
     return problem ? [toPublic(problem)] : [];
   });
 }
+
+/**
+ * Тақырып теориясы (сыныптың мұғалімі жазады): оқушыға — өз сыныбының мәтіні, мұғалімге — өз сыныптарының мәтіндері (өңдеу үшін).
+ * RLS: мұғалім өз сыныптарын, оқушы өз сыныптарын ғана көреді.
+ */
+export async function getTopicNotes(n: number) {
+  await connection();
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) return { shown: null, editable: [] as { classId: string; className: string; theory: string }[] };
+  const [{ data: notes }, { data: ownClasses }] = await Promise.all([
+    supabase.from("olympiad_topic_notes").select("class_id, theory").eq("topic", n),
+    supabase.from("classes").select("id, name").eq("teacher_id", auth.user.id).order("created_at"),
+  ]);
+  const theoryOf = new Map((notes ?? []).map((r) => [r.class_id as string, r.theory as string]));
+  const editable = (ownClasses ?? []).map((c) => ({ classId: c.id as string, className: c.name as string, theory: theoryOf.get(c.id as string) ?? "" }));
+  return { shown: (notes ?? [])[0]?.theory ?? null, editable };
+}

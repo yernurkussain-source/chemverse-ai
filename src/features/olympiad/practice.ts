@@ -48,8 +48,9 @@ export function toPublic(p: BankProblem): PublicProblem {
   }
 }
 
-/** Рубриканың ең жоғары ұпайы: әр критерийдің соңындағы «— 2 ұпай» қосылады */
-export const rubricMax = (rubric: string[]) => rubric.reduce((sum, item) => sum + Number(/(\d+(?:[.,]\d+)?)\s*ұпай\s*$/.exec(item)?.[1].replace(",", ".") ?? 0), 0);
+/** Рубриканың ең жоғары ұпайы: әр критерийдің соңындағы «— 2 ұпай» («2 балла», «2 pts») қосылады */
+export const rubricMax = (rubric: string[]) =>
+  rubric.reduce((sum, item) => sum + Number(/(\d+(?:[.,]\d+)?)\s*(?:ұпай|балл\S*|pts?|points?)\s*$/i.exec(item)?.[1].replace(",", ".") ?? 0), 0);
 
 /** Генератор есебі (seed бойынша) → тек шарты мен бірлігі */
 export function generatedProblem(id: string, seed: number): PublicProblem {

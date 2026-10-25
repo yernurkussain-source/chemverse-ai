@@ -3098,7 +3098,8 @@
       "score": "Teacher's grade",
       "scoreValue": "{total} / {max}",
       "teacherTitle": "Science projects",
-      "teacherEmpty": "No projects in your classes yet."
+      "teacherEmpty": "No projects in your classes yet.",
+      "defense": "Defence date: {date}"
     },
     "ratingLink": "Leaderboard",
     "rating": {
@@ -3116,6 +3117,66 @@
     },
     "assignmentTitle": "Olympiad: topic {n}",
     "assignmentPage": "Olympiad assignment",
-    "toProfile": "Profile"
+    "toProfile": "Profile",
+    "theory": {
+      "editTitle": "Write a short theory note for your class",
+      "placeholder": "e.g. **Electrolysis** — ... Faraday's law: $m = \\frac{M I t}{z F}$, $\\ce{Cu^2+ + 2e- -> Cu}$",
+      "hint": "Markdown: **bold**, - list. Formula: $...$, on its own line $$...$$. Chemistry: \\ce{H2SO4}, \\ce{2H2 + O2 -> 2H2O}. Leave empty to delete.",
+      "preview": "Preview",
+      "save": "Save theory",
+      "saved": "Saved"
+    },
+    "editor": {
+      "title": "Problem bank",
+      "subtitle": "Add your own problem: the checker runs before publishing (the code balances the equation and counts unpaired electrons itself). Only students in your classes see your problems.",
+      "teacherOnly": "This page is for teachers only.",
+      "toTeacher": "Teacher dashboard",
+      "add": "New problem",
+      "mine": "My problems ({count})",
+      "mineEmpty": "No problems of your own yet.",
+      "show": "Show",
+      "hide": "Hide",
+      "jsonTitle": "JSON export / import",
+      "jsonText": "Export: the bank and your problems in one file (with answers — don't give it to students). Import: a file in the same format; every problem goes through the checker.",
+      "export": "Download JSON",
+      "import": "Import",
+      "imported": "{count} problems added, {skipped} skipped",
+      "importErrors": {
+        "forbidden": "Not allowed.",
+        "file": "Couldn't read the file: it must be JSON up to 1 MB with an array of problems."
+      },
+      "topic": "Topic",
+      "level": "Level",
+      "type": "Type",
+      "types": {
+        "numeric": "Numeric answer",
+        "mcq": "Single choice",
+        "balance": "Balance the equation",
+        "econf": "Electron configuration",
+        "open": "Open answer"
+      },
+      "kk": "Statement",
+      "value": "Answer (number)",
+      "unit": "Unit",
+      "tol": "Tolerance, %",
+      "choices": "Choices (mark the correct one)",
+      "correct": "Choice {n} is correct",
+      "choice": "Choice {n}",
+      "correctHint": "The circle on the left marks the correct answer. At least 2 choices.",
+      "equation": "Equation (without coefficients)",
+      "equationHint": "Use “=” or “→”. Charges: Fe^3+, MnO4^-. The checker finds the coefficients.",
+      "z": "Atomic number Z (1–54)",
+      "zHint": "The checker works out the configuration and unpaired electrons.",
+      "rubric": "Rubric (one criterion per line)",
+      "rubricPlaceholder": "Correct reaction equation — 2 pts\nObservation described — 1 pt\nConclusion justified — 2 pts",
+      "solution": "Solution (one step per line)",
+      "solutionPlaceholder": "Step 1\nStep 2",
+      "hints": "3 hints (from general to specific)",
+      "hint": "Hint {n}",
+      "submit": "Check and publish",
+      "created": "Published: {id}",
+      "invalid": "Failed the checker: {reason}",
+      "failed": "Not saved — try again."
+    }
   }
 }
