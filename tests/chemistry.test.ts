@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { ELEMENTS, getElement, tablePosition } from "@/lib/chemistry/elements";
+import { electronConfiguration, electronShells } from "@/lib/chemistry/electron-config";
 import { molarMassOf, parseFormula } from "@/lib/chemistry/formula";
 import { MOLECULES, molarMass } from "@/lib/chemistry/molecules";
 import { equivalenceVolume, mediumState, phenolphthaleinColor, titrationPH, TITRATION } from "@/lib/chemistry/titration";
@@ -120,5 +121,29 @@ describe("Титрлеу", () => {
     assert.equal(mediumState(26, titrationPH(26)), "base");
     assert.equal(phenolphthaleinColor(3).opacity, 0.35);
     assert.equal(phenolphthaleinColor(12).rgb, "rgb(255,40,140)");
+  });
+});
+
+describe("Электрондық конфигурация", () => {
+  test("қысқа жазу, ерекшеліктерімен", () => {
+    const text = (z: number) => {
+      const { core, parts } = electronConfiguration(z);
+      return [core && `[${core}]`, ...parts.map(([name, count]) => name + count)].filter(Boolean).join(" ");
+    };
+    assert.equal(text(1), "1s1");
+    assert.equal(text(11), "[Ne] 3s1");
+    assert.equal(text(26), "[Ar] 4s2 3d6");
+    assert.equal(text(24), "[Ar] 4s1 3d5");
+    assert.equal(text(46), "[Kr] 4d10");
+    assert.equal(text(79), "[Xe] 6s1 4f14 5d10");
+    assert.equal(text(103), "[Rn] 7s2 5f14 7p1");
+  });
+
+  test("қабаттар: қосындысы Z-ке тең", () => {
+    assert.deepEqual(electronShells(11), [2, 8, 1]);
+    assert.deepEqual(electronShells(26), [2, 8, 14, 2]);
+    assert.deepEqual(electronShells(29), [2, 8, 18, 1]);
+    assert.deepEqual(electronShells(118), [2, 8, 18, 32, 32, 18, 8]);
+    for (const e of ELEMENTS) assert.equal(electronShells(e.number).reduce((a, b) => a + b, 0), e.number, e.symbol);
   });
 });

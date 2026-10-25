@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { useLocale, useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { electronConfiguration, electronShells } from "@/lib/chemistry/electron-config";
 import { formatAtomicMass, formatElectronegativity } from "@/lib/chemistry/element-format";
 import { ELEMENTS, getElement, tablePosition, type ChemicalElement, type ElementCategory } from "@/lib/chemistry/elements";
 import { cn } from "@/lib/utils";
@@ -22,6 +25,9 @@ const CATEGORY_STYLE: Record<ElementCategory, string> = {
 
 const CATEGORIES = Object.keys(CATEGORY_STYLE) as ElementCategory[];
 
+// Three.js ауыр — тек «3D атом моделі» басылғанда жүктеледі
+const AtomModel = dynamic(() => import("./atom-model").then((m) => m.AtomModel), { ssr: false });
+
 /** initialSymbol — элемент QR-ынан келгенде бірден таңдалатын элемент (мысалы "Na") */
 export function PeriodicTable({ initialSymbol }: { initialSymbol?: string }) {
   const t = useTranslations("PeriodicTable");
@@ -29,10 +35,20 @@ export function PeriodicTable({ initialSymbol }: { initialSymbol?: string }) {
   const [selected, setSelected] = useState<ChemicalElement | null>(() =>
     initialSymbol ? (getElement(initialSymbol) ?? null) : null,
   );
+  const [category, setCategory] = useState<ElementCategory | null>(null);
+  const detailsRef = useRef<HTMLDivElement>(null);
+
+  function select(element: ChemicalElement) {
+    setSelected(element);
+    // Ақпарат картасы экраннан тыс қалса — оған қарай жылжиды
+    detailsRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
 
   return (
     <div className="flex flex-col gap-5">
-      <ElementDetails element={selected} />
+      <div ref={detailsRef} className="scroll-mt-20">
+        <ElementDetails element={selected} />
+      </div>
 
       <p className="text-[0.8rem] text-muted-foreground md:hidden">↔ {t("scrollHint")}</p>
       {/* Кесте: телефонда көлденең жылжиды, бетті кеңейтпейді */}
@@ -48,7 +64,7 @@ export function PeriodicTable({ initialSymbol }: { initialSymbol?: string }) {
               <button
                 key={element.number}
                 type="button"
-                onClick={() => setSelected(element)}
+                onClick={() => select(element)}
                 aria-pressed={active}
                 aria-label={`${element.number} ${element.symbol} — ${element.name[locale]}`}
                 title={element.name[locale]}
@@ -57,6 +73,7 @@ export function PeriodicTable({ initialSymbol }: { initialSymbol?: string }) {
                   "relative flex aspect-square min-w-0 flex-col items-center justify-center rounded-md border leading-none transition-transform hover:z-10 hover:scale-110",
                   CATEGORY_STYLE[element.category],
                   active && "z-10 scale-110 outline-2 outline-offset-1 outline-cyan",
+                  category && element.category !== category && "opacity-20",
                 )}
               >
                 <span className="absolute top-0.5 left-1 font-mono text-[0.55rem] text-muted-foreground">{element.number}</span>
@@ -66,8 +83,8 @@ export function PeriodicTable({ initialSymbol }: { initialSymbol?: string }) {
           })}
 
           {/* Лантаноидтар мен актиноидтардың кестедегі орны */}
-          <Placeholder row={6} label="57–71" category="lanthanide" />
-          <Placeholder row={7} label="89–103" category="actinide" />
+          <Placeholder row={6} label="57–71" category="lanthanide" dim={!!category && category !== "lanthanide"} />
+          <Placeholder row={7} label="89–103" category="actinide" dim={!!category && category !== "actinide"} />
           <span style={{ gridRow: 9, gridColumn: "1 / span 2" }} className="self-center pr-1 text-right text-[0.7rem] text-muted-foreground">
             {t("lanthanides")}
           </span>
@@ -79,11 +96,25 @@ export function PeriodicTable({ initialSymbol }: { initialSymbol?: string }) {
 
       {/* Түрлер (легенда) */}
       <div>
-        <h2 className="mb-2 text-[0.9rem] font-semibold">{t("legend")}</h2>
+        <h2 className="text-[0.9rem] font-semibold">{t("legend")}</h2>
+        <p className="mb-2 text-[0.8rem] text-muted-foreground">{t("legendHint")}</p>
         <ul className="flex flex-wrap gap-2">
-          {CATEGORIES.map((category) => (
-            <li key={category} className={cn("rounded-full border px-3 py-1 text-[0.78rem]", CATEGORY_STYLE[category])}>
-              {t(`categories.${category}`)}
+          {CATEGORIES.map((c) => (
+            <li key={c}>
+              <button
+                type="button"
+                aria-pressed={category === c}
+                onClick={() => setCategory(category === c ? null : c)}
+                className={cn(
+                  "rounded-full border px-3 py-1 text-[0.78rem] transition-opacity",
+                  CATEGORY_STYLE[c],
+                  category === c && "outline-2 outline-offset-1 outline-cyan",
+                  category && category !== c && "opacity-50",
+                )}
+              >
+                {t(`categories.${c}`)}
+                {category === c && ` · ${ELEMENTS.filter((e) => e.category === c).length}`}
+              </button>
             </li>
           ))}
         </ul>
@@ -92,12 +123,16 @@ export function PeriodicTable({ initialSymbol }: { initialSymbol?: string }) {
   );
 }
 
-function Placeholder({ row, label, category }: { row: number; label: string; category: ElementCategory }) {
+function Placeholder({ row, label, category, dim }: { row: number; label: string; category: ElementCategory; dim: boolean }) {
   return (
     <span
       aria-hidden="true"
       style={{ gridRow: row, gridColumn: 3 }}
-      className={cn("flex aspect-square items-center justify-center rounded-md border border-dashed font-mono text-[0.55rem] text-muted-foreground", CATEGORY_STYLE[category])}
+      className={cn(
+        "flex aspect-square items-center justify-center rounded-md border border-dashed font-mono text-[0.55rem] text-muted-foreground",
+        CATEGORY_STYLE[category],
+        dim && "opacity-20",
+      )}
     >
       {label}
     </span>
@@ -108,6 +143,7 @@ function Placeholder({ row, label, category }: { row: number; label: string; cat
 function ElementDetails({ element }: { element: ChemicalElement | null }) {
   const t = useTranslations("PeriodicTable");
   const locale = useLocale();
+  const [showAtom, setShowAtom] = useState(false);
 
   if (!element) {
     return (
@@ -119,26 +155,55 @@ function ElementDetails({ element }: { element: ChemicalElement | null }) {
 
   const electronegativity = formatElectronegativity(element, locale);
   return (
-    <div aria-live="polite" className="flex flex-col gap-4 rounded-2xl border border-line bg-panel p-4 shadow-[0_1px_2px_var(--shadow)] sm:flex-row sm:items-center dark:shadow-none">
-      <div className={cn("flex size-24 shrink-0 flex-col items-center justify-center rounded-2xl border", CATEGORY_STYLE[element.category])}>
-        <span className="font-mono text-xs text-muted-foreground">{element.number}</span>
-        <span className="font-display text-4xl font-bold">{element.symbol}</span>
+    <>
+      <div aria-live="polite" className="flex flex-col gap-4 rounded-2xl border border-line bg-panel p-4 shadow-[0_1px_2px_var(--shadow)] sm:flex-row sm:items-center dark:shadow-none">
+        <div className={cn("flex size-24 shrink-0 flex-col items-center justify-center rounded-2xl border", CATEGORY_STYLE[element.category])}>
+          <span className="font-mono text-xs text-muted-foreground">{element.number}</span>
+          <span className="font-display text-4xl font-bold">{element.symbol}</span>
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="font-display text-xl font-bold">{element.name[locale]}</p>
+          <p className="text-[0.85rem] text-muted-foreground">{t(`categories.${element.category}`)}</p>
+          <dl className="m-0 mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <Fact label={t("atomicNumber")} value={String(element.number)} />
+            <Fact label={t("atomicMass")} value={formatAtomicMass(element, locale)} />
+            <Fact label={t("electronegativity")} value={electronegativity ?? t("unknown")} />
+            <Fact
+              label={`${t("period")} / ${t("group")}`}
+              value={`${element.period} / ${element.group ?? "—"}`}
+            />
+            <Fact label={t("protons")} value={String(element.number)} />
+            <Fact label={t("neutrons")} value={String(Math.round(element.mass) - element.number)} />
+            <Fact label={t("electrons")} value={String(element.number)} />
+            <Fact label={t("shells")} value={electronShells(element.number).join(", ")} />
+          </dl>
+          <p className="mt-2 text-[0.85rem]">
+            <span className="text-muted-foreground">{t("electronConfig")}: </span>
+            <ElectronConfiguration z={element.number} />
+          </p>
+          {!element.stable && <p className="mt-2 text-[0.75rem] text-muted-foreground">[ ] — {t("radioactive")}</p>}
+          <Button variant="glow" size="pill-sm" className="mt-3" onClick={() => setShowAtom(true)}>
+            ⚛ {t("atomModel")}
+          </Button>
+        </div>
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="font-display text-xl font-bold">{element.name[locale]}</p>
-        <p className="text-[0.85rem] text-muted-foreground">{t(`categories.${element.category}`)}</p>
-        <dl className="m-0 mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <Fact label={t("atomicNumber")} value={String(element.number)} />
-          <Fact label={t("atomicMass")} value={formatAtomicMass(element, locale)} />
-          <Fact label={t("electronegativity")} value={electronegativity ?? t("unknown")} />
-          <Fact
-            label={`${t("period")} / ${t("group")}`}
-            value={`${element.period} / ${element.group ?? "—"}`}
-          />
-        </dl>
-        {!element.stable && <p className="mt-2 text-[0.75rem] text-muted-foreground">[ ] — {t("radioactive")}</p>}
-      </div>
-    </div>
+      {showAtom && <AtomModel element={element} onClose={() => setShowAtom(false)} />}
+    </>
+  );
+}
+
+function ElectronConfiguration({ z }: { z: number }) {
+  const { core, parts } = electronConfiguration(z);
+  return (
+    <span className="font-mono">
+      {core && `[${core}] `}
+      {parts.map(([name, count]) => (
+        <span key={name} className="mr-1">
+          {name}
+          <sup>{count}</sup>
+        </span>
+      ))}
+    </span>
   );
 }
 
