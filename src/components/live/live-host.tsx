@@ -11,7 +11,9 @@ import { cn } from "@/lib/utils";
 import { optionStyle } from "./option-style";
 
 /** Мұғалімнің Live экраны (проекторға арналған): код + QR → сұрақ, таймер, тірі диаграмма → рейтинг */
-export function LiveHost({ sessionId, code, joinUrl }: { sessionId: string; code: string; joinUrl: string }) {
+export type LiveRound = { title: string; from: number };
+
+export function LiveHost({ sessionId, code, joinUrl, rounds = [] }: { sessionId: string; code: string; joinUrl: string; rounds?: LiveRound[] }) {
   const t = useTranslations("LiveClass");
   const locale = useLocale();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -89,7 +91,7 @@ export function LiveHost({ sessionId, code, joinUrl }: { sessionId: string; code
       ) : state.phase === "finished" ? (
         <Podium players={state.players} />
       ) : (
-        <QuestionScreen state={state} remaining={remaining} pending={pending} send={send} />
+        <QuestionScreen state={state} remaining={remaining} pending={pending} send={send} round={rounds.findLast((r) => r.from <= state.index)?.title} />
       )}
     </div>
   );
@@ -145,11 +147,14 @@ function QuestionScreen({
   remaining,
   pending,
   send,
+  round,
 }: {
   state: HostLiveState;
   remaining: number | null;
   pending: boolean;
   send: (command: LiveCommand) => void;
+  /** Сайыстағы раунд атауы (олимпиада сайысы) */
+  round?: string;
 }) {
   const t = useTranslations("LiveClass");
   const reveal = state.phase === "reveal";
@@ -159,6 +164,7 @@ function QuestionScreen({
 
   return (
     <div className="flex flex-col gap-5">
+      {round && <p className="text-center font-display text-[clamp(1.1rem,2.4vw,1.6rem)] font-bold text-pink">{round}</p>}
       <div className="flex items-center justify-between gap-4">
         <p className="font-mono text-lg text-muted-foreground">{t("questionOf", { n: state.index + 1, total: state.total })}</p>
         <p className="text-lg">

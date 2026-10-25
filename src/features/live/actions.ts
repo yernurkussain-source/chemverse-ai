@@ -12,6 +12,7 @@ import {
   broadcast,
   correctOptionId,
   findSessionByCode,
+  insertLiveSession,
   MAX_PARTICIPANTS,
   participantCookie,
   pointsFor,
@@ -64,29 +65,12 @@ export async function createLiveSession(_prev: LiveFormState, formData: FormData
   const questionIds = shuffle((links ?? []).map((l) => l.question_id as string)).slice(0, count);
   if (!questionIds.length) return { error: "no_questions" };
 
-  // Бірегей код (код кестеде мүлде қайталанбайды)
-  let sessionId: string | null = null;
-  for (let attempt = 0; attempt < 10 && !sessionId; attempt++) {
-    const code = String(randomInt(100000, 1000000));
-    const { data, error } = await supabase
-      .from("live_sessions")
-      .insert({
-        teacher_id: auth.user.id,
-        exam_id: examId,
-        code,
-        status: "waiting",
-        phase: "lobby",
-        question_ids: questionIds,
-        seconds_per_question: seconds,
-      })
-      .select("id")
-      .single();
-    if (data) sessionId = data.id as string;
-    else if (error?.code !== "23505") {
-      console.error("Live сессия ашу қатесі:", error);
-      return { error: "unknown" };
-    }
-  }
+  const sessionId = await insertLiveSession(supabase, {
+    teacher_id: auth.user.id,
+    exam_id: examId,
+    question_ids: questionIds,
+    seconds_per_question: seconds,
+  });
   if (!sessionId) return { error: "unknown" };
 
   redirect({ href: `/teacher/live/${sessionId}`, locale });

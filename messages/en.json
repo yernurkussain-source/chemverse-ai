@@ -2844,6 +2844,11 @@
         "results": "Taken: {count} · average result {avg}%",
         "resultsList": "Results",
         "print": "Print / PDF"
+      },
+      "contest": {
+        "title": "“Zhas khimik-daryn” contest",
+        "text": "A 3-round contest on the Live Class engine: quick questions, problems, experiment. Projector screen and leaderboard.",
+        "open": "Set up the contest"
       }
     },
     "mockLink": "Mock olympiad",
@@ -2890,6 +2895,39 @@
       "unpairedLine": "Unpaired electrons",
       "answerLine": "Answer",
       "key": "Answer key (for the teacher)"
+    },
+    "contestLink": "“Zhas khimik-daryn” contest",
+    "projectsLink": "Science projects",
+    "contest": {
+      "title": "“Zhas khimik-daryn” contest",
+      "subtitle": "Lesson 33: a contest on the Live Class engine — projector screen, timer, live leaderboard and podium.",
+      "loading": "Loading…",
+      "step1": "The teacher picks the rounds and starts the contest — the projector shows a QR and a 6-digit code.",
+      "step2": "Students (or teams) open “Enter code” on their phones and join with their name or team name.",
+      "step3": "Faster correct answers earn more points. At the end the projector shows the leaderboard and podium.",
+      "roundsLabel": "Rounds",
+      "rounds": {
+        "quick": "Round 1: quick questions",
+        "problems": "Round 2: problems",
+        "experiment": "Round 3: experiment"
+      },
+      "roundText": {
+        "quick": "Level 1 multiple-choice questions from the bank",
+        "problems": "Level 2 questions that need a calculation",
+        "experiment": "Lab safety and practicum questions"
+      },
+      "perRound": "Questions per round",
+      "seconds": "Time per question",
+      "secondsValue": "{n} seconds",
+      "start": "Start the contest",
+      "errors": {
+        "forbidden": "Only a teacher can start the contest.",
+        "missing_fields": "Pick at least one round.",
+        "no_problems": "Contest questions aren't loaded yet: run npm run seed:olympiad.",
+        "unknown": "The contest didn't start — try again."
+      },
+      "studentNote": "When the teacher starts the contest, a code appears on the projector — type it on the “Enter code” page. Playing as a team? Join with the team name.",
+      "join": "Enter code"
     }
   }
 }

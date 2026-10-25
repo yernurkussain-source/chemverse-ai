@@ -116,7 +116,14 @@ async function TopicContent({ params }: { params: Params }) {
             </Link>
           </>
         ) : (
-          <p className="text-muted-foreground">{t("topic.noPractice")}</p>
+          <>
+            <p className="mb-4 text-muted-foreground">{t("topic.noPractice")}</p>
+            {(n === 33 || n === 34) && (
+              <Link href={n === 33 ? "/olympiad/contest" : "/olympiad/projects"} className={buttonVariants({ variant: "glow", size: "pill" })}>
+                {n === 33 ? t("contestLink") : t("projectsLink")} →
+              </Link>
+            )}
+          </>
         )}
       </Block>
 

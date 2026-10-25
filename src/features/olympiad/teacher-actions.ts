@@ -1,12 +1,57 @@
 "use server";
 
+import { randomInt } from "node:crypto";
 import { refresh } from "next/cache";
+import { hasLocale } from "next-intl";
+import { insertLiveSession } from "@/features/live/server";
+import { CONTEST_PER_ROUND, CONTEST_ROUNDS, CONTEST_SECONDS, contestSlug } from "@/features/olympiad/contest";
 import { MOCK_COUNTS, MOCK_DURATIONS, pickMockProblems, type MockConfig } from "@/features/olympiad/mock";
+import { redirect } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 /** Мұғалімнің олимпиада әрекеттері (OLYMPIAD_SPEC 9-бөлім) */
 export type OlympiadTeacherState = { ok?: boolean; error?: "forbidden" | "missing_fields" | "no_problems" | "unknown" } | null;
+
+/** «Жас химик-дарын» сайысы: таңдалған раундтардан Live сессия (раунд ішінде сұрақтар араласады) */
+export async function createContest(_prev: OlympiadTeacherState, formData: FormData): Promise<OlympiadTeacherState> {
+  const teacher = await currentTeacher();
+  const admin = createAdminClient();
+  if (!teacher || !admin) return { error: "forbidden" };
+  const value = text(formData, "locale");
+  const locale = hasLocale(routing.locales, value) ? value : routing.defaultLocale;
+  const rounds = CONTEST_ROUNDS.filter((r) => formData.getAll("rounds").includes(r));
+  const perRound = Number(text(formData, "perRound"));
+  const seconds = Number(text(formData, "seconds"));
+  if (!rounds.length || !(CONTEST_PER_ROUND as readonly number[]).includes(perRound) || !(CONTEST_SECONDS as readonly number[]).includes(seconds)) {
+    return { error: "missing_fields" };
+  }
+
+  const { data: exams } = await admin.from("exams").select("id, slug").in("slug", rounds.map(contestSlug));
+  const { data: links } = await admin.from("exam_questions").select("exam_id, question_id").in("exam_id", (exams ?? []).map((e) => e.id));
+  const questionIds = rounds.flatMap((round) => {
+    const examId = exams?.find((e) => e.slug === contestSlug(round))?.id;
+    const ids = (links ?? []).filter((l) => l.exam_id === examId).map((l) => l.question_id as string);
+    for (let i = ids.length - 1; i > 0; i--) {
+      const j = randomInt(i + 1);
+      [ids[i], ids[j]] = [ids[j], ids[i]];
+    }
+    return ids.slice(0, perRound);
+  });
+  // Сұрақтар жоқ — seed:olympiad әлі іске қосылмаған
+  if (!questionIds.length) return { error: "no_problems" };
+
+  const sessionId = await insertLiveSession(teacher.supabase, {
+    teacher_id: teacher.userId,
+    exam_id: null,
+    question_ids: questionIds,
+    seconds_per_question: seconds,
+  });
+  if (!sessionId) return { error: "unknown" };
+  redirect({ href: `/olympiad/contest/${sessionId}`, locale });
+  return null;
+}
 
 const text = (formData: FormData, key: string) => String(formData.get(key) ?? "").trim();
 

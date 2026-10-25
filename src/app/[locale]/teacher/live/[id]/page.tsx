@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { locale as rootLocale } from "next/root-params";
 import { hasLocale, useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { LiveHost } from "@/components/live/live-host";
+import { joinUrl } from "@/features/live/join-url";
 import { getTeacherId } from "@/features/teacher/queries";
 import { Link, redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
@@ -33,14 +33,6 @@ export default function LiveHostPage({ params }: PageProps<"/[locale]/teacher/li
       </Suspense>
     </div>
   );
-}
-
-/** Оқушылар ашатын толық адрес (QR ішіне жазылады) */
-async function joinUrl(code: string, locale: Locale) {
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  return `${proto}://${host}/${locale}/join/${code}`;
 }
 
 async function HostContent({ params }: { params: Params }) {

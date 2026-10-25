@@ -1,3 +1,4 @@
+import { randomInt } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Locale } from "@/i18n/routing";
 import { shuffleOptions } from "@/lib/option-order";
@@ -32,6 +33,30 @@ export const ANSWER_GRACE_MS = 2_000;
 
 export const participantCookie = (code: string) => `live_p_${code}`;
 export const channelName = (code: string) => `live-${code}`;
+
+/**
+ * Жаңа Live сессия бірегей 6 санды кодпен (мұғалімнің өз клиентімен — RLS). Код қайталанса, қайта жасалады.
+ * Сәтсіз болса — null.
+ */
+export async function insertLiveSession(
+  supabase: SupabaseClient,
+  row: { teacher_id: string; exam_id: string | null; question_ids: string[]; seconds_per_question: number },
+) {
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const code = String(randomInt(100000, 1000000));
+    const { data, error } = await supabase
+      .from("live_sessions")
+      .insert({ ...row, code, status: "waiting", phase: "lobby" })
+      .select("id")
+      .single();
+    if (data) return data.id as string;
+    if (error?.code !== "23505") {
+      console.error("Live сессия ашу қатесі:", error);
+      return null;
+    }
+  }
+  return null;
+}
 
 export async function findSessionByCode(admin: SupabaseClient, code: string) {
   if (!CODE_PATTERN.test(code)) return null;

@@ -45,9 +45,19 @@ async function Content() {
     redirect({ href: "/teacher", locale });
     return null;
   }
+  const t = await getTranslations("Olympiad.teacher.contest");
   return (
     <div className="flex flex-col gap-12">
       <Mocks teacherId={userId} />
+      <section aria-labelledby="contest" className="flex flex-col items-start gap-3 rounded-3xl border border-cyan-dim bg-panel p-5">
+        <h2 id="contest" className="font-display text-xl font-semibold">
+          🏆 {t("title")}
+        </h2>
+        <p className="text-[0.92rem] text-muted-foreground">{t("text")}</p>
+        <Link href="/olympiad/contest" className={buttonVariants({ variant: "glow", size: "pill" })}>
+          {t("open")} →
+        </Link>
+      </section>
       <OpenAnswers teacherId={userId} />
     </div>
   );

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, test } from "node:test";
 import { econf, mulberry32, type BankProblem } from "@/features/olympiad/core";
+import { roundStarts, type ContestRound } from "@/features/olympiad/contest";
 import { gradeMock, pickMockProblems, weakTopics } from "@/features/olympiad/mock";
 
 const read = (file: string) => JSON.parse(readFileSync(`docs/olympiad/${file}`, "utf8"));
@@ -52,5 +53,23 @@ describe("Сынақ олимпиада: бағалау", () => {
     assert.equal(grade.score, 0);
     assert.ok(Object.values(grade.results).every((ok) => !ok));
     assert.deepStrictEqual(weakTopics(grade.byTopic), [2, 5, 6, 11]);
+  });
+});
+
+describe("Сайыс: раундтардың басталу орны", () => {
+  test("сұрақтар тізбегі → әр раундтың бірінші сұрағы", () => {
+    const roundOf = new Map<string, ContestRound>([
+      ["a", "quick"],
+      ["b", "quick"],
+      ["c", "problems"],
+      ["d", "experiment"],
+      ["e", "experiment"],
+    ]);
+    assert.deepStrictEqual(roundStarts(["a", "b", "c", "d", "e"], roundOf), [
+      { round: "quick", from: 0 },
+      { round: "problems", from: 2 },
+      { round: "experiment", from: 3 },
+    ]);
+    assert.deepStrictEqual(roundStarts(["x", "c"], roundOf), [{ round: "problems", from: 1 }]);
   });
 });
