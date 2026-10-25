@@ -76,3 +76,31 @@ export function electronShells(z: number) {
   }
   return Array.from(shells, (count) => count ?? 0);
 }
+
+const ORBITALS: Record<string, number> = { s: 1, p: 3, d: 5, f: 7 };
+
+/** Хунд ережесі: алдымен әр орбитальға бір-бірден ↑, сосын жұптар ↑↓. 2p⁴ → ["↑↓", "↑", "↑"] */
+export function hundBoxes(subshell: string, count: number) {
+  const k = ORBITALS[subshell[1]];
+  return Array.from({ length: k }, (_, i) => (i < count - k ? "↑↓" : i < count ? "↑" : ""));
+}
+
+/**
+ * Ионның қабаттары: оң зарядта электрон сыртқы қабаттан кетеді (Fe³⁺ → 2, 8, 13),
+ * теріс зарядта сыртқы қабатқа қосылады, ол толық болса (1-қабат — 2, қалғаны — 8) жаңа қабат басталады.
+ */
+export function ionShells(z: number, charge: number) {
+  const shells = electronShells(z);
+  for (let i = 0; i < charge; i++) {
+    while (shells.length && shells[shells.length - 1] === 0) shells.pop();
+    if (!shells.length) break;
+    shells[shells.length - 1]--;
+  }
+  for (let i = 0; i < -charge; i++) {
+    const n = shells.length;
+    if (n && shells[n - 1] < (n === 1 ? 2 : 8)) shells[n - 1]++;
+    else shells.push(1);
+  }
+  while (shells.length && shells[shells.length - 1] === 0) shells.pop();
+  return shells;
+}

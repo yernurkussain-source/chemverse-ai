@@ -7,20 +7,25 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { Button } from "@/components/ui/button";
 import { classifyHand, smoothHands, type Gesture, type Point } from "@/features/gesture/classify";
 import { useHandTracking } from "@/features/gesture/use-hand-tracking";
-import { electronShells } from "@/lib/chemistry/electron-config";
+import { electronShells, ionShells } from "@/lib/chemistry/electron-config";
 import type { ChemicalElement } from "@/lib/chemistry/elements";
 import { cn } from "@/lib/utils";
 
 const PROTON = "#ff5f6d";
 const NEUTRON = "#9aa6b8";
 const ELECTRON = "#3fe0f0";
+const VALENCE = "#ffc53d"; // сыртқы қабат электрондары
 const NUCLEON_RADIUS = 0.5;
 const ROTATE_PER_UNIT = 6; // радиан: кадр енінің бір бірлігіне
 const ZOOM_PER_UNIT = 4;
+const MIN_CHARGE = -3;
+const MAX_CHARGE = 8;
+
+const shellRadius = (nucleusRadius: number, k: number) => nucleusRadius + 1.6 + k * 1.5;
 
 type AtomApi = { rotate: (dx: number, dy: number) => void; zoom: (factor: number) => void; reset: () => void };
 
-/** Атомның Бор моделі: ядро (протон + нейтрон) және қабаттарда айналатын электрондар */
+/** Атомның Бор моделі: ядро (протон + нейтрон), қабаттарда айналатын электрондар; электрон қосып/алып ион жасауға болады */
 export function AtomModel({ element, onClose }: { element: ChemicalElement; onClose: () => void }) {
   const t = useTranslations("PeriodicTable");
   const tg = useTranslations("GestureLab");
@@ -29,10 +34,15 @@ export function AtomModel({ element, onClose }: { element: ChemicalElement; onCl
   const stageRef = useRef<HTMLDivElement>(null);
   const api = useRef<AtomApi>(null);
   const [handVisible, setHandVisible] = useState(false);
+  const [charge, setCharge] = useState(0);
+  // Сахнаның қабаттарды қайта салуға керек бөлігі (электрон қосқанда ядро мен камера орнында қалады)
+  const sceneRef = useRef<{ atom: THREE.Group; nucleusRadius: number; spinners: THREE.Group[] } | null>(null);
 
   const protons = element.number;
   const neutrons = Math.max(0, Math.round(element.mass) - protons);
-  const shells = useMemo(() => electronShells(protons), [protons]);
+  const shells = useMemo(() => ionShells(protons, charge), [protons, charge]);
+  const outerCount = shells.at(-1) ?? 0;
+  const octet = outerCount === (shells.length === 1 ? 2 : 8);
 
   useEffect(() => {
     dialogRef.current?.showModal();
@@ -75,31 +85,11 @@ export function AtomModel({ element, onClose }: { element: ChemicalElement; onCl
       else neutronMesh.setMatrixAt(n++, matrix);
     }
     atom.add(protonMesh, neutronMesh);
+    const current = { atom, nucleusRadius, spinners: [] as THREE.Group[] };
+    sceneRef.current = current;
 
-    // Қабаттар: әр орбита әр бұрышқа еңкейтілген, ішкі қабаттар жылдамырақ айналады
-    const electronGeometry = new THREE.SphereGeometry(0.24, 16, 12);
-    const electronMaterial = new THREE.MeshStandardMaterial({ color: ELECTRON, emissive: ELECTRON, emissiveIntensity: 0.8 });
-    const orbitMaterial = new THREE.MeshBasicMaterial({ color: ELECTRON, transparent: true, opacity: 0.5 });
-    const spinners: THREE.Group[] = [];
-    let outer = nucleusRadius;
-    shells.forEach((count, k) => {
-      const radius = nucleusRadius + 1.6 + k * 1.5;
-      outer = radius;
-      const tilt = new THREE.Group();
-      tilt.rotation.set(Math.PI / 2 + k * 0.55, k * 0.9, 0);
-      const spin = new THREE.Group();
-      tilt.add(new THREE.Mesh(new THREE.TorusGeometry(radius, 0.03, 8, 160), orbitMaterial), spin);
-      for (let j = 0; j < count; j++) {
-        const e = new THREE.Mesh(electronGeometry, electronMaterial);
-        const a = (2 * Math.PI * j) / count;
-        e.position.set(Math.cos(a) * radius, Math.sin(a) * radius, 0);
-        spin.add(e);
-      }
-      spinners.push(spin);
-      atom.add(tilt);
-    });
-
-    const distance = outer * 2.6 + 3;
+    // Камера бейтарап атомның сыртқы қабатынан бір қабат әріге дейін сыяды (анионда жаңа қабат пайда болуы мүмкін)
+    const distance = shellRadius(nucleusRadius, electronShells(protons).length) * 2.6 + 3;
     camera.position.set(0, distance * 0.25, distance);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enablePan = false;
@@ -140,7 +130,7 @@ export function AtomModel({ element, onClose }: { element: ChemicalElement; onCl
     const loop = (time = last) => {
       const dt = (time - last) / 1000;
       last = time;
-      if (!still) spinners.forEach((s, k) => (s.rotation.z += dt * (1.2 / (k + 1))));
+      if (!still) current.spinners.forEach((s, k) => (s.rotation.z += dt * (1.2 / (k + 1))));
       controls.update();
       renderer.render(scene, camera);
       frame = requestAnimationFrame(loop);
@@ -160,8 +150,42 @@ export function AtomModel({ element, onClose }: { element: ChemicalElement; onCl
       renderer.dispose();
       renderer.domElement.remove();
       api.current = null;
+      sceneRef.current = null;
     };
-  }, [protons, neutrons, shells]);
+  }, [protons, neutrons]);
+
+  // Қабаттар: әр орбита әр бұрышқа еңкейтілген, ішкі қабаттар жылдамырақ айналады, сыртқы қабат электрондары — сары
+  useEffect(() => {
+    const current = sceneRef.current;
+    if (!current) return;
+    const group = new THREE.Group();
+    const geometry = new THREE.SphereGeometry(0.24, 16, 12);
+    const inner = new THREE.MeshStandardMaterial({ color: ELECTRON, emissive: ELECTRON, emissiveIntensity: 0.8 });
+    const outer = new THREE.MeshStandardMaterial({ color: VALENCE, emissive: VALENCE, emissiveIntensity: 0.9 });
+    const orbit = new THREE.MeshBasicMaterial({ color: ELECTRON, transparent: true, opacity: 0.5 });
+    current.spinners = shells.map((count, k) => {
+      const radius = shellRadius(current.nucleusRadius, k);
+      const tilt = new THREE.Group();
+      tilt.rotation.set(Math.PI / 2 + k * 0.55, k * 0.9, 0);
+      const spin = new THREE.Group();
+      tilt.add(new THREE.Mesh(new THREE.TorusGeometry(radius, 0.03, 8, 160), orbit), spin);
+      for (let j = 0; j < count; j++) {
+        const e = new THREE.Mesh(geometry, k === shells.length - 1 ? outer : inner);
+        const a = (2 * Math.PI * j) / count;
+        e.position.set(Math.cos(a) * radius, Math.sin(a) * radius, 0);
+        spin.add(e);
+      }
+      group.add(tilt);
+      return spin;
+    });
+    current.atom.add(group);
+    return () => {
+      current.atom.remove(group);
+      current.spinners = [];
+      group.traverse((o) => o instanceof THREE.Mesh && o.geometry !== geometry && o.geometry.dispose());
+      [geometry, inner, outer, orbit].forEach((resource) => resource.dispose());
+    };
+  }, [shells]);
 
   // Қол қимылы: ☝ — айналдыру, 🤏 — үлкейту, ✋ — бастапқы күй (GestureLab-тағы қимылдар)
   const history = useRef<Point[][]>([]);
@@ -210,7 +234,8 @@ export function AtomModel({ element, onClose }: { element: ChemicalElement; onCl
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 id="atom-model-title" className="font-display text-xl font-bold">
-              {element.name[locale]} ({element.symbol}) — {t("atomModel")}
+              {element.name[locale]} ({element.symbol}
+              {charge !== 0 && <sup>{`${Math.abs(charge) > 1 ? Math.abs(charge) : ""}${charge > 0 ? "+" : "−"}`}</sup>}) — {t("atomModel")}
             </h2>
             <p className="font-mono text-[0.8rem] text-muted-foreground">{shells.join(" · ")}</p>
           </div>
@@ -237,8 +262,40 @@ export function AtomModel({ element, onClose }: { element: ChemicalElement; onCl
         <ul className="flex flex-wrap gap-x-5 gap-y-2 text-[0.9rem]">
           <Particle color={PROTON} label={t("protons")} count={protons} />
           <Particle color={NEUTRON} label={t("neutrons")} count={neutrons} />
-          <Particle color={ELECTRON} label={t("electrons")} count={protons} />
+          <Particle color={ELECTRON} label={t("electrons")} count={protons - charge} />
+          <Particle color={VALENCE} label={t("valence")} count={outerCount} />
         </ul>
+
+        {/* Ион жасау: электрон алсақ — катион, қоссақ — анион */}
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-panel-2 px-4 py-3">
+          <span className="text-[0.88rem] font-semibold">{t("ion.label")}:</span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="panel"
+              size="pill-sm"
+              aria-label={t("ion.remove")}
+              title={t("ion.remove")}
+              onClick={() => setCharge((c) => c + 1)}
+              disabled={charge >= Math.min(protons, MAX_CHARGE)}
+            >
+              − e⁻
+            </Button>
+            <Button
+              variant="panel"
+              size="pill-sm"
+              aria-label={t("ion.add")}
+              title={t("ion.add")}
+              onClick={() => setCharge((c) => c - 1)}
+              disabled={charge <= MIN_CHARGE}
+            >
+              + e⁻
+            </Button>
+          </div>
+          <p className="text-[0.85rem]" aria-live="polite">
+            {charge === 0 ? t("ion.neutral") : charge > 0 ? t("ion.cation", { count: charge }) : t("ion.anion", { count: -charge })}
+            {octet && <span className="ml-1 font-semibold text-good">✓ {t("ion.octet")}</span>}
+          </p>
+        </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <Button variant={running ? "panel" : "glow"} size="pill-sm" onClick={running ? stop : start} disabled={state === "loading"}>

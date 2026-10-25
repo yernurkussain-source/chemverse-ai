@@ -202,3 +202,21 @@ export function tablePosition(e: ChemicalElement): { row: number; column: number
   if (e.category === "actinide") return { row: 10, column: e.number - 89 + 3 };
   return { row: e.period, column: e.group ?? 3 };
 }
+
+/** Іздеу: реттік нөмір, белгі немесе кез келген тілдегі атау ("11", "na", "натр", "sodium"). Алдымен дәл сәйкестік. */
+export function searchElements(query: string, limit = 6) {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  const rank = (e: ChemicalElement) => {
+    const names = Object.values(e.name).map((n) => n.toLowerCase());
+    if (String(e.number) === q || e.symbol.toLowerCase() === q) return 0;
+    if (names.some((n) => n.startsWith(q))) return 1;
+    if (names.some((n) => n.includes(q))) return 2;
+    return 3;
+  };
+  return ELEMENTS.map((e) => [rank(e), e] as const)
+    .filter(([r]) => r < 3)
+    .sort((a, b) => a[0] - b[0] || a[1].number - b[1].number)
+    .slice(0, limit)
+    .map(([, e]) => e);
+}

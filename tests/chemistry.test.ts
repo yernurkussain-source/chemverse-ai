@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { ELEMENTS, getElement, tablePosition } from "@/lib/chemistry/elements";
-import { electronConfiguration, electronShells } from "@/lib/chemistry/electron-config";
+import { elementProperties } from "@/lib/chemistry/element-properties";
+import { elementUses } from "@/lib/chemistry/element-uses";
+import { ELEMENTS, getElement, searchElements, tablePosition } from "@/lib/chemistry/elements";
+import { electronConfiguration, electronShells, hundBoxes, ionShells } from "@/lib/chemistry/electron-config";
 import { molarMassOf, parseFormula } from "@/lib/chemistry/formula";
 import { MOLECULES, molarMass } from "@/lib/chemistry/molecules";
 import { equivalenceVolume, mediumState, phenolphthaleinColor, titrationPH, TITRATION } from "@/lib/chemistry/titration";
@@ -145,5 +147,51 @@ describe("Электрондық конфигурация", () => {
     assert.deepEqual(electronShells(29), [2, 8, 18, 1]);
     assert.deepEqual(electronShells(118), [2, 8, 18, 32, 32, 18, 8]);
     for (const e of ELEMENTS) assert.equal(electronShells(e.number).reduce((a, b) => a + b, 0), e.number, e.symbol);
+  });
+
+  test("Хунд ережесі: орбитальдар", () => {
+    assert.deepEqual(hundBoxes("1s", 1), ["↑"]);
+    assert.deepEqual(hundBoxes("2p", 3), ["↑", "↑", "↑"]);
+    assert.deepEqual(hundBoxes("2p", 4), ["↑↓", "↑", "↑"]);
+    assert.deepEqual(hundBoxes("3d", 6), ["↑↓", "↑", "↑", "↑", "↑"]);
+    assert.deepEqual(hundBoxes("4f", 14), Array(7).fill("↑↓"));
+  });
+
+  test("иондар: катион сыртқы қабаттан береді, анион октетке дейін қосады", () => {
+    assert.deepEqual(ionShells(11, 1), [2, 8]); // Na⁺
+    assert.deepEqual(ionShells(12, 2), [2, 8]); // Mg²⁺
+    assert.deepEqual(ionShells(17, -1), [2, 8, 8]); // Cl⁻
+    assert.deepEqual(ionShells(8, -2), [2, 8]); // O²⁻
+    assert.deepEqual(ionShells(26, 3), [2, 8, 13]); // Fe³⁺
+    assert.deepEqual(ionShells(1, 1), []); // H⁺ — тек протон
+    assert.deepEqual(ionShells(1, -1), [2]); // H⁻
+    assert.deepEqual(ionShells(10, -1), [2, 8, 1]);
+  });
+});
+
+describe("Элемент деректері", () => {
+  test("іздеу: нөмір, белгі, атау (үш тілде)", () => {
+    const symbols = (q: string) => searchElements(q).map((e) => e.symbol);
+    assert.equal(symbols("11")[0], "Na");
+    assert.equal(symbols("na")[0], "Na");
+    assert.equal(symbols("натр")[0], "Na");
+    assert.equal(symbols("sodium")[0], "Na");
+    assert.equal(symbols("C")[0], "C"); // дәл белгі алдымен
+    assert.deepEqual(symbols("  "), []);
+    assert.deepEqual(symbols("жоқ-элемент"), []);
+  });
+
+  test("қасиеттер (PubChem) мен қолданылуы 118 элементке де бар", () => {
+    for (const e of ELEMENTS) {
+      assert.ok(elementProperties(e.number), e.symbol);
+      for (const locale of ["kk", "ru", "en"] as const) assert.ok(elementUses(e.number, locale).trim(), `${e.symbol} ${locale}`);
+    }
+    assert.equal(elementProperties(80).state, "liquid"); // Hg
+    assert.equal(elementProperties(35).state, "liquid"); // Br
+    assert.equal(elementProperties(26).melt, 1811); // Fe, K
+    assert.equal(elementProperties(13).year, 1825); // Al
+    assert.equal(elementProperties(79).year, 0); // Au — ежелден
+    assert.match(elementUses(92, "kk"), /Қазақстан/); // жолдар ығыспағанын тексеру
+    assert.match(elementUses(118, "en"), /Oganessian/);
   });
 });

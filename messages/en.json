@@ -572,7 +572,7 @@
   },
   "PeriodicTable": {
     "title": "Periodic table",
-    "subtitle": "Click an element to see its name, mass, protons/neutrons/electrons, electron configuration and a 3D atom model.",
+    "subtitle": "Tap an element to see its atomic structure, properties, uses and a 3D atom model. Color the table by a property to spot trends, or play “Find the element”.",
     "scrollHint": "Scroll the table left and right",
     "selectHint": "Choose an element in the table",
     "atomicNumber": "Atomic number",
@@ -608,6 +608,90 @@
       "noble-gas": "Noble gases",
       "lanthanide": "Lanthanides",
       "actinide": "Actinides"
+    },
+    "tabsLabel": "Information sections",
+    "tabs": {
+      "basic": "Overview",
+      "structure": "Atomic structure",
+      "properties": "Properties"
+    },
+    "state": "State of matter",
+    "states": {
+      "solid": "Solid",
+      "liquid": "Liquid",
+      "gas": "Gas"
+    },
+    "predicted": "predicted",
+    "melt": "Melting point",
+    "boil": "Boiling point",
+    "density": "Density",
+    "oxidation": "Oxidation states",
+    "discovered": "Discovered",
+    "ancient": "Known since ancient times",
+    "radius": "Atomic radius",
+    "ionization": "Ionization energy",
+    "uses": "Uses",
+    "orbitals": "Orbital diagram (Hund’s rule)",
+    "valence": "Outer-shell electrons",
+    "askAi": "Ask the AI tutor",
+    "askAiQuestion": "Tell me about the element {name} ({symbol}): atomic structure, properties, important compounds and uses.",
+    "dataSource": "Physical properties: PubChem. Standard conditions (25 °C, 1 atm).",
+    "search": {
+      "label": "Find an element",
+      "placeholder": "Name, symbol or number: sodium, Na, 11",
+      "none": "Nothing found"
+    },
+    "trend": {
+      "label": "Color the table",
+      "category": "By type",
+      "electronegativity": "Electronegativity (Pauling)",
+      "mass": "Atomic mass",
+      "radius": "Atomic radius, pm",
+      "ionization": "Ionization energy, eV",
+      "melt": "Melting point, °C",
+      "density": "Density, g/cm³",
+      "noData": "no data",
+      "hint": "The deeper the color, the larger the value. See how it changes across a period (left to right) and down a group (top to bottom)."
+    },
+    "categoryInfo": {
+      "alkali": "Group 1 metals (Li–Fr). Very reactive and soft enough to cut with a knife; react with water to form an alkali and hydrogen. 1 outer electron.",
+      "alkaline-earth": "Group 2 metals (Be–Ra). Less reactive and harder than alkali metals; their oxides form alkalis with water. 2 outer electrons.",
+      "transition": "Groups 3–12 metals (d-block). Strong, good conductors of heat and electricity, show several oxidation states, often form colored compounds.",
+      "post-transition": "Metals of the p-block (Al, Ga, In, Sn, Pb, Bi…). Soft with fairly low melting points; some form amphoteric oxides.",
+      "metalloid": "Elements between metals and nonmetals (B, Si, Ge, As, Sb, Te). Mixed properties; many are semiconductors, the basis of electronics.",
+      "nonmetal": "Nonmetals (H, C, N, O, P, S, Se). Poor conductors with high electronegativity; the main elements of living things.",
+      "halogen": "Group 17 (F, Cl, Br, I, At, Ts). “Salt formers”: very reactive nonmetals that make salts with metals. 7 outer electrons.",
+      "noble-gas": "Group 18 (He–Og). Full outer shell (octet), so they hardly react; colorless, odorless gases.",
+      "lanthanide": "La–Lu (57–71), the 4f-block. Rare-earth metals used in magnets, lasers, screens and LEDs.",
+      "actinide": "Ac–Lr (89–103), the 5f-block. All radioactive; uranium and plutonium are nuclear fuels, elements after uranium are made artificially."
+    },
+    "ion": {
+      "label": "Make an ion",
+      "add": "Add an electron",
+      "remove": "Remove an electron",
+      "neutral": "Neutral atom: protons = electrons.",
+      "cation": "Positive ion (cation): electrons given away: {count}.",
+      "anion": "Negative ion (anion): electrons gained: {count}.",
+      "octet": "Outer shell is full — a stable state."
+    },
+    "game": {
+      "title": "Find the element",
+      "hint": "Find the element in the table by its name and tap it. 10 questions.",
+      "start20": "Elements 1–20",
+      "startAll": "All 118",
+      "find": "Find in the table:",
+      "progress": "{round}/{total} · score: {score}",
+      "correct": "Correct!",
+      "wrong": "Wrong — the right answer is shown in green",
+      "result": "Result: {score}/{total}",
+      "again": "Play again",
+      "stop": "Exit"
+    },
+    "units": {
+      "gcm3": "g/cm³",
+      "gl": "g/L",
+      "pm": "pm",
+      "ev": "eV"
     }
   },
   "GestureLab": {
