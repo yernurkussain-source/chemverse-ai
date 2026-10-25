@@ -21,6 +21,8 @@ const eslintConfig = defineConfig([
     "ios/**",
     // 3D ойынның бір файлдық прототипі (салыстыру үшін сақталған, жобаның кодына кірмейді)
     "docs/game/prototype/**",
+    // Олимпиада ядросының JS прототипі (src/features/olympiad/core-ге көшірілген, тесттер салыстырады)
+    "docs/olympiad/core/**",
     // Playwright есептері (npx playwright test жасайды)
     "playwright-report/**",
     "test-results/**",
