@@ -23,6 +23,7 @@ describe("ChemLab каталогы", () => {
   test("LabShell тәжірибелері — «ready», сілтеме түрі өз бетіне апарады", () => {
     for (const slug of SHELL_LABS) assert.equal(getLab(slug)?.status, "ready", slug);
     assert.equal(labHref(getLab("periodic-explorer")!), "/periodic-table");
+    assert.equal(labHref(getLab("molecule-builder")!), "/molecules/builder");
     assert.equal(labHref(getLab("titration")!), "/virtual-lab/titration");
   });
 

@@ -17,7 +17,7 @@ export const LAB_CATALOG = [
   { slug: "measurements", grades: [7], status: "soon" },
   // 8-сынып
   { slug: "atom-builder", grades: [8], status: "ready" },
-  { slug: "molecule-builder", grades: [8], status: "soon" },
+  { slug: "molecule-builder", grades: [8], status: "ready", href: "/molecules/builder" },
   { slug: "periodic-explorer", grades: [8], status: "ready", href: "/periodic-table" },
   { slug: "reaction-signs", grades: [8], status: "soon" },
   { slug: "balance-equations", grades: [8], status: "soon" },
