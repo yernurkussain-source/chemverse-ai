@@ -691,6 +691,10 @@
       "scan": {
         "title": "QR scanner",
         "text": "Scan a QR in a textbook or on a slide to open the molecule instantly."
+      },
+      "olympiad": {
+        "title": "Olympiad preparation",
+        "text": "“Daryn” club, grade 9: 34 topics, problems checked by code, a mistakes notebook and an AI helper."
       }
     }
   },
@@ -2662,6 +2666,109 @@
       "high": "High",
       "low": "Low",
       "hint": "Low — no shadows, for slower phones"
+    }
+  },
+  "Olympiad": {
+    "eyebrow": "Olympiad",
+    "title": "Olympiad preparation",
+    "subtitle": "“Daryn” club, grade 9: 34 topics, bank problems and generators with new numbers every time. Answers are checked by code, not by AI.",
+    "loading": "Loading…",
+    "notConfigured": "Olympiad content has not been loaded into the database yet.",
+    "map": "Course map",
+    "topicN": "Lesson {n}",
+    "mastery": "Mastery",
+    "reviewDue": "Time to review",
+    "nextLesson": "Lesson: {date}",
+    "guestNote": "Sign in to save your mastery level and mistakes notebook.",
+    "login": "Sign in",
+    "mistakesLink": "Mistakes notebook",
+    "topic": {
+      "goals": "Goals",
+      "key": "Key concepts",
+      "tip": "Olympiad tip",
+      "example": "Worked example",
+      "practice": "Practice",
+      "practiceText": "From the bank: {bank} · from generators: {gen}. Problems are ordered to match your level.",
+      "practiceStart": "Start practice",
+      "reviewStart": "Start review",
+      "labs": "Lab",
+      "selfCheck": "Self-check",
+      "selfCheckText": "{count} questions. The result affects your mastery level.",
+      "ai": "AI helper",
+      "aiText": "Socratic mode: the AI won't give the final answer — it asks guiding questions and helps you solve it yourself.",
+      "aiOpen": "Talk to the AI helper",
+      "aiPrompt": "I'm preparing for olympiad problems on “{title}”. Key concepts: {key}. Where should I start?",
+      "noPractice": "This lesson has no problem practice: lesson 33 is the “Zhas khimik-daryn” contest and lesson 34 is the science project defence. They will be in a separate section."
+    },
+    "labs": {
+      "game": "3D lab",
+      "chemlab": "ChemLab",
+      "site": "Site section",
+      "soon": "Soon",
+      "anyQuest": "Any quest",
+      "sites": {
+        "periodic-table": "Periodic table",
+        "molecules": "3D molecules",
+        "live": "Live lesson"
+      }
+    },
+    "problem": {
+      "progress": "{n} / {total}",
+      "level": "Level {level}",
+      "generated": "Generator",
+      "answer": "Your answer",
+      "numericPlaceholder": "e.g. 2.39",
+      "unit": "Unit: {unit}",
+      "sublevels": "Fill in the sublevels",
+      "unpaired": "Number of unpaired electrons",
+      "preview": "Configuration",
+      "decrease": "{name}: decrease",
+      "increase": "{name}: increase",
+      "coefficient": "Coefficient of {formula}",
+      "check": "Check",
+      "checking": "Checking…",
+      "correct": "Correct! Well done.",
+      "wrong": "Not yet",
+      "tryAgain": "Try again or open a hint.",
+      "reveal": "Show solution",
+      "revealNote": "If you open the solution, the problem goes to your mistakes notebook.",
+      "revealed": "Solution shown — the problem was added to your mistakes notebook.",
+      "solution": "Solution",
+      "stepOf": "Step {n} of {total}",
+      "nextStep": "Next step",
+      "allSteps": "Show all",
+      "hints": "Hints",
+      "hint": "Hint {n}",
+      "openHint": "Open hint {n}",
+      "askAi": "Ask the AI helper",
+      "aiPrompt": "I want to solve this olympiad problem myself — don't give me the answer, guide me.\n\nProblem: {kk}",
+      "aiHints": "Hints I've opened: {hints}",
+      "next": "Next problem",
+      "finish": "Finish",
+      "masteryNow": "Mastery: {value}%",
+      "errors": {
+        "network": "No connection. Check the internet and try again.",
+        "not_found": "Problem not found — refresh the page.",
+        "bad_request": "Enter the full answer.",
+        "not_configured": "Checking is temporarily unavailable."
+      }
+    },
+    "summary": {
+      "title": "Done!",
+      "score": "Correct on the first try: {correct} of {total}",
+      "again": "Again (new numbers)",
+      "toTopic": "Back to the topic",
+      "toMistakes": "Mistakes notebook"
+    },
+    "practicePage": {
+      "title": "Practice",
+      "empty": "This topic has no practice problems yet."
+    },
+    "mistakes": {
+      "title": "Mistakes notebook",
+      "subtitle": "Problems you got wrong or opened the solution for stay here. Solve one correctly and it leaves the notebook.",
+      "empty": "The notebook is empty — no mistakes. Well done!",
+      "login": "Sign in to see your mistakes notebook."
     }
   }
 }

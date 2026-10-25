@@ -21,11 +21,11 @@ const errorCode = (error: Error | undefined): KnownError | null => {
 };
 
 /** AI мұғалім чаты: стриминг жауап, KaTeX формулалар, дереккөздер, сократтық режим */
-export function TutorChat({ initialQuestion = "" }: { initialQuestion?: string }) {
+export function TutorChat({ initialQuestion = "", initialMode = "explain" }: { initialQuestion?: string; initialMode?: TutorMode }) {
   const t = useTranslations("AiTutor");
   const locale = useLocale();
   const [input, setInput] = useState(initialQuestion);
-  const [mode, setMode] = useState<TutorMode>("explain");
+  const [mode, setMode] = useState<TutorMode>(initialMode);
   const logRef = useRef<HTMLDivElement>(null);
 
   const { messages, sendMessage, status, error, stop, setMessages, clearError } = useChat({

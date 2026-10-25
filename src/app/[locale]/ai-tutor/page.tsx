@@ -11,7 +11,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 type SearchParams = PageProps<"/[locale]/ai-tutor">["searchParams"];
 
-// AI мұғалім (BLUEPRINT 10.4). ?q=... — нәтиже бетінен келген сұрақ өріске алдын ала жазылады
+// AI мұғалім (BLUEPRINT 10.4). ?q=... — нәтиже бетінен келген сұрақ өріске алдын ала жазылады;
+// ?mode=socratic — олимпиада есебінен келгенде дайын жауапсыз режим
 export default function AiTutorPage({ searchParams }: PageProps<"/[locale]/ai-tutor">) {
   const t = useTranslations("AiTutor");
   return (
@@ -27,6 +28,6 @@ export default function AiTutorPage({ searchParams }: PageProps<"/[locale]/ai-tu
 }
 
 async function ChatWithQuestion({ searchParams }: { searchParams: SearchParams }) {
-  const { q } = await searchParams;
-  return <TutorChat initialQuestion={typeof q === "string" ? q.slice(0, 2000) : ""} />;
+  const { q, mode } = await searchParams;
+  return <TutorChat initialQuestion={typeof q === "string" ? q.slice(0, 2000) : ""} initialMode={mode === "socratic" ? "socratic" : "explain"} />;
 }
