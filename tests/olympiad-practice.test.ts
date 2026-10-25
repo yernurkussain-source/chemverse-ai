@@ -2,24 +2,25 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, test } from "node:test";
 import { GEN, type BankProblem } from "@/features/olympiad/core";
-import { adaptiveOrder, generatedProblem, selfCheckSet, toPublic, type PublicProblem } from "@/features/olympiad/practice";
+import { adaptiveOrder, generatedProblem, rubricMax, selfCheckSet, toPublic, type PublicProblem } from "@/features/olympiad/practice";
 import { MASTERED, masteryDelta, nextMastery } from "@/features/olympiad/server/mastery";
 
 const P: BankProblem[] = JSON.parse(readFileSync("docs/olympiad/PROBLEMS.json", "utf8"));
 const facts = { correct: true, firstTry: true, hintsUsed: 0, level: 1, creditedToday: false };
 
 describe("Олимпиада: дұрыс жауап клиентке жіберілмейді", () => {
-  test("банк есептері: answer, correct, coeffs, Z, unpaired, solution жоқ; ашық есеп → null", () => {
+  test("банк есептері: answer, correct, coeffs, Z, unpaired, solution, rubric жоқ", () => {
     for (const p of P) {
       const pub = toPublic(p);
-      if (p.type === "open") {
-        assert.equal(pub, null, p.id);
-        continue;
-      }
-      assert.ok(pub, p.id);
       for (const secret of ["answer", "correct", "coeffs", "Z", "unpaired", "solution", "rubric"]) assert.ok(!(secret in pub), `${p.id}: ${secret}`);
       assert.deepStrictEqual(pub.hints, p.hints);
+      assert.equal(pub.type, p.type);
     }
+  });
+
+  test("ашық есептің ең жоғары ұпайы рубрикадан есептеледі", () => {
+    assert.equal(rubricMax(["Бірінші қадам — 2 ұпай", "Екінші — 1,5 ұпай", "ұпайсыз жол"]), 3.5);
+    for (const p of P) if (p.type === "open") assert.equal(rubricMax(p.rubric), 8, p.id);
   });
 
   test("генератор есептері: тек шарты мен бірлігі", () => {

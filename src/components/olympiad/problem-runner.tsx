@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { CheckResponse } from "@/app/api/olympiad/check/route";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { splitEq } from "@/features/olympiad/core";
@@ -11,8 +11,8 @@ import { HintLadder, StepReveal } from "./hint-ladder";
 import { BalanceInput, EconfInput, McqInput, NumericInput, type EconfAnswer } from "./inputs";
 
 type Answer = string | number | null | number[] | EconfAnswer;
-type Status = "idle" | "checking" | "wrong" | "correct" | "revealed";
-const ERRORS = ["network", "not_found", "bad_request", "not_configured"] as const;
+type Status = "idle" | "checking" | "wrong" | "correct" | "revealed" | "submitted";
+const ERRORS = ["network", "not_found", "bad_request", "not_configured", "login_required"] as const;
 type ErrorCode = (typeof ERRORS)[number];
 
 function initialAnswer(p: PublicProblem): Answer {
@@ -27,7 +27,7 @@ function initialAnswer(p: PublicProblem): Answer {
 
 /** Жауап толық енгізілді ме (тексеру батырмасы сонда ғана белсенді) */
 function isReady(p: PublicProblem, a: Answer) {
-  if (p.type === "numeric") return typeof a === "string" && a.trim() !== "";
+  if (p.type === "numeric" || p.type === "open") return typeof a === "string" && a.trim() !== "";
   if (p.type === "mcq") return a !== null;
   if (p.type === "econf") return Object.values((a as EconfAnswer).occ).some((n) => n > 0);
   return true;
@@ -38,14 +38,16 @@ export function ProblemRunner({ problems, showTopic = false }: { problems: Publi
   const t = useTranslations("Olympiad.summary");
   const router = useRouter();
   const [index, setIndex] = useState(0);
-  const [firstTry, setFirstTry] = useState<boolean[]>([]);
+  // null — ашық жауап (оны мұғалім бағалайды, қорытындыға кірмейді)
+  const [firstTry, setFirstTry] = useState<(boolean | null)[]>([]);
   if (!problems.length) return null;
 
   if (index >= problems.length) {
+    const scored = firstTry.filter((r) => r !== null);
     return (
       <section className="flex flex-col items-start gap-3 rounded-3xl border border-cyan-dim bg-panel p-6" aria-live="polite">
         <h2 className="font-display text-xl font-semibold">{t("title")}</h2>
-        <p className="font-mono text-lg">{t("score", { correct: firstTry.filter(Boolean).length, total: problems.length })}</p>
+        {scored.length > 0 && <p className="font-mono text-lg">{t("score", { correct: scored.filter(Boolean).length, total: scored.length })}</p>}
         <div className="flex flex-wrap gap-2">
           <Button
             type="button"
@@ -84,16 +86,17 @@ export function ProblemRunner({ problems, showTopic = false }: { problems: Publi
   );
 }
 
-function ProblemCard({ problem, n, total, showTopic, onNext }: { problem: PublicProblem; n: number; total: number; showTopic: boolean; onNext: (firstTryCorrect: boolean) => void }) {
+function ProblemCard({ problem, n, total, showTopic, onNext }: { problem: PublicProblem; n: number; total: number; showTopic: boolean; onNext: (firstTryCorrect: boolean | null) => void }) {
   const t = useTranslations("Olympiad.problem");
   const tRoot = useTranslations("Olympiad");
+  const locale = useLocale();
   const [answer, setAnswer] = useState<Answer>(() => initialAnswer(problem));
   const [hints, setHints] = useState(0);
   const [status, setStatus] = useState<Status>("idle");
   const [result, setResult] = useState<CheckResponse | null>(null);
   const [error, setError] = useState<ErrorCode | null>(null);
   const [firstTryCorrect, setFirstTryCorrect] = useState<boolean | null>(null);
-  const finished = status === "correct" || status === "revealed";
+  const finished = status === "correct" || status === "revealed" || status === "submitted";
   const busy = status === "checking";
 
   async function send(reveal: boolean) {
@@ -105,7 +108,7 @@ function ProblemCard({ problem, n, total, showTopic, onNext }: { problem: Public
       const response = await fetch("/api/olympiad/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...target, answer: reveal ? undefined : answer, reveal, hintsUsed: hints }),
+        body: JSON.stringify({ ...target, answer: reveal ? undefined : answer, reveal, hintsUsed: hints, locale }),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -114,9 +117,9 @@ function ProblemCard({ problem, n, total, showTopic, onNext }: { problem: Public
         return;
       }
       const checked = data as CheckResponse;
-      if (firstTryCorrect === null) setFirstTryCorrect(!reveal && checked.ok);
+      if (firstTryCorrect === null && !checked.open) setFirstTryCorrect(!reveal && checked.ok);
       setResult(checked);
-      setStatus(checked.ok ? "correct" : reveal ? "revealed" : "wrong");
+      setStatus(checked.open ? "submitted" : checked.ok ? "correct" : reveal ? "revealed" : "wrong");
     } catch {
       setError("network");
       setStatus(before);
@@ -152,6 +155,20 @@ function ProblemCard({ problem, n, total, showTopic, onNext }: { problem: Public
         {problem.type === "mcq" && <McqInput choices={problem.choices ?? []} value={answer as number | null} disabled={finished} onChange={setAnswer} />}
         {problem.type === "balance" && <BalanceInput equation={problem.equation ?? ""} value={answer as number[]} disabled={finished} onChange={setAnswer} />}
         {problem.type === "econf" && <EconfInput value={answer as EconfAnswer} disabled={finished} onChange={setAnswer} />}
+        {problem.type === "open" && (
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[0.85rem] font-semibold text-muted-foreground">{t("openAnswer")}</span>
+            <textarea
+              value={answer as string}
+              disabled={finished}
+              maxLength={4000}
+              rows={7}
+              onChange={(e) => setAnswer(e.target.value)}
+              className="min-h-40 rounded-2xl border border-line bg-panel-2 px-4 py-3 text-foreground"
+            />
+            <span className="text-[0.8rem] text-muted-foreground">{t("openNote")}</span>
+          </label>
+        )}
 
         <div aria-live="polite" className="flex flex-col gap-2 empty:hidden">
           {status === "correct" && (
@@ -165,9 +182,36 @@ function ProblemCard({ problem, n, total, showTopic, onNext }: { problem: Public
             </p>
           )}
           {status === "revealed" && <p className="rounded-2xl border border-line bg-panel-2 px-4 py-3 text-muted-foreground">{t("revealed")}</p>}
+          {status === "submitted" && result?.open && (
+            <div className="flex flex-col gap-2 rounded-2xl border border-cyan-dim bg-cyan/5 px-4 py-3">
+              <p className="font-semibold">{t("openSent")}</p>
+              {result.open.ai ? (
+                <p>
+                  <span className="font-mono font-semibold text-cyan">{t("aiScore", { score: result.open.ai.score, max: result.open.maxScore })}</span>{" "}
+                  {result.open.ai.feedback}
+                </p>
+              ) : (
+                <p className="text-muted-foreground">{t("aiUnavailable")}</p>
+              )}
+              <p className="text-[0.85rem] text-muted-foreground">{t("teacherFinal")}</p>
+              <details className="text-[0.9rem]">
+                <summary className="cursor-pointer font-semibold">{t("rubric")}</summary>
+                <ul className="mt-2 flex list-disc flex-col gap-1 pl-5">
+                  {result.open.rubric.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </details>
+            </div>
+          )}
           {error && (
             <p role="alert" className="text-[0.9rem] text-pink">
               {t(`errors.${error}`)}
+              {error === "login_required" && (
+                <Link href="/login" className="ml-2 font-semibold underline">
+                  {tRoot("login")}
+                </Link>
+              )}
             </p>
           )}
           {result?.mastery != null && <p className="font-mono text-[0.85rem] text-muted-foreground">{t("masteryNow", { value: Math.round(result.mastery) })}</p>}
@@ -209,7 +253,7 @@ function ProblemCard({ problem, n, total, showTopic, onNext }: { problem: Public
       )}
 
       {finished && (
-        <Button type="button" variant="glow" size="pill" className="mt-5" onClick={() => onNext(firstTryCorrect === true)}>
+        <Button type="button" variant="glow" size="pill" className="mt-5" onClick={() => onNext(problem.type === "open" ? null : firstTryCorrect === true)}>
           {n < total ? `${t("next")} →` : t("finish")}
         </Button>
       )}

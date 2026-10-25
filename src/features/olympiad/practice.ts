@@ -1,7 +1,7 @@
 import { generate, type BankProblem } from "./core";
 
-/** Код тексеретін есеп түрлері (open — мұғалім бағалайды, 3-сессия) */
-export type CheckableType = "numeric" | "mcq" | "balance" | "econf";
+/** Жаттығудағы есеп түрлері: төртеуін код тексереді, open-ды AI алдын ала, мұғалім түпкілікті бағалайды */
+export type CheckableType = "numeric" | "mcq" | "balance" | "econf" | "open";
 
 /** Оқушыға жіберілетін есеп: дұрыс жауапсыз және шешімсіз (тексеру — /api/olympiad/check) */
 export type PublicProblem = {
@@ -24,8 +24,8 @@ export type PublicProblem = {
 /** Генератор есептерінің деңгейі (банкте 1–3) */
 export const GENERATOR_LEVEL = 2;
 
-/** Банк есебі → оқушыға көрінетін нұсқасы; ашық есеп → null */
-export function toPublic(p: BankProblem): PublicProblem | null {
+/** Банк есебі → оқушыға көрінетін нұсқасы (ашық есептің рубрикасы да жауап болғандықтан жіберілмейді) */
+export function toPublic(p: BankProblem): PublicProblem {
   const base = { key: p.id, problemId: p.id, topic: p.topic, level: p.level, kk: p.kk, hints: p.hints };
   switch (p.type) {
     case "numeric":
@@ -34,12 +34,13 @@ export function toPublic(p: BankProblem): PublicProblem | null {
       return { ...base, type: p.type, choices: p.choices };
     case "balance":
       return { ...base, type: p.type, equation: p.equation };
-    case "econf":
-      return { ...base, type: p.type };
     default:
-      return null;
+      return { ...base, type: p.type };
   }
 }
+
+/** Рубриканың ең жоғары ұпайы: әр критерийдің соңындағы «— 2 ұпай» қосылады */
+export const rubricMax = (rubric: string[]) => rubric.reduce((sum, item) => sum + Number(/(\d+(?:[.,]\d+)?)\s*ұпай\s*$/.exec(item)?.[1].replace(",", ".") ?? 0), 0);
 
 /** Генератор есебі (seed бойынша) → тек шарты мен бірлігі */
 export function generatedProblem(id: string, seed: number): PublicProblem {

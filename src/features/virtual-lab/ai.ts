@@ -31,7 +31,7 @@ const THINKING_OPTIONS = [
   undefined,
 ];
 
-async function withLowThinking<T>(run: (providerOptions: (typeof THINKING_OPTIONS)[number]) => Promise<T>): Promise<T> {
+export async function withLowThinking<T>(run: (providerOptions: (typeof THINKING_OPTIONS)[number]) => Promise<T>): Promise<T> {
   for (const [i, options] of THINKING_OPTIONS.entries()) {
     try {
       return await run(options);

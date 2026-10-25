@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { Eyebrow } from "@/components/landing/section";
 import { ProblemRunner } from "@/components/olympiad/problem-runner";
 import { buttonVariants } from "@/components/ui/button";
+import { getMyOpenAnswers } from "@/features/olympiad/server/open-answers";
 import { getMistakes, getMyOlympiad } from "@/features/olympiad/server/queries";
 import { Link } from "@/i18n/navigation";
 
@@ -47,7 +48,39 @@ async function MistakesList() {
       </div>
     );
   }
-  const problems = await getMistakes(me.userId);
-  if (!problems.length) return <p className="rounded-3xl border border-good/40 bg-good/10 p-6 text-good">{t("mistakes.empty")}</p>;
-  return <ProblemRunner problems={problems} showTopic />;
+  const [problems, openAnswers] = await Promise.all([getMistakes(me.userId), getMyOpenAnswers(me.userId)]);
+  return (
+    <>
+      {problems.length ? (
+        <ProblemRunner problems={problems} showTopic />
+      ) : (
+        <p className="rounded-3xl border border-good/40 bg-good/10 p-6 text-good">{t("mistakes.empty")}</p>
+      )}
+      {openAnswers.length > 0 && (
+        <section aria-labelledby="my-open" className="mt-6 flex flex-col gap-3">
+          <h2 id="my-open" className="font-display text-lg font-semibold">
+            {t("myOpen.title")}
+          </h2>
+          <ul className="flex flex-col gap-3">
+            {openAnswers.map((a) => (
+              <li key={a.id} className="flex flex-col gap-2 rounded-2xl border border-line bg-panel p-4 text-[0.92rem]">
+                {a.problem && <p className="line-clamp-2 font-semibold">{a.problem.kk}</p>}
+                <p className="font-mono text-[0.85rem] text-muted-foreground">
+                  {a.aiScore === null ? t("teacher.open.aiNone") : t("problem.aiScore", { score: a.aiScore, max: a.maxScore })}
+                </p>
+                {a.reviewedAt ? (
+                  <p className="rounded-xl border border-good/40 bg-good/10 px-3 py-2">
+                    <span className="font-mono font-semibold text-good">{t("myOpen.teacher", { score: a.teacherScore ?? 0, max: a.maxScore })}</span>
+                    {a.teacherComment && <span> — {a.teacherComment}</span>}
+                  </p>
+                ) : (
+                  <p className="text-muted-foreground">{t("myOpen.pending")}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </>
+  );
 }

@@ -944,6 +944,10 @@
       "lab": {
         "title": "Virtual lab",
         "text": "ChemLab: assign experiments to classes, see results, review conclusions."
+      },
+      "olympiad": {
+        "title": "Olympiad club",
+        "text": "Grade open answers, mock olympiads, the “Zhas khimik-daryn” contest, projects."
       }
     },
     "classes": "My classes",
@@ -2750,8 +2754,16 @@
         "network": "No connection. Check the internet and try again.",
         "not_found": "Problem not found — refresh the page.",
         "bad_request": "Enter the full answer.",
-        "not_configured": "Checking is temporarily unavailable."
-      }
+        "not_configured": "Checking is temporarily unavailable.",
+        "login_required": "Open answers are graded by the teacher — please sign in."
+      },
+      "openAnswer": "Your answer (in full: observations, equations, conclusion)",
+      "openNote": "The AI gives a preliminary rubric score first; the teacher sets the final grade.",
+      "openSent": "Your answer was sent to the teacher.",
+      "aiScore": "AI preliminary score: {score} / {max}",
+      "aiUnavailable": "AI scoring is unavailable right now — the teacher will grade your answer.",
+      "teacherFinal": "This is a preliminary score. The teacher sets the final grade.",
+      "rubric": "Grading rubric"
     },
     "summary": {
       "title": "Done!",
@@ -2769,6 +2781,36 @@
       "subtitle": "Problems you got wrong or opened the solution for stay here. Solve one correctly and it leaves the notebook.",
       "empty": "The notebook is empty — no mistakes. Well done!",
       "login": "Sign in to see your mistakes notebook."
+    },
+    "myOpen": {
+      "title": "My open answers",
+      "teacher": "Teacher's grade: {score} / {max}",
+      "pending": "Not reviewed by the teacher yet."
+    },
+    "teacher": {
+      "back": "Teacher dashboard",
+      "eyebrow": "Olympiad club",
+      "title": "Olympiad preparation: teacher",
+      "subtitle": "Grade open answers, build mock olympiads and run the contest.",
+      "loading": "Loading…",
+      "open": {
+        "title": "Open answers",
+        "subtitle": "The AI suggests a preliminary rubric score — confirm or adjust it.",
+        "empty": "No open answers to review.",
+        "student": "Student",
+        "reviewed": "Graded",
+        "ai": "AI: {score} / {max}",
+        "aiNone": "No AI score",
+        "score": "Score",
+        "comment": "Comment",
+        "save": "Confirm",
+        "saved": "Saved",
+        "errors": {
+          "forbidden": "You can't grade this answer.",
+          "missing_fields": "Enter a score between 0 and the maximum.",
+          "unknown": "Not saved — try again."
+        }
+      }
     }
   }
 }

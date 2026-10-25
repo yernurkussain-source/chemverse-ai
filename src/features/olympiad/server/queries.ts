@@ -69,7 +69,7 @@ export async function getTopicView(n: number): Promise<TopicView | null> {
   return {
     topic: topicRow.data,
     example: first ? { kk: first.kk, choices: first.type === "mcq" ? first.choices : undefined, solution: first.solution } : null,
-    problems: rest.flatMap((p) => toPublic(p) ?? []),
+    problems: rest.map(toPublic),
     generated: topicRow.data.generators.filter((id) => Object.hasOwn(GEN, id)).map((id) => generatedProblem(id, newSeed())),
   };
 }
@@ -139,6 +139,6 @@ export async function getMistakes(userId: string): Promise<PublicProblem[]> {
       return Object.hasOwn(GEN, id) && a.seed !== null ? [generatedProblem(id, a.seed)] : [];
     }
     const problem = byId.get(a.problem_id);
-    return (problem && toPublic(problem)) || [];
+    return problem ? [toPublic(problem)] : [];
   });
 }

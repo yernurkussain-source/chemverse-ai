@@ -21,6 +21,7 @@ const TOOLS = [
   { key: "studio", href: "/teacher/lesson-studio" },
   { key: "qr", href: "/teacher/qr" },
   { key: "lab", href: "/teacher/labs" },
+  { key: "olympiad", href: "/teacher/olympiad" },
 ] as const;
 
 // Мұғалім кабинеті: сыныптар және құралдар
