@@ -846,6 +846,41 @@
       "unknown": "The valence is right, but this substance is not on the platform yet.",
       "taskDone": "Task complete!",
       "taskWrong": "This is a different substance — compare it with the task molecule."
+    },
+    "reactionsLink": "Reactions",
+    "reactions": {
+      "title": "Reaction animation",
+      "subtitle": "See what happens in a chemical reaction: bonds break, atoms regroup and form new bonds. Atoms never disappear — only their arrangement changes.",
+      "choose": "Choose a reaction",
+      "play": "Play",
+      "pause": "Pause",
+      "progress": "Reaction progress",
+      "phases": {
+        "reactants": "1. Starting substances (reactants): the molecules have not changed yet.",
+        "breaking": "2. Old bonds break and atoms move to new places.",
+        "products": "3. New bonds have formed — the reaction products appear."
+      },
+      "conservation": "The number of atoms does not change (conservation of mass)",
+      "element": "Element",
+      "before": "Before",
+      "after": "After",
+      "hint": "Drag the slider to scrub through the animation and rotate the 3D scene.",
+      "names": {
+        "water": "Forming water",
+        "hcl": "Forming hydrogen chloride",
+        "ammonia": "Ammonia synthesis",
+        "methane-burning": "Burning methane",
+        "ethanol-burning": "Burning ethanol",
+        "hydrogenation": "Hydrogenating ethylene"
+      },
+      "descriptions": {
+        "water": "Hydrogen burns in oxygen to form water. It is a combination reaction that releases a lot of heat, so hydrogen is a clean fuel of the future.",
+        "hcl": "Hydrogen and chlorine combine in light to form hydrogen chloride. Its water solution is hydrochloric acid.",
+        "ammonia": "Making ammonia from nitrogen and hydrogen (the Haber process) is the basis of fertilizer production. It runs at high pressure with a catalyst.",
+        "methane-burning": "Complete combustion of natural gas (methane): carbon dioxide and water form and heat is released.",
+        "ethanol-burning": "Alcohol burns in oxygen and turns into carbon dioxide and water — this is how a spirit lamp burns.",
+        "hydrogenation": "Ethylene's double bond opens and hydrogen adds to it, forming ethane. An unsaturated compound becomes saturated."
+      }
     }
   },
   "PeriodicTable": {

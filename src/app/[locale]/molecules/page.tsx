@@ -37,6 +37,9 @@ export default async function MoleculesPage() {
           <Link href="/molecules/builder" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
             🧩 {t("builderLink")}
           </Link>
+          <Link href="/molecules/reactions" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
+            ⚗ {t("reactionsLink")}
+          </Link>
           <Link href="/periodic-table" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
             {t("periodicLink")}
           </Link>
