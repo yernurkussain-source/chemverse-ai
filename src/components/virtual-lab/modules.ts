@@ -1,5 +1,6 @@
 import type { ShellLabSlug } from "@/features/virtual-lab/catalog";
 import { atomModule } from "./experiments/atom-builder";
+import { balanceModule } from "./experiments/balance-equations";
 import { indicatorModule } from "./experiments/indicator-lab";
 import { activityModule } from "./experiments/metal-activity";
 import { mixtureModule } from "./experiments/mixture-separation";
@@ -19,4 +20,5 @@ export const LAB_MODULES: Record<ShellLabSlug, LabModule> = {
   precipitation: precipitationModule,
   "metal-activity": activityModule,
   "unknown-substance": unknownModule,
+  "balance-equations": balanceModule,
 };

@@ -1798,7 +1798,14 @@
       "molarMassOk": "The molar mass is correct.",
       "molarMassWrong": "M is the sum of the masses of all atoms in the formula (remember the subscripts).",
       "hno3Ok": "Correct: in acid, carbonate escapes as CO₂, so it cannot be mistaken for AgCl.",
-      "hno3Wrong": "Recall how carbonate reacts with acid: what false precipitate would AgNO₃ give without HNO₃?"
+      "hno3Wrong": "Recall how carbonate reacts with acid: what false precipitate would AgNO₃ give without HNO₃?",
+      "equationsBalanced": "Balanced equations: {count}/{total}.",
+      "indicesOk": "Correct: a subscript shows the composition of a substance.",
+      "indicesWrong": "Compare H₂O and H₂O₂: what happens if you change a subscript?",
+      "lawOk": "Correct: the number of atoms is conserved — the law of conservation of mass.",
+      "lawWrong": "What stays the same before and after a reaction? Find the law about it.",
+      "waterMassOk": "The mass of water is correct.",
+      "waterMassWrong": "n(H₂) = 4 / 2 = 2 mol; by the equation n(H₂O) = n(H₂), and m = n · M."
     },
     "resultPage": {
       "title": "Experiment result",
@@ -2571,6 +2578,74 @@
         "reveal": {
           "unknown": "Substance X",
           "molarMass": "Molar mass, g/mol"
+        }
+      },
+      "balance-equations": {
+        "goal": "Balance simple reaction equations with coefficients and show that the number of atoms is conserved.",
+        "theory": "In a chemical reaction atoms are neither destroyed nor created — they only regroup. So each element must have the same number of atoms on the left and on the right of an equation (the law of conservation of mass, M. Lomonosov, A. Lavoisier). To balance an equation, put coefficients in front of the substances: 2H₂ + O₂ → 2H₂O. A coefficient shows the number of molecules, while a subscript shows what a molecule is made of. Never change subscripts: writing H₂O₂ instead of H₂O gives a different substance. Coefficients must be the smallest whole numbers.",
+        "safety": {
+          "model": "This is a paper task: there is no laboratory hazard.",
+          "indices": "Do not change the subscripts in formulas — only add coefficients.",
+          "check": "Recount the atoms after every step."
+        },
+        "prediction": {
+          "question": "What coefficient do you think goes in front of aluminium in Al + O₂ → Al₂O₃?"
+        },
+        "equipmentHint": "What do you need to balance an equation? Choose the right actions — each extra one costs 3 points.",
+        "equipment": {
+          "coefficients": "Put coefficients in front of substances",
+          "indices": "Change subscripts in formulas",
+          "atom-count": "Count the atoms of each element on both sides",
+          "new-substance": "Add a new substance to the equation",
+          "conservation": "Rely on the law of conservation of mass",
+          "remove-substance": "Remove an “extra” substance from the equation"
+        },
+        "experiment": {
+          "hint": "Pick an equation and change the coefficients with “+” and “−”. The atom balance counts the atoms on both sides — when every row shows “=”, the equation is balanced.",
+          "equations": "Equations",
+          "more": "{formula}: increase coefficient",
+          "less": "{formula}: decrease coefficient",
+          "scale": "Atom balance",
+          "element": "Element",
+          "left": "Left",
+          "right": "Right",
+          "balanced": "Balanced ✓",
+          "notBalanced": "Not balanced yet",
+          "progress": "Balanced: {count}/{total}"
+        },
+        "observation": {
+          "equation": "Equation",
+          "atoms": "Atoms on one side"
+        },
+        "observationHint": "Count all the atoms on one side (multiply the coefficient by the subscripts): for example, 2NaCl: 2 · (1 + 1) = 4 atoms.",
+        "questions": {
+          "indices": {
+            "label": "Why do we change coefficients, not subscripts, when balancing?",
+            "options": {
+              "easier": "Coefficients are easier to change",
+              "substance": "Changing a subscript changes the composition, and so the substance itself",
+              "mass": "Subscripts do not affect mass",
+              "rule": "It is just a convention"
+            }
+          },
+          "law": {
+            "label": "Which law is balancing equations based on?",
+            "options": {
+              "periodic": "The periodic law",
+              "composition": "The law of constant composition",
+              "conservation": "The law of conservation of mass",
+              "avogadro": "Avogadro’s law"
+            }
+          },
+          "waterMass": {
+            "label": "2H₂ + O₂ → 2H₂O. How many grams of water form if 4 g of hydrogen react completely? (M(H₂) = 2 g/mol, M(H₂O) = 18 g/mol)",
+            "unit": "g"
+          }
+        },
+        "conclusionHint": "Tip: write what changed and what stayed the same while balancing (the number of atoms), and how you calculated the mass of water.",
+        "reveal": {
+          "balanced": "Balanced equations",
+          "waterMass": "Mass of water, g"
         }
       }
     },

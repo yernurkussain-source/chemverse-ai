@@ -20,7 +20,7 @@ export const LAB_CATALOG = [
   { slug: "molecule-builder", grades: [8], status: "ready", href: "/molecules/builder" },
   { slug: "periodic-explorer", grades: [8], status: "ready", href: "/periodic-table" },
   { slug: "reaction-signs", grades: [8], status: "soon" },
-  { slug: "balance-equations", grades: [8], status: "soon" },
+  { slug: "balance-equations", grades: [8], status: "ready" },
   { slug: "metals-nonmetals", grades: [8], status: "soon" },
   // 9-сынып
   { slug: "indicator-lab", grades: [9], status: "ready" },
@@ -52,7 +52,7 @@ export type LabEntry = (typeof LAB_CATALOG)[number];
 export type LabSlug = LabEntry["slug"];
 
 /** 8 қадамдық LabShell-де жұмыс істейтін тәжірибелер (сынып ретімен) */
-export const SHELL_LABS = ["mixture-separation", "atom-builder", "indicator-lab", "titration", "reaction-rate", "precipitation", "metal-activity", "unknown-substance"] as const satisfies readonly LabSlug[];
+export const SHELL_LABS = ["mixture-separation", "atom-builder", "indicator-lab", "titration", "reaction-rate", "precipitation", "metal-activity", "unknown-substance", "balance-equations"] as const satisfies readonly LabSlug[];
 export type ShellLabSlug = (typeof SHELL_LABS)[number];
 
 export const isShellLab = (slug: string): slug is ShellLabSlug => (SHELL_LABS as readonly string[]).includes(slug);

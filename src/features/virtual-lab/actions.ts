@@ -11,6 +11,7 @@ import { aiConclusionScore, isAiAvailable, labContext } from "./ai";
 import { getLab, isShellLab, type ShellLabSlug } from "./catalog";
 import { CONCLUSION_MAX_LENGTH } from "./conclusion";
 import { atomExperimentSchema, gradeAtom } from "./experiments/atom-builder/grade";
+import { balanceExperimentSchema, gradeBalance } from "./experiments/balance-equations/grade";
 import { gradeIndicator, indicatorExperimentSchema } from "./experiments/indicator-lab/grade";
 import { isValidOrder, SOLUTIONS } from "./experiments/indicator-lab/model";
 import { activityExperimentSchema, gradeActivity } from "./experiments/metal-activity/grade";
@@ -39,6 +40,7 @@ const PARAMS: Record<ShellLabSlug, (level: number | null) => Record<string, numb
   "atom-builder": () => ({}),
   precipitation: () => ({}),
   "metal-activity": () => ({}),
+  "balance-equations": () => ({}),
   // Тек seed: X-ті одан тек сервер есептей алады (жауап клиентке берілмейді)
   "unknown-substance": () => ({ s: randomInt(1, SEED_MAX) }),
   // 9-сынып: γ = 2 белгілі; 10-сынып («Реакция кинетикасы»): γ жасырын, оқушы оны деректерінен табады
@@ -128,6 +130,10 @@ function grade(slug: ShellLabSlug, params: Record<string, number>, input: z.infe
     case "metal-activity": {
       const experiment = activityExperimentSchema.safeParse(input.experiment);
       return experiment.success ? gradeActivity({ ...input, experiment: experiment.data }) : null;
+    }
+    case "balance-equations": {
+      const experiment = balanceExperimentSchema.safeParse(input.experiment);
+      return experiment.success ? gradeBalance({ ...input, experiment: experiment.data }) : null;
     }
     case "unknown-substance": {
       const experiment = unknownExperimentSchema.safeParse(input.experiment);

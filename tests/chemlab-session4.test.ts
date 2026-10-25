@@ -7,6 +7,8 @@ import { ACTIVITY_KEY, gradeActivity, type ActivitySubmission } from "@/features
 import { ACTIVITY_META } from "@/features/virtual-lab/experiments/metal-activity/meta";
 import { CELLS as METAL_CELLS, metalSummary, runTube } from "@/features/virtual-lab/experiments/metal-activity/model";
 import { gradeUnknown, SEED_MAX, UNKNOWN_KEY, unknownIndex, type UnknownSubmission } from "@/features/virtual-lab/experiments/unknown-substance/grade";
+import { BALANCE_KEY, gradeBalance, type BalanceSubmission } from "@/features/virtual-lab/experiments/balance-equations/grade";
+import { atomCounts, EQUATIONS, equationText, isBalanced, totalAtoms } from "@/features/virtual-lab/experiments/balance-equations/model";
 import { CANDIDATES, molarMass, observe, revealedIon, TESTS } from "@/features/virtual-lab/experiments/unknown-substance/model";
 
 describe("Тұнба түзілуі: модель (ортақ қозғалтқыш)", () => {
@@ -180,5 +182,54 @@ describe("Белгісіз затты анықтау: бағалау", () => {
   test("тек 2 сынақ жасалды", () => {
     const { breakdown } = gradeUnknown(x, { ...perfect, experiment: { tests: perfect.experiment.tests.slice(0, 2) } });
     assert.equal(breakdown.procedure, 10 + 8);
+  });
+});
+
+describe("Коэффициенттерді таңдау: модель", () => {
+  test("кілттегі коэффициенттер теңдеулерді теңестіреді, бастапқы (бәрі 1) — жоқ", () => {
+    BALANCE_KEY.solutions.forEach((c, i) => assert.ok(isBalanced(i, c), EQUATIONS[i].id));
+    assert.ok(EQUATIONS.every((_, i) => !isBalanced(i, BALANCE_KEY.solutions[i].map(() => 1))));
+  });
+
+  test("еселенген коэффициенттер (4, 2, 4) — ең кіші емес, теңестірілген деп саналмайды", () => {
+    assert.equal(isBalanced(0, [4, 2, 4]), false);
+    assert.equal(isBalanced(0, [2, 1, 2]), true);
+    assert.equal(isBalanced(0, [2, 1]), false);
+  });
+
+  test("атом таразысы және теңдеу мәтіні", () => {
+    assert.deepEqual(atomCounts(3, [4, 3, 2]), { left: { Al: 4, O: 6 }, right: { Al: 4, O: 6 } });
+    assert.deepEqual(BALANCE_KEY.solutions.map((c, i) => totalAtoms(atomCounts(i, c).left)), [6, 4, 5, 10, 9]);
+    assert.equal(equationText(4, [1, 2, 1, 2]), "CH₄ + 2O₂ → CO₂ + 2H₂O");
+  });
+});
+
+describe("Коэффициенттерді таңдау: бағалау", () => {
+  const perfect: BalanceSubmission = {
+    prediction: "4",
+    equipment: [...BALANCE_KEY.equipment],
+    experiment: { coeffs: BALANCE_KEY.solutions.map((c) => [...c]) },
+    observations: { "r0.atoms": "6", "r1.atoms": "4", "r2.atoms": "5", "r3.atoms": "10", "r4.atoms": "9" },
+    answers: { indices: "substance", law: "conservation", waterMass: "36" },
+    conclusion:
+      "Теңестіргенде тек коэффициенттерді өзгерттім, индекстер өзгермеді. Әр элементтің атом саны екі жақта бірдей — атомдар сақталады. 4 г сутектен 36 г су түзіледі.",
+  };
+
+  test("мінсіз жұмыс — 100", () => {
+    const { breakdown, reveal } = gradeBalance(perfect);
+    assert.deepEqual(breakdown, { procedure: 30, observation: 25, calc: 20, conclusion: 25, total: 100 });
+    assert.equal(reveal.balanced, 5);
+  });
+
+  test("екі теңдеу теңестірілмеген, бір атом саны қате, индекс өзгертілген", () => {
+    const coeffs = perfect.experiment.coeffs.map((c, i) => (i < 2 ? c.map(() => 1) : c));
+    const { breakdown } = gradeBalance({
+      ...perfect,
+      equipment: [...BALANCE_KEY.equipment, "indices"],
+      experiment: { coeffs },
+      observations: { ...perfect.observations, "r3.atoms": "9" },
+    });
+    assert.equal(breakdown.procedure, 7 + 12);
+    assert.equal(breakdown.observation, 20);
   });
 });
