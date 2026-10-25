@@ -11,6 +11,7 @@ import { updateDtube } from "./dtube";
 import { updateFunnel } from "./funnel";
 import { holdPose, pourPose } from "./pour";
 import { updateSplint } from "./splint";
+import { carryTaint } from "../game/mystery";
 
 const tmp = new THREE.Vector3();
 
@@ -70,9 +71,11 @@ export function updateObjects(G: Game, rdt: number): void {
         if (it.type === "bottle") {
           safetyCheck(G);
           addLiquid(rv, LIQUIDS[it.rid].ions, amt);
+          if (it.mystery) carryTaint(G, "x", rv);
           state.pourAmt += amt;
           flowing = true;
         } else if (it.type === "vessel") {
+          carryTaint(G, it.v.s, rv);
           const m = transfer(it.v.s, rv, amt);
           state.pourAmt += m;
           flowing = m > 0;

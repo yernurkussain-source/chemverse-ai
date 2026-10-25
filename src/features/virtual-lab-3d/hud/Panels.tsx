@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { LIQUIDS } from "@/features/chem-engine";
 import { cn } from "@/lib/utils";
+import { MYSTERY_CANDIDATES } from "../game/mystery";
 import { QUESTS } from "../game/quests";
 import { useStore, type HudStore } from "../game/store";
 import { muted, topButton } from "./styles";
@@ -46,12 +48,21 @@ export function Journal({ store, onClose }: { store: HudStore; onClose: () => vo
   );
 }
 
-/** Тапсырмалар терезесі (T): 22 тапсырма, әрқайсысы +100 XP */
-export function Quests({ store, onClose }: { store: HudStore; onClose: () => void }) {
+/** Тапсырмалар терезесі (T): 23 тапсырма, әрқайсысы +100 XP; «X» тапсырмасының жауабы осы жерде таңдалады */
+export function Quests({
+  store,
+  onClose,
+  onAnswer,
+}: {
+  store: HudStore;
+  onClose: () => void;
+  onAnswer: (guess: string) => boolean | null | undefined;
+}) {
   const t = useTranslations("VirtualLab3D");
   const open = useStore(store, (s) => s.quests);
   const done = useStore(store, (s) => s.done);
   const dialog = useRef<HTMLDivElement>(null);
+  const [answer, setAnswer] = useState<{ ok: boolean; f: string } | null>(null);
   // Фокус терезенің өзіне түседі (батырмаға емес) — тізім басынан көрінеді
   useEffect(() => {
     if (open) dialog.current?.focus({ preventScroll: true });
@@ -94,6 +105,29 @@ export function Quests({ store, onClose }: { store: HudStore; onClose: () => voi
                 <span>
                   <b className="block text-[0.88rem]">{t(`quests.${q.id}.t`)}</b>
                   <small className={muted}>{t(`quests.${q.id}.d`)}</small>
+                  {q.id === "unknown" && !ok && (
+                    <span role="group" aria-label={t("mystery.answer")} className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <small className="w-full">{t("mystery.answer")}</small>
+                      {MYSTERY_CANDIDATES.map((id) => (
+                        <button
+                          key={id}
+                          type="button"
+                          onClick={() => {
+                            const result = onAnswer(id);
+                            if (typeof result === "boolean") setAnswer({ ok: result, f: LIQUIDS[id].f });
+                          }}
+                          className="rounded-lg border border-[var(--hud-line)] px-2.5 py-1 font-mono text-[0.8rem] hover:border-cyan focus-visible:outline-2 focus-visible:outline-cyan"
+                        >
+                          {LIQUIDS[id].f}
+                        </button>
+                      ))}
+                    </span>
+                  )}
+                  {q.id === "unknown" && answer && (
+                    <small role="status" className={cn("mt-1 block", answer.ok ? "text-good" : "text-[var(--warn)]")}>
+                      {answer.ok ? t("mystery.right", { f: answer.f }) : t("mystery.wrong")}
+                    </small>
+                  )}
                 </span>
                 <em className="font-mono text-[0.74rem] text-cyan not-italic">+100</em>
               </li>

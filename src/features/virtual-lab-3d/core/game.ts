@@ -29,6 +29,7 @@ import { vesselVisual } from "../systems/visuals";
 import { createBase, type Game } from "./context";
 import { addLights } from "./renderer";
 import { disposeScene } from "./three-utils";
+import { answerMystery } from "../game/mystery";
 
 /** React жағынан ойынды басқару */
 export type GameApi = {
@@ -46,6 +47,8 @@ export type GameApi = {
   unlockAudio: () => void;
   /** «Сапа»: high — көлеңкемен, low — көлеңкесіз (таңдау браузерде есте сақталады) */
   setQuality: (q: Quality) => void;
+  /** «X» тапсырмасының жауабы: true — дұрыс, false — қате (X ауысты), null — бұрын шешілген */
+  answerMystery: (guess: string) => boolean | null;
   /** Телефондағы джойстик пен батырмалар */
   touch: TouchApi;
   dispose: () => void;
@@ -310,6 +313,7 @@ export function createGame(opts: { container: HTMLElement; store: HudStore; tr: 
       else snd.init();
     },
     unlockAudio: () => snd.init(),
+    answerMystery: (guess) => answerMystery(G, guess),
     setQuality: (q) => {
       setQuality(q);
       try {

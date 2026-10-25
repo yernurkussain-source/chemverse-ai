@@ -24,7 +24,8 @@ type ItemBase = {
   cap?: THREE.Object3D;
 };
 
-export type BottleItem = ItemBase & { type: "bottle"; rid: LiquidId };
+/** mystery — «X» бөтелкесі (rid жасырын); liq — сұйықтың материалы (X ауысқанда түсі өзгереді) */
+export type BottleItem = ItemBase & { type: "bottle"; rid: LiquidId; mystery?: boolean; liq?: THREE.MeshStandardMaterial };
 export type DropperItem = ItemBase & { type: "dropper"; rid: IndicatorId };
 export type JarItem = ItemBase & { type: "jar"; rid: SolidId };
 export type VesselItem = ItemBase & { type: "vessel"; v: LabVessel };
@@ -51,7 +52,8 @@ export type SplintItem = ItemBase & {
   f1: THREE.Mesh;
   light: THREE.PointLight;
 };
-export type WireItem = ItemBase & { type: "wire"; sample: Partial<Record<IonId, number>>; acid: boolean; naRes: boolean };
+/** mystery — сымдағы сынама X ерітіндісінен алынды (иондары жазылмайды) */
+export type WireItem = ItemBase & { type: "wire"; sample: Partial<Record<IonId, number>>; acid: boolean; naRes: boolean; mystery?: boolean };
 
 export type ReagentItem = BottleItem | DropperItem | JarItem;
 export type Item = BottleItem | DropperItem | JarItem | VesselItem | FunnelItem | DTubeItem | SplintItem | WireItem;

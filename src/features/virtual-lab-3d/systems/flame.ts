@@ -3,6 +3,7 @@ import type { Game } from "../core/context";
 import { chooseFlame, FLAME } from "../game/flame-rules";
 import { addLog, toast } from "../game/journal";
 import type { VesselItem, WireItem } from "../items/types";
+import { isTainted } from "../game/mystery";
 
 /** Сымға не жұғады: ерітіндідегі катиондар (≥ 0,005 М) не буландырғаннан кейінгі қалдықтың катиондары */
 function sampleFrom(o: VesselItem): { cat: Partial<Record<IonId, number>>; acid: boolean } {
@@ -29,8 +30,11 @@ export function wireDip(G: Game, w: WireItem, t: VesselItem): void {
   const sm = sampleFrom(t);
   w.sample = sm.cat;
   w.acid = sm.acid && !Object.keys(sm.cat).length;
+  // X ерітіндісінен алынған сынаманың иондары жазылмайды — оларды жалын түсі бойынша анықтайды
+  w.mystery = isTainted(G, t.v.s) && Object.keys(sm.cat).length > 0;
   G.snd.drip();
-  addLog(G, "", t.name, "", w.acid ? G.tr("log.wireAcid") : G.tr("log.wireDipped", { ions: ions(sm.cat) || G.tr("log.noCation") }));
+  const dipped = w.mystery ? G.tr("mystery.wireDipped") : G.tr("log.wireDipped", { ions: ions(sm.cat) || G.tr("log.noCation") });
+  addLog(G, "", t.name, "", w.acid ? G.tr("log.wireAcid") : dipped);
 }
 
 /** Сымды спиртовка жалынына енгізу */
@@ -60,13 +64,22 @@ export function wireFlame(G: Game, w: WireItem): void {
     G.snd.whoosh();
     const color = tr(`flame.${main}`);
     const ion = ION[main].f;
+    if (w.mystery) {
+      addLog(G, "r", tr("log.flameTest"), "", tr("mystery.flame", { color }));
+      toast(G, tr("mystery.flame", { color }));
+      if (colored.includes("Na")) w.naRes = true;
+      w.sample = {};
+      w.mystery = false;
+      return;
+    }
     let text = tr("log.flameColored", { color, ion });
     if (main === "Na" && colored.includes("K")) text += ". " + tr("log.flameMasked");
     if (w.naRes && !sampleIons.includes("Na")) text += ` (${tr("log.flameResidue")})`;
     addLog(G, "r", tr("log.flameTest"), tr("log.flameEq", { ion, color }), text);
     toast(G, tr("log.flameColored", { color, ion }));
   } else {
-    const list = ions(w.sample);
+    const list = w.mystery ? "" : ions(w.sample);
+    w.mystery = false;
     addLog(G, "", tr("log.flameTest"), "", tr("log.flameNone") + (list ? ` (${list})` : ""));
     toast(G, tr("toast.flameNoChange"));
   }

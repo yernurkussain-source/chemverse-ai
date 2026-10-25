@@ -3,6 +3,7 @@ import type { Game } from "../core/context";
 import type { LookView } from "../game/store";
 import type { FunnelItem, VesselItem } from "../items/types";
 import { burReading } from "../scene/burette";
+import { isTainted } from "../game/mystery";
 
 /**
  * HUD карточкасы: нысанадағы (не қолдағы, не құйылып жатқан) ыдыстың көлемі, температурасы, pH-ы,
@@ -49,7 +50,10 @@ export function buildLook(G: Game): LookView | null {
         { label: tr("look.inside"), value: fmt(v.V, 1) },
         { label: tr("look.ph"), value: phText(pH(v)), accent: true },
       ],
-      rows: [...(ions.length ? [ions.map(([k, c]) => ({ text: `${ION[k].f} ${fmt(c, 2)} ${molar}` }))] : []), [{ text: tr("look.buretteHint") }]],
+      rows: [
+        ...(isTainted(G, v) ? [[{ text: tr("mystery.ions") }]] : ions.length ? [ions.map(([k, c]) => ({ text: `${ION[k].f} ${fmt(c, 2)} ${molar}` }))] : []),
+        [{ text: tr("look.buretteHint") }],
+      ],
     };
   }
   if (!it && !f) return null;
@@ -74,10 +78,14 @@ export function buildLook(G: Game): LookView | null {
       .filter(([k, c]) => (c >= 1e-4 && ION[k].z !== 0) || (k === "H2O2" && c >= 1e-3))
       .sort((a, b) => b[1] - a[1])
       .slice(0, 6);
+    // X ерітіндісі бар ыдыс: иондары жасырын (оқушы оларды реакциялар бойынша анықтайды)
+    const mystery = isTainted(G, s);
     view.rows.push(
-      ions.length
-        ? ions.map(([k, c]) => ({ text: `${ION[k].f} ${conc(c)} ${molar}` }))
-        : [{ text: tr(s.V > 0.05 ? "look.onlyWater" : "look.empty") }],
+      mystery && s.V > 0.05
+        ? [{ text: tr("mystery.ions") }]
+        : ions.length
+          ? ions.map(([k, c]) => ({ text: `${ION[k].f} ${conc(c)} ${molar}` }))
+          : [{ text: tr(s.V > 0.05 ? "look.onlyWater" : "look.empty") }],
     );
     const ppt = entries(s.ppt).filter(([k, n]) => n * PPT[k].M * 1000 >= 0.05);
     if (ppt.length) {
@@ -96,7 +104,7 @@ export function buildLook(G: Game): LookView | null {
     if (s.residue) {
       view.rows.push(
         s.residue.salts.length
-          ? s.residue.salts.map((x) => ({ text: tr("look.residue", { f: x.f, g: fmt(x.g, 3) }) }))
+          ? s.residue.salts.map((x) => ({ text: tr("look.residue", { f: mystery ? "?" : x.f, g: fmt(x.g, 3) }) }))
           : [{ text: tr("look.noResidue") }],
       );
     }

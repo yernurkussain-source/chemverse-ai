@@ -3,6 +3,7 @@ import { entries, liquidColor, PPT, transfer } from "@/features/chem-engine";
 import type { Game } from "../core/context";
 import { CR, setCR, V3 } from "../core/three-utils";
 import { nearPlayer } from "../game/journal";
+import { carryTaint } from "../game/mystery";
 
 const PAPER = CR(247, 247, 242);
 const tmpCol = new THREE.Color();
@@ -44,6 +45,7 @@ export function updateFunnel(G: Game, rdt: number): void {
     if (amt > 0) {
       const sum = () => Object.values(f.paper).reduce((a, b) => a + (b ?? 0), 0);
       const before = sum();
+      carryTaint(G, f.fv, rcv.s);
       transfer(f.fv, rcv.s, amt, f.paper);
       const after = sum();
       if (after > before + 1e-9 || after > 1e-6) G.stats.filter = G.stats.filter || (after > 1e-5 && rcv.s.V > 1);

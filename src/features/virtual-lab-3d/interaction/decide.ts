@@ -55,6 +55,7 @@ export function canPourFrom(h: Item | null): boolean {
 
 /** Заттың қысқа аты: реактивте — формуласы, қалғанында — аты */
 export function nm(G: Game, it: Item): string {
+  if (it.type === "bottle" && it.mystery) return it.name;
   return it.type === "bottle" || it.type === "dropper" || it.type === "jar" ? reagentShort(G.tr, it.rid) : it.name;
 }
 

@@ -65,7 +65,17 @@ export function startProgress(G: Game): ProgressSync {
     pending = false;
     const p = snapshot();
     if (userId && supabase) {
-      void supabase.from("lab_game_progress").upsert({ user_id: userId, xp: p.xp, safety: p.safety, quests_done: p.done });
+      const row = { user_id: userId, xp: p.xp, safety: p.safety, quests_done: p.done };
+      void supabase
+        .from("lab_game_progress")
+        .upsert(row)
+        .then(({ error }) => {
+          // shortcut: 20261101000000_lab_game_unknown.sql іске қосылмаған базада «unknown» тексерістен өтпейді (23514) —
+          // қалған прогресс жоғалмауы үшін онсыз сақтаймыз; миграциядан кейін бұл тармақ іске қосылмайды
+          if (error?.code !== "23514" || !p.done.includes("unknown")) return;
+          const done = p.done.filter((id) => id !== "unknown");
+          void supabase.from("lab_game_progress").upsert({ ...row, xp: done.length * 100, quests_done: done });
+        });
     } else writeLocal(p);
   };
 

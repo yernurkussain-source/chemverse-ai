@@ -1,13 +1,14 @@
-import type { ReagentId } from "@/features/chem-engine";
+import type { ReagentId, Vessel } from "@/features/chem-engine";
 import type { Base } from "../core/context";
 import { boxG, std, V3 } from "../core/three-utils";
+import { pickMystery, type Mystery } from "../game/mystery";
 import type { Bench } from "../scene/bench";
 import type { Cabinet, Cabinets } from "../scene/cabinets";
 import { makeBottle } from "./bottle";
 import { makeRack } from "./rack";
 import { placeAt, setHome } from "./register";
 import { makeDTube, makeFunnel, makeSplint, makeWire } from "./tools";
-import type { Item } from "./types";
+import type { BottleItem, Item } from "./types";
 import { makeVessel } from "./vessel";
 
 /** Заттарды сөрелерге бірдей аралықпен қою (shelf: 0 — төменгі, 1 — ортаңғы, 2 — жоғарғы) */
@@ -26,7 +27,9 @@ export function populate(G: Base, cabs: Cabinets, bench: Bench) {
   shelfRow(cabs.acids, 1, [B("HCl"), B("H2SO4"), B("H2O2")]);
   shelfRow(cabs.acids, 0, [B("NaOH"), B("CaOH2")]);
   shelfRow(cabs.salts, 1, [B("Na2CO3"), B("NaCl"), B("KI"), B("CuSO4")]);
-  shelfRow(cabs.salts, 0, [B("AgNO3"), B("BaCl2"), B("FeCl3")]);
+  // «X» — белгісіз зат (тапсырма): ішіндегісі ойын басталғанда кездейсоқ таңдалады
+  const xBottle = makeBottle(G, pickMystery(), true) as BottleItem;
+  shelfRow(cabs.salts, 0, [B("AgNO3"), B("BaCl2"), B("FeCl3"), xBottle]);
   shelfRow(cabs.other, 1, [B("php"), B("mo"), B("lit"), B("uni")]);
   shelfRow(cabs.other, 0, [B("Mg"), B("Zn"), B("Fe"), B("Cu"), B("CaCO3"), B("MnO2")], 0.84);
 
@@ -69,5 +72,6 @@ export function populate(G: Base, cabs: Cabinets, bench: Bench) {
     setHome(t);
     t.home!.slot = sl;
   }
-  return { beakers, rackCab, rackBench, funnel, dtube, splint, wire };
+  const mystery: Mystery = { bottle: xBottle, taint: new WeakSet<Vessel>(), solved: false };
+  return { beakers, rackCab, rackBench, funnel, dtube, splint, wire, mystery };
 }

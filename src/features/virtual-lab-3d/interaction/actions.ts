@@ -22,6 +22,7 @@ function handTxt(G: Game, it: Item | null): string {
   if (it.type === "splint") return `${it.name} (${tr(`splintState.${it.st}`)})`;
   if (it.type === "wire") {
     const ions = Object.keys(it.sample);
+    if (ions.length && it.mystery) return `${it.name} (${tr("mystery.wireSample")})`;
     if (ions.length) return `${it.name} (${tr("hand.wireSample", { ions: ions.map((k) => ION[k as IonId].f).join(", ") })})`;
     return it.acid ? `${it.name} (${tr("hand.wireAcid")})` : it.name;
   }
@@ -34,7 +35,12 @@ export function handView(G: Game): HandView | null {
   const R = G.state.held;
   const L = G.state.heldL;
   if (!R && !L) return null;
-  const note = R && (R.type === "bottle" || R.type === "dropper" || R.type === "jar") ? reagentNote(G.tr, R.rid) : null;
+  const note =
+    R?.type === "bottle" && R.mystery
+      ? G.tr("mystery.note")
+      : R && (R.type === "bottle" || R.type === "dropper" || R.type === "jar")
+        ? reagentNote(G.tr, R.rid)
+        : null;
   return { right: handTxt(G, R), left: handTxt(G, L), note };
 }
 
@@ -168,10 +174,13 @@ export function safetyCheck(G: Game): void {
   }
   if (it.type !== "bottle" && it.type !== "dropper" && it.type !== "jar") return;
   const r = REAG_BY[it.rid];
-  const haz = r.kind === "liq" ? LIQUIDS[r.id].haz : undefined;
-  if (!haz || state.warned[r.id]) return;
-  state.warned[r.id] = true;
-  const f = reagentShort(tr, r.id);
+  // Белгісіз затты қауіпті деп есептейміз: көзілдірік пен қолғап керек
+  const mystery = it.type === "bottle" && !!it.mystery;
+  const haz = mystery ? "gl" : r.kind === "liq" ? LIQUIDS[r.id].haz : undefined;
+  const key = mystery ? "X" : r.id;
+  if (!haz || state.warned[key]) return;
+  state.warned[key] = true;
+  const f = mystery ? "X" : reagentShort(tr, r.id);
   if (!state.goggles) penalty(G, tr("penalty.noGoggles", { f }));
   else if (haz === "gl" && !state.gloves) penalty(G, tr("penalty.noGloves", { f }));
 }

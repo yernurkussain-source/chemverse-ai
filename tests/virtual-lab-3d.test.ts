@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, test } from "node:test";
-import { ENGINE_EVENT_KEYS, LIQUIDS, REAG } from "@/features/chem-engine";
+import { addLiquid, ENGINE_EVENT_KEYS, LIQUIDS, newVessel, REAG, type Vessel } from "@/features/chem-engine";
 import { chooseFlame } from "@/features/virtual-lab-3d/game/flame-rules";
 import { makeFmt, observationKey, plainNumber, TRANSLATED_EQUATIONS } from "@/features/virtual-lab-3d/game/i18n";
 import { sanitizeProgress } from "@/features/virtual-lab-3d/game/progress";
+import { carryTaint, isTainted, MYSTERY_CANDIDATES, pickMystery } from "@/features/virtual-lab-3d/game/mystery";
 import { QUEST_IDS } from "@/features/virtual-lab-3d/game/quest-ids";
 import { LEVEL_COUNT, QUESTS } from "@/features/virtual-lab-3d/game/quests";
 
@@ -38,9 +39,9 @@ describe("3D зертхана: мәтіндер", () => {
 });
 
 describe("3D зертхана: тапсырмалар", () => {
-  test("22 тапсырма, id-лері қайталанбайды, әрқайсысының үш тілде аты мен сипаттамасы бар", () => {
-    assert.equal(QUESTS.length, 22);
-    assert.equal(new Set(QUESTS.map((q) => q.id)).size, 22);
+  test("23 тапсырма, id-лері қайталанбайды, әрқайсысының үш тілде аты мен сипаттамасы бар", () => {
+    assert.equal(QUESTS.length, 23);
+    assert.equal(new Set(QUESTS.map((q) => q.id)).size, 23);
     // Мұғалім беті мен дерекқор осы тізімді қолданады — реті ойындағыдай
     assert.deepEqual(QUESTS.map((q) => q.id), [...QUEST_IDS]);
     for (const l of LOCALES) {
@@ -105,5 +106,38 @@ describe("3D зертхана: сандар", () => {
     assert.equal(observationKey("ag_Cu"), "agCu");
     assert.equal(observationKey("ag_Zn"), "ag");
     assert.equal(observationKey("pAgCl"), "pAgCl");
+  });
+});
+
+describe("3D зертхана: «Белгісіз зат X»", () => {
+  // isTainted / carryTaint тек G.mystery-ді қолданады
+  const fakeGame = () => ({ mystery: { taint: new WeakSet<Vessel>(), solved: false } }) as unknown as Parameters<typeof isTainted>[0];
+
+  test("X бөтелкесінен және X бар ыдыстан құйғанда белгі ауысады; босаған ыдыстан белгі алынады", () => {
+    const G = fakeGame();
+    const a = newVessel("A", 100, "beaker");
+    const b = newVessel("B", 100, "beaker");
+    const c = newVessel("C", 100, "beaker");
+    addLiquid(a, { Na: 0.1, Cl: 0.1 }, 10);
+    carryTaint(G, "x", a);
+    assert.equal(isTainted(G, a), true);
+    carryTaint(G, a, b);
+    addLiquid(b, { Na: 0.1, Cl: 0.1 }, 5);
+    assert.equal(isTainted(G, b), true);
+    carryTaint(G, c, b);
+    assert.equal(isTainted(G, c), false);
+    a.V = 0;
+    a.ions = {};
+    assert.equal(isTainted(G, a), false, "бос ыдыс — таза");
+  });
+
+  test("қате жауаптан кейін X басқа затқа ауысады; кандидаттар 3D реактивтерінің ішінде", () => {
+    for (const id of MYSTERY_CANDIDATES) for (let i = 0; i < 20; i++) assert.notEqual(pickMystery(id), id);
+    assert.ok(MYSTERY_CANDIDATES.every((id) => LIQUIDS[id]));
+  });
+
+  test("дерекқордың соңғы миграциясы 23 тапсырманың бәрін қабылдайды", () => {
+    const sql = readFileSync("supabase/migrations/20261101000000_lab_game_unknown.sql", "utf8");
+    for (const id of QUEST_IDS) assert.ok(sql.includes(`"${id}"`), id);
   });
 });

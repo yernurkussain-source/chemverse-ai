@@ -26,16 +26,16 @@ const BOTTLE: Record<LiquidId, { cap: number; amber?: boolean }> = {
 
 const hex = (n: number) => "#" + n.toString(16).padStart(6, "0");
 
-/** Затбелгі: жоғарғы жолақ (түрі), формула, концентрация не масса, қауіп белгісі */
-function labelTex(G: Base, id: ReagentId) {
+/** Затбелгі: жоғарғы жолақ (түрі), формула, концентрация не масса, қауіп белгісі (X бөтелкесінде — «X» және «?») */
+function labelTex(G: Base, id: ReagentId, mystery = false) {
   const r = REAG_BY[id];
-  const f = reagentShort(G.tr, id);
-  const amount = reagentAmount(G.tr, id, G.locale);
-  const haz = r.kind === "liq" && LIQUIDS[r.id].haz;
+  const f = mystery ? "X" : reagentShort(G.tr, id);
+  const amount = mystery ? "?" : reagentAmount(G.tr, id, G.locale);
+  const haz = mystery || (r.kind === "liq" && LIQUIDS[r.id].haz);
   return canvasTex(256, 128, (x, w) => {
     x.fillStyle = "#fbfaf6";
     x.fillRect(0, 0, w, 128);
-    x.fillStyle = r.kind === "liq" ? hex(BOTTLE[r.id].cap) : r.kind === "ind" ? "#7a3fa0" : "#4b5563";
+    x.fillStyle = mystery ? "#4b5563" : r.kind === "liq" ? hex(BOTTLE[r.id].cap) : r.kind === "ind" ? "#7a3fa0" : "#4b5563";
     x.fillRect(0, 0, w, 16);
     x.fillStyle = "#111827";
     x.textAlign = "center";
@@ -59,37 +59,31 @@ function labelTex(G: Base, id: ReagentId) {
   });
 }
 
-/** Ерітінді бөтелкесі, индикатор тамызғышы не қатты зат құтысы */
-export function makeBottle(G: Base, id: ReagentId): ReagentItem {
+/** Ерітінді бөтелкесі, индикатор тамызғышы не қатты зат құтысы. mystery — «X» бөтелкесі (ішіндегісі жасырын) */
+export function makeBottle(G: Base, id: ReagentId, mystery = false): ReagentItem {
   const { mesh, mats, tr } = G;
   const r = REAG_BY[id];
   const g = new THREE.Group();
   G.scene.add(g);
-  const short = reagentShort(tr, id);
-  const amount = reagentAmount(tr, id, G.locale);
-  const full = tr(`reagents.${id}.name`);
-  const label = () => new THREE.MeshStandardMaterial({ map: labelTex(G, id), roughness: 0.8 });
+  const short = mystery ? "X" : reagentShort(tr, id);
+  const amount = mystery ? "" : reagentAmount(tr, id, G.locale);
+  const full = mystery ? tr("mystery.full") : tr(`reagents.${id}.name`);
+  const label = () => new THREE.MeshStandardMaterial({ map: labelTex(G, id, mystery), roughness: 0.8 });
 
   if (r.kind === "liq") {
     const R = 0.03;
-    const style = BOTTLE[r.id];
-    const gm = style.amber ? mats.amber : mats.glass;
+    const style = mystery ? { cap: 0x7d8799 } : BOTTLE[r.id];
+    const gm = "amber" in style && style.amber ? mats.amber : mats.glass;
     mesh(new THREE.CylinderGeometry(R, R, 0.1, 32), gm, 0, 0.05, 0, g, { cast: false }).renderOrder = 4;
     const lc = REAG_LIQ_COL[r.id] || [214, 232, 244];
-    mesh(
-      new THREE.CylinderGeometry(R - 0.003, R - 0.003, 0.072, 28),
-      new THREE.MeshStandardMaterial({ color: CR(...lc), transparent: true, opacity: REAG_LIQ_COL[r.id] ? 0.85 : 0.32, roughness: 0.1, depthWrite: false }),
-      0,
-      0.038,
-      0,
-      g,
-      { cast: false },
-    ).renderOrder = 1;
+    const liq = new THREE.MeshStandardMaterial({ color: CR(...lc), transparent: true, opacity: REAG_LIQ_COL[r.id] ? 0.85 : 0.32, roughness: 0.1, depthWrite: false });
+    mesh(new THREE.CylinderGeometry(R - 0.003, R - 0.003, 0.072, 28), liq, 0, 0.038, 0, g, { cast: false }).renderOrder = 1;
     mesh(new THREE.CylinderGeometry(0.013, R, 0.018, 28, 1, true), gm, 0, 0.109, 0, g, { cast: false }).renderOrder = 4;
     mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.014, 20), gm, 0, 0.125, 0, g, { cast: false }).renderOrder = 4;
     const cap = mesh(new THREE.CylinderGeometry(0.0145, 0.0145, 0.018, 20), std(style.cap, { r: 0.5 }), 0, 0.141, 0, g);
     mesh(new THREE.CylinderGeometry(R + 0.0004, R + 0.0004, 0.05, 24, 1, true, -1.15, 2.3), label(), 0, 0.048, 0, g, { cast: false });
-    return registerItem(G, { ...itemBase(g, 0.132, R, amount ? `${short} ${amount}` : short, full), type: "bottle", rid: r.id, cap });
+    const item = { ...itemBase(g, 0.132, R, amount ? `${short} ${amount}` : short, full), type: "bottle" as const, rid: r.id, cap };
+    return registerItem(G, mystery ? { ...item, mystery, liq } : item);
   }
 
   if (r.kind === "ind") {

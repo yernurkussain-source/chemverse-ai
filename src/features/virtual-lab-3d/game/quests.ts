@@ -8,7 +8,7 @@ export type { QuestId };
 /** Тапсырма: id (аты мен сипаттамасы messages → VirtualLab3D.quests.<id>), ok — орындалды ма */
 type Quest = { id: QuestId; ok: (G: Game) => boolean };
 
-/** 22 тапсырма (прототиптегі QUESTS — шарттары өзгертілмеген), әрқайсысы +100 XP */
+/** 23 тапсырма: прототиптегі 22 (шарттары өзгертілмеген) + «Белгісіз зат X»; әрқайсысы +100 XP */
 export const QUESTS: Quest[] = [
   { id: "ppe", ok: (G) => G.state.goggles && G.state.gloves },
   {
@@ -42,6 +42,7 @@ export const QUESTS: Quest[] = [
   { id: "titr", ok: (G) => G.stats.titr },
   { id: "lamp", ok: (G) => G.stats.lamp },
   { id: "flame", ok: (G) => G.flameSeen.size >= 3 },
+  { id: "unknown", ok: (G) => G.mystery.solved },
 ];
 
 /** Деңгейлер: әр 400 XP сайын келесісі (аттары messages → VirtualLab3D.levels.0…4) */

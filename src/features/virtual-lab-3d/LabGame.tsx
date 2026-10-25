@@ -102,7 +102,7 @@ export default function LabGame() {
           {phase === "ready" && (
             <Welcome store={store} onStart={() => gameRef.current?.start()} onQuality={(q) => gameRef.current?.setQuality(q)} />
           )}
-          <Quests store={store} onClose={() => gameRef.current?.setQuests(false)} />
+          <Quests store={store} onClose={() => gameRef.current?.setQuests(false)} onAnswer={(guess) => gameRef.current?.answerMystery(guess)} />
         </>
       )}
     </div>

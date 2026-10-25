@@ -2880,7 +2880,7 @@
     "game3d": {
       "badge": "New",
       "title": "3D lab",
-      "text": "A first-person virtual lab: take reagents from the cabinets, pour solutions, test gases with a splint, titrate. 22 tasks, XP and a safety score.",
+      "text": "A first-person virtual lab: take reagents from the cabinets, pour solutions, test gases with a splint, titrate and identify the unknown substance X. 23 tasks, XP and a safety score.",
       "cta": "Enter the lab"
     }
   },
@@ -3426,6 +3426,10 @@
       "flame": {
         "t": "Flame test",
         "d": "Identify 3 different cations by flame colour with the nichrome wire (Na⁺, K⁺, Ca²⁺, Cu²⁺, Ba²⁺)"
+      },
+      "unknown": {
+        "t": "Unknown substance X",
+        "d": "Identify the substance in bottle X with tests (flame, NaOH, AgNO₃, BaCl₂ or H₂SO₄, HCl), then choose your answer here. A wrong answer changes X."
       }
     },
     "quality": {
@@ -3433,6 +3437,19 @@
       "high": "High",
       "low": "Low",
       "hint": "Low — no shadows, for slower phones"
+    },
+    "mystery": {
+      "full": "Unknown solution",
+      "note": "Unknown substance: treat it as dangerous — wear goggles and gloves.",
+      "ions": "Ions: unknown (contains X) — identify them with tests",
+      "wireSample": "sample of X",
+      "wireDipped": "The wire picked up a sample of X — now put it into the flame",
+      "flame": "The flame turned {color}",
+      "wrong": "Wrong. Bottle X now holds a different substance — investigate again!",
+      "logRight": "X identified: {f} ✓",
+      "logWrong": "The answer “{f}” is wrong — X was replaced with a new substance",
+      "answer": "Your answer: X is…",
+      "right": "Correct! X is {f}."
     }
   },
   "Olympiad": {

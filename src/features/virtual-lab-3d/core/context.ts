@@ -25,6 +25,7 @@ import type { Lamp } from "../scene/lamp";
 import type { Ppe } from "../scene/ppe";
 import type { Effects } from "../systems/effects";
 import { createRenderer } from "./renderer";
+import type { Mystery } from "../game/mystery";
 
 /** Жүруге кедергі (тікбұрыш, жоғарыдан қарағанда) */
 export type Collider = { x0: number; x1: number; z0: number; z1: number };
@@ -184,6 +185,8 @@ export type Game = Base & {
   dtube: DTubeItem;
   splint: SplintItem;
   wire: WireItem;
+  /** «Белгісіз зат X» тапсырмасы */
+  mystery: Mystery;
   rigR: Rig;
   rigL: Rig;
   fx: Effects;

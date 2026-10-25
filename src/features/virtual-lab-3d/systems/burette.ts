@@ -6,6 +6,7 @@ import { addLog, nearPlayer, toast } from "../game/journal";
 import { penalty } from "../interaction/actions";
 import type { LabVessel } from "../items/types";
 import { burReading } from "../scene/burette";
+import { carryTaint } from "../game/mystery";
 
 /** Бюретканың ұшының астында тұрған ыдыс (қолдағылар есептелмейді) */
 function vesselUnder(G: Game, x: number, z: number, y: number): LabVessel | null {
@@ -51,6 +52,7 @@ export function burStep(G: Game, rdt: number): void {
       }
       if (amt > 0) {
         const p0 = pH(o.s);
+        carryTaint(G, v, o.s);
         transfer(v, o.s, amt);
         const p1 = pH(o.s);
         if ((o.s.ind.php || 0) > 0 && p0 != null && p1 != null && p0 < 8.2 && p1 >= 8.2 && bur.readStart != null) {
