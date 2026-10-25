@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { LIQUIDS } from "@/features/chem-engine";
 import { cn } from "@/lib/utils";
 import { MYSTERY_CANDIDATES } from "../game/mystery";
 import { QUESTS } from "../game/quests";
 import { useStore, type HudStore } from "../game/store";
+import { openReport, reportHtml } from "./report";
 import { muted, topButton } from "./styles";
 
 const LOG_BORDER = { "": "border-l-[var(--hud-line)]", r: "border-l-cyan", w: "border-l-[var(--warn)]", q: "border-l-good" } as const;
@@ -14,6 +15,7 @@ const LOG_BORDER = { "": "border-l-[var(--hud-line)]", r: "border-l-cyan", w: "b
 /** Зертхана журналы: оң жақтан шығатын тартпа, ең жаңа жазба жоғарыда (J) */
 export function Journal({ store, onClose }: { store: HudStore; onClose: () => void }) {
   const t = useTranslations("VirtualLab3D");
+  const locale = useLocale();
   const open = useStore(store, (s) => s.drawer);
   const log = useStore(store, (s) => s.log);
   return (
@@ -28,9 +30,18 @@ export function Journal({ store, onClose }: { store: HudStore; onClose: () => vo
     >
       <h3 className="mt-1.5 mb-3 flex items-center justify-between font-display text-[0.9rem] font-bold">
         {t("journal.title")}
-        <button type="button" className={topButton} onClick={onClose}>
-          {t("journal.close")}
-        </button>
+        <span className="flex gap-1.5">
+          <button
+            type="button"
+            className={topButton}
+            onClick={() => openReport(reportHtml(store.get(), t as unknown as Parameters<typeof reportHtml>[1], locale))}
+          >
+            {t("report.button")}
+          </button>
+          <button type="button" className={topButton} onClick={onClose}>
+            {t("journal.close")}
+          </button>
+        </span>
       </h3>
       <ol className="flex flex-col gap-[9px]">
         {log.map((e) => (

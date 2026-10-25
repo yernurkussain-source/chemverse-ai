@@ -3450,6 +3450,21 @@
       "logWrong": "The answer “{f}” is wrong — X was replaced with a new substance",
       "answer": "Your answer: X is…",
       "right": "Correct! X is {f}."
+    },
+    "report": {
+      "button": "Report",
+      "title": "3D lab: work report",
+      "print": "Print / PDF",
+      "date": "Date: {date}",
+      "level": "Level",
+      "tasks": "Tasks done: {done}/{total}",
+      "noTasks": "No tasks done yet.",
+      "time": "Time",
+      "who": "Vessel / action",
+      "eq": "Equation",
+      "obs": "Observation",
+      "student": "Student: ____________________",
+      "teacher": "Teacher: ____________________"
     }
   },
   "Olympiad": {

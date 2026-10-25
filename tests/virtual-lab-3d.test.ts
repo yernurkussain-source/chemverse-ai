@@ -7,6 +7,7 @@ import { makeFmt, observationKey, plainNumber, TRANSLATED_EQUATIONS } from "@/fe
 import { sanitizeProgress } from "@/features/virtual-lab-3d/game/progress";
 import { carryTaint, isTainted, MYSTERY_CANDIDATES, pickMystery } from "@/features/virtual-lab-3d/game/mystery";
 import { QUEST_IDS } from "@/features/virtual-lab-3d/game/quest-ids";
+import { reportHtml } from "@/features/virtual-lab-3d/hud/report";
 import { LEVEL_COUNT, QUESTS } from "@/features/virtual-lab-3d/game/quests";
 
 type Tree = { [key: string]: string | Tree };
@@ -139,5 +140,21 @@ describe("3D зертхана: «Белгісіз зат X»", () => {
   test("дерекқордың соңғы миграциясы 23 тапсырманың бәрін қабылдайды", () => {
     const sql = readFileSync("supabase/migrations/20261101000000_lab_game_unknown.sql", "utf8");
     for (const id of QUEST_IDS) assert.ok(sql.includes(`"${id}"`), id);
+  });
+});
+
+describe("3D зертхана: жұмыс есебі", () => {
+  const t = (key: string, values?: Record<string, string | number>) => (values ? `${key}:${JSON.stringify(values)}` : key);
+  const log = [
+    { id: 2, cls: "r" as const, time: "00:02", who: "Стакан <1>", eq: "Ag⁺ + Cl⁻ → AgCl↓", obs: "ақ тұнба & лай" },
+    { id: 1, cls: "" as const, time: "00:01", who: "Зертхана", eq: "", obs: "басталды" },
+  ];
+
+  test("журнал уақыт ретімен, мәтін экрандалады, тапсырмалар ойындағы ретімен", () => {
+    const html = reportHtml({ log, xp: 200, level: 0, safety: 90, done: ["unknown", "ppe"] }, t, "kk");
+    assert.ok(html.indexOf("басталды") < html.indexOf("AgCl"), "ескі жазба бірінші");
+    assert.ok(html.includes("Стакан &lt;1&gt;") && html.includes("&amp; лай") && !html.includes("<1>"));
+    assert.ok(html.indexOf("quests.ppe.t") < html.indexOf("quests.unknown.t"));
+    assert.ok(html.includes(`report.tasks:${JSON.stringify({ done: 2, total: QUEST_IDS.length })}`.replace(/"/g, "&quot;")));
   });
 });
