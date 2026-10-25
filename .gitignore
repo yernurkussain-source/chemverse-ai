@@ -50,3 +50,10 @@ next-env.d.ts
 
 # Жиналған APK
 /dist/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
