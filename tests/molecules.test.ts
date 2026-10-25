@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { describe, test } from "node:test";
 import { parseFormula } from "@/lib/chemistry/formula";
 import { analyzeMolecule, angleBetween, bondTypes, distance, hydrogenBonds } from "@/lib/chemistry/molecule-geometry";
-import { getMolecule, MOLECULES, moleculesWith } from "@/lib/chemistry/molecules";
+import { getMolecule, molecularFormula, MOLECULES, moleculesWith } from "@/lib/chemistry/molecules";
 import { parseMolfile } from "@/lib/chemistry/molfile";
 
 const graph = (id: string) => parseMolfile(readFileSync(`public${getMolecule(id)!.sdf}`, "utf8"));
@@ -23,6 +23,13 @@ describe("Молекулалар дерегі", () => {
       if (m.group !== "crystal") assert.deepEqual(counts, m.atoms, m.id);
       else assert.deepEqual(Object.keys(counts).sort(), Object.keys(m.atoms).sort(), m.id);
     }
+  });
+
+  test("молекулалық формула (Хилл реті)", () => {
+    assert.equal(molecularFormula(getMolecule("ethanol")!.atoms), "C₂H₆O");
+    assert.equal(molecularFormula(getMolecule("dimethyl-ether")!.atoms), "C₂H₆O");
+    assert.equal(molecularFormula(getMolecule("sucrose")!.atoms), "C₁₂H₂₂O₁₁");
+    assert.equal(molecularFormula(getMolecule("h2so4")!.atoms), "H₂O₄S");
   });
 
   test("элемент бойынша іздеу", () => {

@@ -787,6 +787,36 @@
       "organic": "Oxygen-containing organics",
       "bio": "Life and everyday",
       "crystal": "Crystals"
+    },
+    "compareLink": "Compare",
+    "quizLink": "Guess the molecule",
+    "compare": {
+      "title": "Compare molecules",
+      "subtitle": "Put two substances side by side and compare their structure: isomers (same formula, different structure) and allotropes (different forms of the same element).",
+      "presets": "Ready-made pairs",
+      "first": "First substance",
+      "second": "Second substance",
+      "isomers": "Isomers: the same formula ({formula}), but the atoms are connected differently — so their properties differ too.",
+      "allotropes": "Allotropes: both are made only of {element} atoms, but their structure differs — so their properties differ too.",
+      "sameSubstance": "The same substance: same composition, but one is a single molecule and the other a crystal (a different state of matter).",
+      "different": "Different substances: their composition differs.",
+      "same": "The same molecule is selected twice — change the second one.",
+      "syncHint": "Rotate or zoom one molecule and the other follows."
+    },
+    "quiz": {
+      "title": "Guess the molecule",
+      "subtitle": "Look at the 3D shape and name the substance. 10 questions, 4 answers each.",
+      "rules": "Rotate the molecule and tap its atoms (the color shows the element), then choose the right name.",
+      "start": "Start",
+      "question": "Which substance is this?",
+      "progress": "{round}/{total} · score: {score}",
+      "correct": "Correct!",
+      "wrong": "Wrong — this is {name}.",
+      "next": "Next",
+      "open": "Open the 3D page",
+      "hint": "Tip: tap an atom to see which element it is.",
+      "result": "Result: {score}/{total}",
+      "again": "Play again"
     }
   },
   "PeriodicTable": {

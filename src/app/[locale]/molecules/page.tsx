@@ -28,6 +28,12 @@ export default async function MoleculesPage() {
           <Link href="/gesture-lab" className={buttonVariants({ variant: "glow", size: "pill-sm" })}>
             {tAr("gestureLink")}
           </Link>
+          <Link href="/molecules/compare" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
+            ⇄ {t("compareLink")}
+          </Link>
+          <Link href="/molecules/quiz" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
+            🎯 {t("quizLink")}
+          </Link>
           <Link href="/periodic-table" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
             {t("periodicLink")}
           </Link>

@@ -149,6 +149,16 @@ export function formatMoleculeAngle(molecule: Molecule, locale: Locale) {
   return molecule.angle ? `${molecule.angle.approx ? "≈" : ""}${formatShort(molecule.angle.degrees, locale)}°` : null;
 }
 
+/** Молекулалық формула (Хилл реті: C, H, сосын әліпби бойынша): этанол мен диметил эфирі → "C₂H₆O" */
+export function molecularFormula(atoms: Molecule["atoms"]) {
+  const order = (el: string) => (el === "C" ? "0" : el === "H" && "C" in atoms ? "1" : `2${el}`);
+  const sub = (n: number) => (n === 1 ? "" : [...String(n)].map((d) => String.fromCharCode(0x2080 + Number(d))).join(""));
+  return Object.keys(atoms)
+    .sort((x, y) => order(x).localeCompare(order(y)))
+    .map((el) => el + sub(atoms[el]))
+    .join("");
+}
+
 /** Осы элемент кіретін молекулалар (периодтық кестеден сілтеме үшін) */
 export function moleculesWith(symbol: string) {
   return MOLECULES.filter((m) => symbol in m.atoms);
