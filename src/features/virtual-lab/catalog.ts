@@ -33,12 +33,12 @@ export const LAB_CATALOG = [
   { slug: "metal-activity", grades: [9], status: "ready" },
   { slug: "unknown-substance", grades: [9, 10], status: "ready" },
   // 10-сынып
-  { slug: "equilibrium", grades: [10], status: "soon" },
-  { slug: "redox", grades: [10], status: "soon" },
-  { slug: "dissociation", grades: [10], status: "soon" },
-  { slug: "galvanic-cell", grades: [10], status: "soon" },
-  { slug: "organic-builder", grades: [10], status: "soon" },
-  { slug: "organic-properties", grades: [10], status: "soon" },
+  { slug: "equilibrium", grades: [10], status: "ready" },
+  { slug: "redox", grades: [10], status: "ready" },
+  { slug: "dissociation", grades: [10], status: "ready" },
+  { slug: "galvanic-cell", grades: [10], status: "ready" },
+  { slug: "organic-builder", grades: [10], status: "ready" },
+  { slug: "organic-properties", grades: [10], status: "ready" },
 ] as const satisfies readonly {
   slug: string;
   grades: readonly LabGrade[];
@@ -52,7 +52,7 @@ export type LabEntry = (typeof LAB_CATALOG)[number];
 export type LabSlug = LabEntry["slug"];
 
 /** 8 қадамдық LabShell-де жұмыс істейтін тәжірибелер (сынып ретімен) */
-export const SHELL_LABS = ["mixture-separation", "atom-builder", "indicator-lab", "titration", "reaction-rate", "precipitation", "metal-activity", "unknown-substance", "balance-equations", "pure-vs-mixture", "phys-chem-phenomena", "substance-properties", "lab-equipment", "lab-safety", "measurements", "reaction-signs", "metals-nonmetals", "solubility", "mass-fraction"] as const satisfies readonly LabSlug[];
+export const SHELL_LABS = ["mixture-separation", "atom-builder", "indicator-lab", "titration", "reaction-rate", "precipitation", "metal-activity", "unknown-substance", "balance-equations", "pure-vs-mixture", "phys-chem-phenomena", "substance-properties", "lab-equipment", "lab-safety", "measurements", "reaction-signs", "metals-nonmetals", "solubility", "mass-fraction", "equilibrium", "redox", "dissociation", "galvanic-cell", "organic-properties", "organic-builder"] as const satisfies readonly LabSlug[];
 export type ShellLabSlug = (typeof SHELL_LABS)[number];
 
 export const isShellLab = (slug: string): slug is ShellLabSlug => (SHELL_LABS as readonly string[]).includes(slug);

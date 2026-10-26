@@ -32,6 +32,12 @@ import { gradeMetals } from "./experiments/metals-nonmetals/grade";
 import { gradeMeasure, measureExperimentSchema, measureParams } from "./experiments/measurements/grade";
 import { gradeSolubility, solubilityExperimentSchema } from "./experiments/solubility/grade";
 import { gradeMassFraction, massFractionExperimentSchema } from "./experiments/mass-fraction/grade";
+import { gradeOrganicBuilder, organicBuilderExperimentSchema } from "./experiments/organic-builder/grade";
+import { gradeEquilibrium } from "./experiments/equilibrium/grade";
+import { gradeRedox } from "./experiments/redox/grade";
+import { gradeDissociation } from "./experiments/dissociation/grade";
+import { gradeGalvanic } from "./experiments/galvanic-cell/grade";
+import { gradeOrganic } from "./experiments/organic-properties/grade";
 import { matrixExperimentSchema, type MatrixSubmission } from "./matrix/grade";
 import { labSecret as secret, signParams, verifyParams } from "./params-token";
 import { totalScore, type FeedbackItem, type ScoreBreakdown } from "./scoring";
@@ -116,6 +122,11 @@ const MATRIX_LABS: Partial<Record<ShellLabSlug, (submission: MatrixSubmission) =
   "lab-safety": gradeSafety,
   "reaction-signs": gradeSigns,
   "metals-nonmetals": gradeMetals,
+  equilibrium: gradeEquilibrium,
+  redox: gradeRedox,
+  dissociation: gradeDissociation,
+  "galvanic-cell": gradeGalvanic,
+  "organic-properties": gradeOrganic,
 };
 
 function grade(slug: ShellLabSlug, params: Record<string, number>, input: z.infer<typeof submissionSchema>): LabOutcome | null {
@@ -175,6 +186,10 @@ function grade(slug: ShellLabSlug, params: Record<string, number>, input: z.infe
     case "mass-fraction": {
       const experiment = massFractionExperimentSchema.safeParse(input.experiment);
       return experiment.success ? gradeMassFraction({ ...input, experiment: experiment.data }) : null;
+    }
+    case "organic-builder": {
+      const experiment = organicBuilderExperimentSchema.safeParse(input.experiment);
+      return experiment.success ? gradeOrganicBuilder({ ...input, experiment: experiment.data }) : null;
     }
     default:
       return null;

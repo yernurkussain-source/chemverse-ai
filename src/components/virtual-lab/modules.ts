@@ -19,6 +19,12 @@ import { signsModule } from "./experiments/reaction-signs";
 import { metalsModule } from "./experiments/metals-nonmetals";
 import { solubilityModule } from "./experiments/solubility";
 import { massFractionModule } from "./experiments/mass-fraction";
+import { equilibriumModule } from "./experiments/equilibrium";
+import { redoxModule } from "./experiments/redox";
+import { dissociationModule } from "./experiments/dissociation";
+import { galvanicModule } from "./experiments/galvanic-cell";
+import { organicModule } from "./experiments/organic-properties";
+import { organicBuilderModule } from "./experiments/organic-builder";
 
 /** slug → клиенттік модуль (жаңа тәжірибе осында қосылады) */
 export const LAB_MODULES: Record<ShellLabSlug, LabModule> = {
@@ -41,4 +47,10 @@ export const LAB_MODULES: Record<ShellLabSlug, LabModule> = {
   "metals-nonmetals": metalsModule,
   solubility: solubilityModule,
   "mass-fraction": massFractionModule,
+  equilibrium: equilibriumModule,
+  redox: redoxModule,
+  dissociation: dissociationModule,
+  "galvanic-cell": galvanicModule,
+  "organic-properties": organicModule,
+  "organic-builder": organicBuilderModule,
 };

@@ -24,6 +24,21 @@ import { SIGNS_SPEC } from "@/features/virtual-lab/experiments/reaction-signs/mo
 import { gradeMetals, METALS_KEY } from "@/features/virtual-lab/experiments/metals-nonmetals/grade";
 import { METALS_META } from "@/features/virtual-lab/experiments/metals-nonmetals/meta";
 import { METALS_SPEC } from "@/features/virtual-lab/experiments/metals-nonmetals/model";
+import { gradeEquilibrium, EQUILIBRIUM_KEY } from "@/features/virtual-lab/experiments/equilibrium/grade";
+import { EQUILIBRIUM_META } from "@/features/virtual-lab/experiments/equilibrium/meta";
+import { EQUILIBRIUM_SPEC } from "@/features/virtual-lab/experiments/equilibrium/model";
+import { gradeRedox, REDOX_KEY } from "@/features/virtual-lab/experiments/redox/grade";
+import { REDOX_META } from "@/features/virtual-lab/experiments/redox/meta";
+import { REDOX_SPEC } from "@/features/virtual-lab/experiments/redox/model";
+import { gradeDissociation, DISSOCIATION_KEY } from "@/features/virtual-lab/experiments/dissociation/grade";
+import { DISSOCIATION_META } from "@/features/virtual-lab/experiments/dissociation/meta";
+import { DISSOCIATION_SPEC } from "@/features/virtual-lab/experiments/dissociation/model";
+import { gradeGalvanic, GALVANIC_KEY } from "@/features/virtual-lab/experiments/galvanic-cell/grade";
+import { GALVANIC_META } from "@/features/virtual-lab/experiments/galvanic-cell/meta";
+import { GALVANIC_SPEC } from "@/features/virtual-lab/experiments/galvanic-cell/model";
+import { gradeOrganic, ORGANIC_KEY } from "@/features/virtual-lab/experiments/organic-properties/grade";
+import { ORGANIC_META } from "@/features/virtual-lab/experiments/organic-properties/meta";
+import { ORGANIC_SPEC } from "@/features/virtual-lab/experiments/organic-properties/model";
 
 type Tree = { [key: string]: string | Tree };
 const LOCALES = ["kk", "ru", "en"] as const;
@@ -96,6 +111,46 @@ const LABS: Lab[] = [
     key: METALS_KEY,
     grade: gradeMetals,
     conclusion: "Алты заттың 3-еуі металл, 3-еуі бейметалл болды. Бейметалдардың оксиді сумен қышқыл береді, ал металл оксиді — негіз.",
+  },
+  {
+    slug: "equilibrium",
+    spec: EQUILIBRIUM_SPEC,
+    meta: EQUILIBRIUM_META,
+    key: EQUILIBRIUM_KEY,
+    grade: gradeEquilibrium,
+    conclusion: "Ле Шателье принципі бойынша тепе-теңдік әсерді әлсірететін жаққа ығысады. Қыздырғанда NO₂ көбейді, ал қысқанда тепе-теңдік кері жаққа ығысты; Kc = 0,1.",
+  },
+  {
+    slug: "redox",
+    spec: REDOX_SPEC,
+    meta: REDOX_META,
+    key: REDOX_KEY,
+    grade: gradeRedox,
+    conclusion: "Әр реакцияда металл электрон береді, ол тотықсыздандырғыш. Ерітіндідегі ион электрон қабылдайды — тотықтырғыш, мысалы Zn⁰ − 2e⁻ → Zn²⁺.",
+  },
+  {
+    slug: "dissociation",
+    spec: DISSOCIATION_SPEC,
+    meta: DISSOCIATION_META,
+    key: DISSOCIATION_KEY,
+    grade: gradeDissociation,
+    conclusion: "Тұздар, HCl және NaOH — күшті электролиттер, олардың диссоциациясы толық. Сірке қышқылы әлсіз электролит: молекулалардың тек 1,3 %-ы иондарға ыдырайды.",
+  },
+  {
+    slug: "galvanic-cell",
+    spec: GALVANIC_SPEC,
+    meta: GALVANIC_META,
+    key: GALVANIC_KEY,
+    grade: gradeGalvanic,
+    conclusion: "Әр элементте белсенді металл анод болды, ол ериді, ал катодқа металл қонды. Даниэль элементінің ЭҚК-і 1,1 В.",
+  },
+  {
+    slug: "organic-properties",
+    spec: ORGANIC_SPEC,
+    meta: ORGANIC_META,
+    key: ORGANIC_KEY,
+    grade: gradeOrganic,
+    conclusion: "Әр класқа өз сапалық реакциясы бар: алкен бром суын түссіздендіреді, альдегид тобы күміс айна береді. Функционалдық топтар қасиетті анықтайды, ал 6 г сірке қышқылынан 2,24 л CO₂ шығады.",
   },
 ];
 

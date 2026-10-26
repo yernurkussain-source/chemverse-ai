@@ -6,6 +6,9 @@ import { gradeSolubility, SOLUBILITY_KEY, type SolubilitySubmission } from "@/fe
 import { brackets, REQUIRED, solubility, solubilityDone, type Sample } from "@/features/virtual-lab/experiments/solubility/model";
 import { gradeMassFraction, MASS_FRACTION_KEY, type MassFractionSubmission } from "@/features/virtual-lab/experiments/mass-fraction/grade";
 import { fraction, massFractionDone, prepOk, type Prep } from "@/features/virtual-lab/experiments/mass-fraction/model";
+import { gradeOrganicBuilder, ORGANIC_BUILDER_KEY } from "@/features/virtual-lab/experiments/organic-builder/grade";
+import { foundOf, TARGETS } from "@/features/virtual-lab/experiments/organic-builder/model";
+import { getMolecule, molecularFormula } from "@/lib/chemistry/molecules";
 
 describe("Өлшеулер: модель", () => {
   const p = paramsOf({ b: 52.3, m: 27.5, v1: 24, dv: 10 });
@@ -135,5 +138,32 @@ describe("Массалық үлес: модель және бағалау", () =
     // 10 + 20 · 2/3 = 23,3 → 23
     assert.equal(breakdown.procedure, 23);
     assert.equal(breakdown.observation, Math.round((25 * 4) / 6));
+  });
+});
+
+describe("Органикалық конструктор: изомерлер", () => {
+  test("үш жұптың құрамы бірдей: C₄H₁₀, C₂H₆O, C₃H₆O", () => {
+    const f = TARGETS.map((id) => molecularFormula(getMolecule(id)!.atoms));
+    assert.equal(f[0], f[1]);
+    assert.equal(f[2], f[3]);
+    assert.equal(f[4], f[5]);
+    assert.notEqual(f[0], f[2]);
+  });
+
+  test("тек мақсаттағы молекулалар, қайталанбай саналады", () => {
+    assert.deepEqual(foundOf(["butane", "butane", "water", "acetone"]), ["butane", "acetone"]);
+  });
+
+  test("мінсіз жұмыс — 100", () => {
+    const classes = ["alkane", "alkane", "alcohol", "ether", "aldehyde", "ketone"];
+    const { breakdown } = gradeOrganicBuilder({
+      prediction: "2",
+      equipment: [...ORGANIC_BUILDER_KEY.equipment],
+      experiment: { found: [...TARGETS] },
+      observations: Object.fromEntries(classes.map((c, i) => [`r${i}.class`, c])),
+      answers: { isomers: "sameFormula", sodium: "ethanol", molarMass: "58" },
+      conclusion: "Мен 3 изомер жұбын құрастырдым: олардың формуласы бірдей, бірақ құрылысы әртүрлі. C₄H₁₀ молярлық массасы 58 г/моль.",
+    });
+    assert.deepEqual(breakdown, { procedure: 30, observation: 25, calc: 20, conclusion: 25, total: 100 });
   });
 });

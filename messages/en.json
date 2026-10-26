@@ -1947,11 +1947,96 @@
             "ok": "Correct: 10 %.",
             "wrong": "w = 25 / 250 · 100 %."
           }
+        },
+        "equilibrium": {
+          "catalyst": {
+            "ok": "Correct: a catalyst speeds up both reactions equally.",
+            "wrong": "How does a catalyst affect the rates of the forward and reverse reactions?"
+          },
+          "exothermic": {
+            "ok": "Correct: towards absorbing heat — the reverse reaction.",
+            "wrong": "In an exothermic reaction heat is a product: how does the system reduce the heating?"
+          },
+          "kc": {
+            "ok": "Correct: Kc = 0.1.",
+            "wrong": "Kc = [NO₂]² / [N₂O₄]."
+          }
+        },
+        "redox": {
+          "reducer": {
+            "ok": "Correct: the reducing agent gives away electrons.",
+            "wrong": "Zn⁰ → Zn²⁺: did zinc gain or lose electrons?"
+          },
+          "manganese": {
+            "ok": "Correct: Mn⁺⁷.",
+            "wrong": "Solve +1 + x + 4·(−2) = 0."
+          },
+          "aluminium": {
+            "ok": "Correct: Al⁰ − 3e⁻ → Al³⁺.",
+            "wrong": "What is the oxidation state of aluminium in Al₂O₃?"
+          }
+        },
+        "dissociation": {
+          "weak": {
+            "ok": "Correct: α ≈ 1.3 % — most molecules have not broken up.",
+            "wrong": "Look at the ion model of acetic acid: how many of 100 molecules broke up?"
+          },
+          "particles": {
+            "ok": "Correct: a strong electrolyte dissociates completely.",
+            "wrong": "Why did the bulb shine brightly? Which particles carry the current?"
+          },
+          "hydrogen": {
+            "ok": "Correct: [H⁺] = 0.0013 M.",
+            "wrong": "[H⁺] = α · c = 0.013 · 0.1 M."
+          }
+        },
+        "galvanic-cell": {
+          "daniell": {
+            "ok": "Correct: zinc is more reactive — it is the anode.",
+            "wrong": "Which plate got thinner in the experiment?"
+          },
+          "electrons": {
+            "ok": "Correct: from the anode (oxidation) to the cathode (reduction).",
+            "wrong": "Where are the electrons released — at the anode or at the cathode?"
+          },
+          "emf": {
+            "ok": "Correct: 3.17 V.",
+            "wrong": "EMF = E°(cathode) − E°(anode) = 0.80 − (−2.37)."
+          }
+        },
+        "organic-properties": {
+          "mirror": {
+            "ok": "Correct: the aldehyde group gives the silver mirror.",
+            "wrong": "Which substances gave a silver mirror? Which group do they share?"
+          },
+          "glucose": {
+            "ok": "Correct: glucose is an aldehyde alcohol.",
+            "wrong": "What does the deep blue solution with Cu(OH)₂ show, and what does the silver mirror show?"
+          },
+          "co2": {
+            "ok": "Correct: 2.24 L.",
+            "wrong": "n(CH₃COOH) = 6 / 60 = 0.1 mol = n(CO₂); V = n · 22.4."
+          }
+        },
+        "organic-builder": {
+          "isomers": {
+            "ok": "Correct: same composition, different structure.",
+            "wrong": "Compare butane and isobutane: is it the formula or the structure that differs?"
+          },
+          "sodium": {
+            "ok": "Correct: sodium reacts with the hydrogen of the –OH group.",
+            "wrong": "Which molecule has an O–H bond?"
+          },
+          "molarMass": {
+            "ok": "Correct: 58 g/mol.",
+            "wrong": "M = 4 · 12 + 10 · 1."
+          }
         }
       },
       "measureDone": "Mass and volume were measured.",
       "measureNotDone": "Measuring is not finished: both the mass and the volume of the stone are needed.",
-      "solutionsMade": "Solutions prepared: {count}/{total}."
+      "solutionsMade": "Solutions prepared: {count}/{total}.",
+      "moleculesBuilt": "Molecules built: {count}/{total}."
     },
     "resultPage": {
       "title": "Experiment result",
@@ -3040,7 +3125,7 @@
           "noAttract": "not attracted to the magnet",
           "current": "the bulb lights — it conducts",
           "noCurrent": "the bulb stays off — it does not conduct",
-          "massVolume": "m = {m, number} g, V = {v, number} cm³"
+          "massVolume": "m = {m} g, V = {v} cm³"
         },
         "experiment": {
           "hint": "Test every substance in four ways. Note the mass and volume — you will calculate the density yourself in the observation table."
@@ -3495,7 +3580,7 @@
           "pinkGone": "the crimson colour disappeared, the solution became colourless",
           "whitePpt": "a white curdy precipitate formed",
           "brownPpt": "a red-brown precipitate formed",
-          "temperature": "{t0, number} °C → {t1, number} °C"
+          "temperature": "{t0} °C → {t1} °C"
         },
         "experiment": {
           "hint": "Mix each pair, watch for the sign, then measure the temperature with the thermometer."
@@ -3778,6 +3863,505 @@
         "conclusionHint": "Tip: write how you calculated the solute for each solution and how you checked the mass fraction (with numbers).",
         "reveal": {
           "salt": "{task}: solute needed, g"
+        }
+      },
+      "equilibrium": {
+        "goal": "Test Le Chatelier’s principle: find which way an equilibrium shifts when temperature, pressure and concentration change.",
+        "theory": "When the rates of the forward and reverse reactions are equal, the system is at chemical equilibrium. Le Chatelier’s principle: if a system at equilibrium is disturbed, the equilibrium shifts so as to reduce the disturbance. Raising the temperature favours the endothermic direction, raising the pressure favours the side with fewer gas molecules, and adding a substance favours the reaction that uses it up. A catalyst does not shift an equilibrium. We study N₂O₄ ⇌ 2NO₂ (ΔH > 0; NO₂ is a brown gas) and Fe³⁺ + SCN⁻ ⇌ FeSCN²⁺ (blood red).",
+        "safety": {
+          "goggles": "Wear safety goggles.",
+          "no2": "NO₂ is a toxic gas: never open the ampoule, work only in a fume cupboard.",
+          "sealed": "Do not knock the sealed ampoules or heat them strongly.",
+          "hot": "Take care with the hot water bath."
+        },
+        "prediction": {
+          "question": "How do you think the colour of an NO₂/N₂O₄ mixture in a closed tube changes when it is heated?",
+          "options": {
+            "darker": "The brown colour gets darker",
+            "lighter": "The colour gets lighter",
+            "same": "It does not change"
+          }
+        },
+        "equipment": {
+          "ampoules": "Sealed NO₂/N₂O₄ ampoules",
+          "syringe": "Gas syringe (pressure)",
+          "hotBath": "Hot water bath",
+          "iceBath": "Ice water",
+          "test-tubes": "Test tubes",
+          "dropper": "Dropper",
+          "goggles": "Safety goggles",
+          "magnet": "Magnet",
+          "funnel": "Funnel"
+        },
+        "rows": {
+          "heat": "N₂O₄ ⇌ 2NO₂: into hot water (80 °C)",
+          "cool": "N₂O₄ ⇌ 2NO₂: into ice water (0 °C)",
+          "compress": "N₂O₄ ⇌ 2NO₂: compress 2× with a syringe",
+          "addFe": "FeSCN²⁺: add FeCl₃",
+          "addSCN": "FeSCN²⁺: add KSCN",
+          "addAlkali": "FeSCN²⁺: add NaOH"
+        },
+        "tests": {
+          "apply": "Apply"
+        },
+        "seen": {
+          "no2Darker": "the brown colour deepened; NO₂ fraction {before} % → {after} %",
+          "no2Lighter": "the colour faded; NO₂ fraction {before} % → {after} %",
+          "feDarker": "the red colour deepened; [FeSCN²⁺] {before} → {after} mmol/L",
+          "feLighter": "the red colour faded; [FeSCN²⁺] {before} → {after} mmol/L"
+        },
+        "experiment": {
+          "hint": "Apply each change to the starting system separately. Compare the colour and the amount of product (NO₂ fraction or [FeSCN²⁺]) — careful: colour and fraction do not always change together!"
+        },
+        "observation": {
+          "row": "Change"
+        },
+        "columns": {
+          "shift": {
+            "label": "Which way did the equilibrium shift?",
+            "options": {
+              "forward": "→ forward (towards products)",
+              "reverse": "← reverse (towards reactants)",
+              "none": "No shift"
+            }
+          }
+        },
+        "observationHint": "Judge the shift by the amount of product, not by colour: on compression the colour darkens, but the NO₂ fraction falls.",
+        "questions": {
+          "catalyst": {
+            "label": "How does a catalyst affect an equilibrium?",
+            "options": {
+              "forward": "It shifts it forward",
+              "reverse": "It shifts it back",
+              "noShift": "It does not shift it, it only helps equilibrium form faster"
+            }
+          },
+          "exothermic": {
+            "label": "If the temperature of an exothermic reaction (ΔH < 0) is raised, the equilibrium…",
+            "options": {
+              "forward": "shifts forward",
+              "reverse": "shifts back",
+              "noShift": "does not shift"
+            }
+          },
+          "kc": {
+            "label": "At equilibrium [NO₂] = 0.02 M and [N₂O₄] = 0.004 M. What is Kc for N₂O₄ ⇌ 2NO₂?"
+          }
+        },
+        "conclusionHint": "Tip: write which way the equilibrium shifted for each change and how Le Chatelier’s principle explains it. Give the value of Kc too."
+      },
+      "redox": {
+        "goal": "Observe electron transfer in reactions of metals with salts and an acid, and identify the oxidising and reducing agents.",
+        "theory": "In redox reactions the oxidation states of particles change because electrons move from one particle to another. The particle that gives away electrons is the reducing agent, and it is itself oxidised: Zn⁰ − 2e⁻ → Zn²⁺. The particle that accepts electrons is the oxidising agent, and it is reduced: Cu²⁺ + 2e⁻ → Cu⁰. The numbers of electrons lost and gained must be equal (electron balance). A more reactive metal displaces a less reactive one from a solution of its salt.",
+        "safety": {
+          "goggles": "Wear safety goggles.",
+          "acid": "Pour hydrochloric acid carefully.",
+          "silver": "AgNO₃ stains skin dark — work in gloves.",
+          "hydrogen": "Hydrogen is flammable — keep it away from flames."
+        },
+        "prediction": {
+          "question": "What do you think zinc does when it reacts with copper(II) sulfate?",
+          "options": {
+            "gives": "It gives away electrons (is oxidised)",
+            "takes": "It accepts electrons",
+            "nothing": "It does not change"
+          }
+        },
+        "equipment": {
+          "test-tubes": "Test tubes",
+          "rack": "Test tube rack",
+          "sandpaper": "Sandpaper (to clean the metal)",
+          "tweezers": "Tweezers",
+          "goggles": "Safety goggles",
+          "burner": "Spirit lamp",
+          "thermometer": "Thermometer"
+        },
+        "rows": {
+          "zincCopper": "Zn + CuSO₄",
+          "ironCopper": "Fe + CuSO₄",
+          "copperSilver": "Cu + AgNO₃",
+          "magnesiumAcid": "Mg + HCl"
+        },
+        "tests": {
+          "run": "Add the metal"
+        },
+        "seen": {
+          "copperCoat": "red copper coated the metal and the blue colour faded",
+          "silverCoat": "grey silver coated the copper and the solution turned blue",
+          "hydrogen": "the magnesium dissolves with fizzing — hydrogen was given off"
+        },
+        "experiment": {
+          "hint": "Run each reaction and watch: which particle gives away electrons and which accepts them?"
+        },
+        "observation": {
+          "row": "Reaction"
+        },
+        "columns": {
+          "reducer": {
+            "label": "Reducing agent (gives e⁻)",
+            "options": {
+              "Zn": "Zn",
+              "Fe": "Fe",
+              "Cu": "Cu",
+              "Mg": "Mg",
+              "Cu2": "Cu²⁺",
+              "Ag": "Ag⁺",
+              "H": "H⁺"
+            }
+          },
+          "oxidizer": {
+            "label": "Oxidising agent (accepts e⁻)",
+            "options": {
+              "Zn": "Zn",
+              "Fe": "Fe",
+              "Cu": "Cu",
+              "Mg": "Mg",
+              "Cu2": "Cu²⁺",
+              "Ag": "Ag⁺",
+              "H": "H⁺"
+            }
+          }
+        },
+        "observationHint": "A metal atom gives away electrons and becomes an ion, while an ion from the solution accepts electrons and comes out as a metal or a gas.",
+        "questions": {
+          "reducer": {
+            "label": "In a reaction, the reducing agent…",
+            "options": {
+              "takes": "accepts electrons and is reduced",
+              "gives": "gives away electrons and is itself oxidised",
+              "both": "both gives and accepts electrons"
+            }
+          },
+          "manganese": {
+            "label": "What is the oxidation state of manganese in KMnO₄? (K: +1, O: −2)"
+          },
+          "aluminium": {
+            "label": "How many electrons does one aluminium atom give away in 4Al + 3O₂ → 2Al₂O₃?"
+          }
+        },
+        "conclusionHint": "Tip: for each reaction write the reducing and oxidising agents and the number of electrons transferred (for example Zn⁰ − 2e⁻ → Zn²⁺)."
+      },
+      "dissociation": {
+        "goal": "Compare the electrical conductivity of solutions and identify strong electrolytes, weak electrolytes and non-electrolytes.",
+        "theory": "Electrolytes are substances that break up into ions in solution or when molten, so they conduct electricity. Strong electrolytes (most salts, HCl, NaOH) dissociate almost completely: NaCl → Na⁺ + Cl⁻. In weak electrolytes (CH₃COOH, NH₃·H₂O) only a small fraction of molecules break up — the degree of dissociation α is small. Non-electrolytes (sugar, alcohol) form no ions when they dissolve and do not conduct. For a weak electrolyte α is found from Ostwald’s law: α ≈ √(K / c).",
+        "safety": {
+          "goggles": "Wear safety goggles.",
+          "voltage": "Only the teacher switches the device on; do not touch the electrodes.",
+          "rinse": "Rinse the electrodes with distilled water after every measurement.",
+          "acid": "Pour acids and alkalis carefully."
+        },
+        "prediction": {
+          "question": "Do you think a sugar solution conducts electricity?",
+          "options": {
+            "yes": "Yes, it does",
+            "no": "No, it does not"
+          }
+        },
+        "equipment": {
+          "tester": "Conductivity apparatus (electrodes + bulb)",
+          "beakers": "Beakers",
+          "distilled": "Distilled water (for rinsing)",
+          "goggles": "Safety goggles",
+          "burner": "Spirit lamp",
+          "thermometer": "Thermometer",
+          "magnet": "Magnet"
+        },
+        "rows": {
+          "water": "Distilled water",
+          "sugar": "Sugar solution",
+          "ethanol": "Ethanol solution",
+          "NaCl": "NaCl solution",
+          "HCl": "HCl solution",
+          "NaOH": "NaOH solution",
+          "aceticAcid": "Acetic acid CH₃COOH",
+          "ammonia": "Ammonia solution NH₃·H₂O"
+        },
+        "tests": {
+          "conduct": "Current",
+          "model": "Ion model"
+        },
+        "seen": {
+          "bright": "the bulb shines brightly",
+          "dim": "the bulb glows dimly",
+          "off": "the bulb stays off",
+          "ionsAll": "all molecules have broken into ions (α ≈ {alpha} %)",
+          "ionsFew": "only ≈ {alpha} of every 100 molecules have broken into ions",
+          "ionsNone": "no ions — molecules only"
+        },
+        "experiment": {
+          "hint": "Check the brightness of the bulb for each solution, then look at the ion model. All solutions are 0.1 M."
+        },
+        "observation": {
+          "row": "Solution"
+        },
+        "columns": {
+          "type": {
+            "label": "Type",
+            "options": {
+              "strong": "Strong electrolyte",
+              "weak": "Weak electrolyte",
+              "non": "Non-electrolyte"
+            }
+          }
+        },
+        "observationHint": "Use the bulb brightness and the degree of dissociation to choose the type of each substance.",
+        "questions": {
+          "weak": {
+            "label": "Acetic acid is a weak electrolyte because…",
+            "options": {
+              "noIons": "its solution contains no ions at all",
+              "few": "only a small fraction of its molecules break into ions",
+              "slow": "it dissolves slowly in water",
+              "insoluble": "it does not dissolve in water"
+            }
+          },
+          "particles": {
+            "label": "Which particles are mainly found in a NaCl solution?",
+            "options": {
+              "molecules": "NaCl molecules",
+              "ions": "Hydrated Na⁺ and Cl⁻ ions",
+              "atoms": "Na and Cl atoms"
+            }
+          },
+          "hydrogen": {
+            "label": "In 0.1 M CH₃COOH, α = 1.3 %. What is [H⁺]?",
+            "unit": "M"
+          }
+        },
+        "conclusionHint": "Tip: write which substances turned out to be strong electrolytes, weak electrolytes and non-electrolytes, and the degree of dissociation of the weak electrolyte (with the number)."
+      },
+      "galvanic-cell": {
+        "goal": "Build galvanic cells from different metals, measure their EMF and identify the anode and the cathode.",
+        "theory": "In a galvanic cell the energy of a chemical reaction becomes electrical energy. Two metals are dipped into solutions of their own salts and joined by a salt bridge. The more reactive metal (lower electrode potential) is the anode: it is oxidised and dissolves (Zn − 2e⁻ → Zn²⁺). The other metal is the cathode: ions from the solution are reduced on it (Cu²⁺ + 2e⁻ → Cu). Electrons flow through the external circuit from the anode to the cathode. Standard EMF = E°(cathode) − E°(anode). E°: Mg −2.37; Zn −0.76; Fe −0.44; Cu +0.34; Ag +0.80 V.",
+        "safety": {
+          "goggles": "Wear safety goggles.",
+          "salts": "Handle salt solutions (especially AgNO₃ and CuSO₄) in gloves.",
+          "wires": "Connect the wires only when building the circuit and never short-circuit it.",
+          "waste": "Pour the solutions into the special container, not the sink."
+        },
+        "prediction": {
+          "question": "Which plate do you think dissolves in a Daniell cell (Zn and Cu)?",
+          "options": {
+            "Zn": "The zinc plate",
+            "Cu": "The copper plate",
+            "both": "Both"
+          }
+        },
+        "equipment": {
+          "beakers": "Two beakers (salt solutions)",
+          "plates": "Metal plates",
+          "bridge": "Salt bridge",
+          "voltmeter": "Voltmeter",
+          "wires": "Connecting wires",
+          "goggles": "Safety goggles",
+          "burner": "Spirit lamp",
+          "thermometer": "Thermometer"
+        },
+        "tests": {
+          "close": "Close the circuit"
+        },
+        "seen": {
+          "voltage": "voltmeter: {e} V; the {anode} plate gets thinner, metal is deposited on the {cathode} plate"
+        },
+        "experiment": {
+          "hint": "Build each cell and close the circuit. Watch the voltmeter reading and which plate dissolves."
+        },
+        "observation": {
+          "row": "Cell"
+        },
+        "columns": {
+          "anode": {
+            "label": "Anode (oxidised)"
+          },
+          "emf": {
+            "label": "EMF, V"
+          }
+        },
+        "observationHint": "The plate that dissolves is the anode. Write the EMF from the voltmeter.",
+        "questions": {
+          "daniell": {
+            "label": "Which electrode is the anode in a Daniell cell (Zn | ZnSO₄ ‖ CuSO₄ | Cu)?",
+            "options": {
+              "Zn": "The zinc plate",
+              "Cu": "The copper plate",
+              "bridge": "The salt bridge"
+            }
+          },
+          "electrons": {
+            "label": "How do electrons move in the external circuit?",
+            "options": {
+              "anodeToCathode": "From the anode to the cathode",
+              "cathodeToAnode": "From the cathode to the anode",
+              "bridge": "Through the salt bridge"
+            }
+          },
+          "emf": {
+            "label": "What is the standard EMF of the cell Mg | Mg²⁺ ‖ Ag⁺ | Ag?",
+            "unit": "V"
+          }
+        },
+        "conclusionHint": "Tip: write the anode, cathode and EMF of each cell (with numbers); the bigger the difference between the metal potentials, the bigger the EMF."
+      },
+      "organic-properties": {
+        "goal": "Use qualitative tests to identify the class (functional group) of six organic substances.",
+        "theory": "The properties of organic substances depend on their functional groups, so each class has its own qualitative test. Alkenes with a double bond decolourise bromine water. Polyhydric alcohols (glycerol, glucose) give a deep blue solution with freshly made Cu(OH)₂. The aldehyde group (–CHO) gives the silver mirror test. Carboxylic acids (–COOH) release CO₂ with baking soda. Hydrocarbons do not dissolve in water and form a separate layer. Glucose is both a polyhydric alcohol and an aldehyde.",
+        "safety": {
+          "goggles": "Wear safety goggles and gloves.",
+          "fumeHood": "Work with bromine water and organic solvents in a fume cupboard.",
+          "noFlame": "Hexane and alcohol are flammable — keep them away from flames and heat with a water bath.",
+          "silver": "Do not store ammoniacal silver solution — pour it away right after the test."
+        },
+        "prediction": {
+          "question": "Which substance do you think will decolourise bromine water?",
+          "options": {
+            "hexane": "Hexane",
+            "hexene": "Hexene",
+            "ethanol": "Ethanol"
+          }
+        },
+        "equipment": {
+          "test-tubes": "Test tubes",
+          "rack": "Test tube rack",
+          "dropper": "Dropper",
+          "waterBath": "Water bath",
+          "goggles": "Safety goggles",
+          "magnet": "Magnet",
+          "scales": "Balance"
+        },
+        "rows": {
+          "hexane": "Hexane C₆H₁₄",
+          "hexene": "Hexene C₆H₁₂",
+          "ethanol": "Ethanol C₂H₅OH",
+          "glycerol": "Glycerol C₃H₅(OH)₃",
+          "aceticAcid": "Acetic acid CH₃COOH",
+          "glucose": "Glucose C₆H₁₂O₆"
+        },
+        "tests": {
+          "water": "Water",
+          "bromine": "Bromine water",
+          "copperHydroxide": "Cu(OH)₂",
+          "silverMirror": "Ag₂O (NH₃), heat",
+          "soda": "NaHCO₃"
+        },
+        "seen": {
+          "layers": "does not dissolve — two layers",
+          "mixes": "mixes with water in any ratio",
+          "dissolves": "dissolves well in water",
+          "noChange": "no change",
+          "decolorized": "the bromine water lost its colour",
+          "deepBlue": "the precipitate dissolved, giving a deep blue solution",
+          "dissolvesBlue": "the precipitate dissolved, giving a light blue solution",
+          "mirror": "a silver mirror formed on the tube walls",
+          "fizz": "bubbles — CO₂ was given off"
+        },
+        "experiment": {
+          "hint": "Do five tests on each substance. Find the “signature” of each class: bromine water, Cu(OH)₂, the silver mirror, soda."
+        },
+        "observation": {
+          "row": "Substance"
+        },
+        "columns": {
+          "class": {
+            "label": "Class",
+            "options": {
+              "alkane": "Alkane",
+              "alkene": "Alkene",
+              "alcohol": "Monohydric alcohol",
+              "polyol": "Polyhydric alcohol",
+              "acid": "Carboxylic acid",
+              "carbohydrate": "Carbohydrate (aldehyde alcohol)"
+            }
+          }
+        },
+        "observationHint": "Use the set of qualitative reactions of each substance to decide its class.",
+        "questions": {
+          "mirror": {
+            "label": "The silver mirror test is a qualitative test for which functional group?",
+            "options": {
+              "hydroxyl": "Hydroxyl group –OH",
+              "aldehyde": "Aldehyde group –CHO",
+              "carboxyl": "Carboxyl group –COOH",
+              "double": "C=C double bond"
+            }
+          },
+          "glucose": {
+            "label": "Glucose gives a deep blue solution with Cu(OH)₂ and a silver mirror. What does this prove?",
+            "options": {
+              "onlyAldehyde": "Glucose has only an aldehyde group",
+              "onlyHydroxyl": "Glucose has only OH groups",
+              "both": "Glucose has several OH groups and an aldehyde group",
+              "acid": "Glucose is an acid"
+            }
+          },
+          "co2": {
+            "label": "How many litres of CO₂ form when 6 g of acetic acid reacts completely with NaHCO₃? (STP, Vm = 22.4 L/mol, M(CH₃COOH) = 60 g/mol)",
+            "unit": "L"
+          }
+        },
+        "conclusionHint": "Tip: write which qualitative test is typical of each class and how you proved the two functional groups of glucose."
+      },
+      "organic-builder": {
+        "goal": "Build three pairs of isomers in the molecule builder and show that substances with the same composition can differ in structure and class.",
+        "theory": "Isomers are substances with the same molecular formula but a different structure (the order in which the atoms are joined). For example, C₄H₁₀ is both butane (a chain) and isobutane (branched). Isomers can even belong to different classes: C₂H₆O is ethanol (an alcohol, –OH) and dimethyl ether (an ether, C–O–C); C₃H₆O is propanal (an aldehyde, –CHO) and acetone (a ketone, C=O in the middle of the chain). In a structural formula carbon has a valency of 4, oxygen 2 and hydrogen 1.",
+        "safety": {
+          "model": "This is work with a model: there is no laboratory hazard.",
+          "valence": "Check the valency of every atom: C — 4, O — 2, H — 1.",
+          "real": "In a real lab acetone and ether are highly flammable and are kept away from flames."
+        },
+        "prediction": {
+          "question": "How many different substances do you think have the formula C₄H₁₀?"
+        },
+        "equipmentHint": "Which “parts” do you need to build the isomers? Each extra one costs 3 points.",
+        "equipment": {
+          "carbon": "Carbon atoms (C)",
+          "hydrogen": "Hydrogen atoms (H)",
+          "oxygen": "Oxygen atoms (O)",
+          "bonds": "Bonds (single and double)",
+          "nitrogen": "Nitrogen atoms (N)",
+          "chlorine": "Chlorine atoms (Cl)",
+          "burner": "Spirit lamp"
+        },
+        "experiment": {
+          "hint": "Build each molecule in the builder below: add atoms, join them and fill in the hydrogens. When the model recognises the substance, a ✓ appears in the list. You can pick a target from the “Task” list.",
+          "progress": "Built: {count}/{total}"
+        },
+        "observation": {
+          "molecule": "Substance",
+          "class": "Class"
+        },
+        "classes": {
+          "alkane": "Alkane",
+          "alcohol": "Alcohol",
+          "ether": "Ether",
+          "aldehyde": "Aldehyde",
+          "ketone": "Ketone"
+        },
+        "observationHint": "Decide the class of each substance from its functional group (–OH, C–O–C, –CHO, C=O).",
+        "questions": {
+          "isomers": {
+            "label": "Isomers are…",
+            "options": {
+              "sameStructure": "substances with the same structure but different composition",
+              "sameFormula": "substances with the same composition (molecular formula) but different structure",
+              "sameProperties": "substances with the same properties"
+            }
+          },
+          "sodium": {
+            "label": "Which of ethanol and dimethyl ether reacts with sodium to give hydrogen?",
+            "options": {
+              "ethanol": "Ethanol (it has an –OH group)",
+              "ether": "Dimethyl ether",
+              "both": "Both"
+            }
+          },
+          "molarMass": {
+            "label": "What is the molar mass of C₄H₁₀? (Ar: C = 12, H = 1)",
+            "unit": "g/mol"
+          }
+        },
+        "conclusionHint": "Tip: write how many pairs of isomers you built, how their composition and structure differ, and the molar mass of C₄H₁₀.",
+        "reveal": {
+          "built": "Molecules built"
         }
       }
     },

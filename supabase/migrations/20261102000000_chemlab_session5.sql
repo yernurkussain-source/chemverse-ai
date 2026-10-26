@@ -7,7 +7,8 @@ update public.lab_experiments
   set status = 'ready'
   where id in ('lab-equipment', 'lab-safety', 'pure-vs-mixture', 'phys-chem-phenomena', 'substance-properties', 'measurements',
     'reaction-signs', 'metals-nonmetals',
-    'solubility', 'mass-fraction');
+    'solubility', 'mass-fraction',
+    'equilibrium', 'redox', 'dissociation', 'galvanic-cell', 'organic-builder', 'organic-properties');
 
 -- Тексеру
 select id, status from public.lab_experiments where status = 'ready' order by id;

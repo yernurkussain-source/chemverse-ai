@@ -51,8 +51,11 @@ function moleculeSignature(id: MoleculeId) {
   return signatures.get(id)!;
 }
 
-/** Молекула құрастырушы: атом қосу, байланыс еселігі, валенттілікті тексеру, затты тану */
-export function MoleculeBuilder() {
+/**
+ * Молекула құрастырушы: атом қосу, байланыс еселігі, валенттілікті тексеру, затты тану.
+ * tasks — тапсырмалар тізімі (ChemLab «Органикалық конструкторы» өз тізімін береді), onFound — зат танылғанда.
+ */
+export function MoleculeBuilder({ tasks = TASKS, onFound }: { tasks?: readonly MoleculeId[]; onFound?: (id: MoleculeId) => void } = {}) {
   const t = useTranslations("MoleculesPage.builder");
   const tm = useTranslations("Molecules");
   const [state, setState] = useState<BuilderState>(EMPTY);
@@ -86,6 +89,9 @@ export function MoleculeBuilder() {
   }, [key, state]);
 
   const found = match?.key === key && key ? match.id : undefined;
+  useEffect(() => {
+    if (found) onFound?.(found);
+  }, [found, onFound]);
 
   function add(elem: string) {
     const result = addAtom(state, elem, selected);
@@ -241,7 +247,7 @@ export function MoleculeBuilder() {
           {t("task")}
           <select value={task} onChange={(e) => setTask(e.target.value as MoleculeId | "")} className={cn(inputClass, "font-normal")}>
             <option value="">{t("free")}</option>
-            {TASKS.map((id) => (
+            {tasks.map((id) => (
               <option key={id} value={id}>
                 {tm(`${id}.name`)}
               </option>

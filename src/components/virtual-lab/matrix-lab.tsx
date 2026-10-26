@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { Locale } from "@/i18n/routing";
-import { formatDecimal } from "@/lib/format";
+import { formatDecimal, formatPlain } from "@/lib/format";
 import { logOf, matrixDone, matrixProgress, rowResults, type MatrixMeta, type MatrixSpec, type MatrixVisual } from "@/features/virtual-lab/matrix/spec";
 import { cn } from "@/lib/utils";
 import type { ExperimentProps, LabModule, LabTexts, LabValue, ObservationProps } from "./module";
@@ -54,7 +54,9 @@ export function makeMatrixModule({ slug, spec, meta }: { slug: string; spec: Mat
   const logIn = (value: LabValue) => logOf(spec, value.log);
   const rowName = (t: T, row: number) => label(t, `rows.${spec.rows[row]}`, spec.rows[row]);
   const testName = (t: T, test: string) => label(t, `tests.${test}`, test);
-  const seenText = (t: T, r: { seen: string; values?: Record<string, string | number> }) => t(`seen.${r.seen}`, r.values);
+  // Сандар — жобаның ондық бөлгішімен (Chrome-да Intl қазақ тілі үшін нүкте қояды)
+  const seenText = (t: T, locale: Locale, r: { seen: string; values?: Record<string, string | number> }) =>
+    t(`seen.${r.seen}`, r.values && Object.fromEntries(Object.entries(r.values).map(([k, v]) => [k, typeof v === "number" ? formatPlain(v, locale) : v])));
 
   function useTexts(): LabTexts {
     const t = useLabT(slug);
@@ -85,6 +87,7 @@ export function makeMatrixModule({ slug, spec, meta }: { slug: string; spec: Mat
   function Experiment({ value, onChange }: ExperimentProps) {
     const t = useLabT(slug);
     const tm = useTranslations("ChemLab.matrix");
+    const locale = useLocale() as Locale;
     const log = logIn(value);
     const [last, setLast] = useState<[number, string] | null>(null);
     const progress = matrixProgress(spec, log);
@@ -122,7 +125,7 @@ export function makeMatrixModule({ slug, spec, meta }: { slug: string; spec: Mat
                         {r?.visual && <Visual v={r.visual} />}
                         <span className="min-w-0">
                           <b className="block font-semibold">{testName(t, test)}</b>
-                          {r && <span className="text-muted-foreground">{seenText(t, r)}</span>}
+                          {r && <span className="text-muted-foreground">{seenText(t, locale, r)}</span>}
                         </span>
                       </button>
                     );
@@ -147,6 +150,7 @@ export function makeMatrixModule({ slug, spec, meta }: { slug: string; spec: Mat
   function Observation({ experiment, values, onChange }: ObservationProps) {
     const t = useLabT(slug);
     const tm = useTranslations("ChemLab.matrix");
+    const locale = useLocale() as Locale;
     const log = logIn(experiment);
     const own = meta.observationRows;
     const rows = own
@@ -154,7 +158,7 @@ export function makeMatrixModule({ slug, spec, meta }: { slug: string; spec: Mat
       : spec.rows.map((_, row) => {
           const results = rowResults(spec, log, row).filter((r) => spec.mode === "explore" || r.ok);
           const seen = results.length
-            ? results.map((r) => (spec.mode === "explore" ? `${testName(t, r.test)}: ${seenText(t, r)}` : `${testName(t, r.test)} — ${seenText(t, r)}`)).join("; ")
+            ? results.map((r) => (spec.mode === "explore" ? `${testName(t, r.test)}: ${seenText(t, locale, r)}` : `${testName(t, r.test)} — ${seenText(t, locale, r)}`)).join("; ")
             : tm("notTested");
           return { id: `r${row}`, cells: { row: rowName(t, row), seen } };
         });
