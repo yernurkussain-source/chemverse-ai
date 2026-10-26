@@ -9,6 +9,12 @@ import { rateModule } from "./experiments/reaction-rate";
 import { titrationModule } from "./experiments/titration";
 import { unknownModule } from "./experiments/unknown-substance";
 import type { LabModule } from "./module";
+import { pureModule } from "./experiments/pure-vs-mixture";
+import { phenomenaModule } from "./experiments/phys-chem-phenomena";
+import { propertiesModule } from "./experiments/substance-properties";
+import { equipmentModule } from "./experiments/lab-equipment";
+import { safetyModule } from "./experiments/lab-safety";
+import { measureModule } from "./experiments/measurements";
 
 /** slug → клиенттік модуль (жаңа тәжірибе осында қосылады) */
 export const LAB_MODULES: Record<ShellLabSlug, LabModule> = {
@@ -21,4 +27,10 @@ export const LAB_MODULES: Record<ShellLabSlug, LabModule> = {
   "metal-activity": activityModule,
   "unknown-substance": unknownModule,
   "balance-equations": balanceModule,
+  "pure-vs-mixture": pureModule,
+  "phys-chem-phenomena": phenomenaModule,
+  "substance-properties": propertiesModule,
+  "lab-equipment": equipmentModule,
+  "lab-safety": safetyModule,
+  measurements: measureModule,
 };

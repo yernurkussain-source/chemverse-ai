@@ -1805,7 +1805,96 @@
       "lawOk": "Correct: the number of atoms is conserved — the law of conservation of mass.",
       "lawWrong": "What stays the same before and after a reaction? Find the law about it.",
       "waterMassOk": "The mass of water is correct.",
-      "waterMassWrong": "n(H₂) = 4 / 2 = 2 mol; by the equation n(H₂O) = n(H₂), and m = n · M."
+      "waterMassWrong": "n(H₂) = 4 / 2 = 2 mol; by the equation n(H₂O) = n(H₂), and m = n · M.",
+      "situationsSolved": "Situations solved correctly: {count}/{total}.",
+      "q": {
+        "pure-vs-mixture": {
+          "air": {
+            "ok": "Correct: air is a homogeneous mixture of gases.",
+            "wrong": "Air contains several gases, but you cannot see their particles — what kind of mixture is that?"
+          },
+          "sign": {
+            "ok": "Correct: a pure substance has a constant temperature.",
+            "wrong": "Compare the boiling points of water and sea water."
+          },
+          "saltPct": {
+            "ok": "The mass fraction is correct.",
+            "wrong": "w = m(salt) / m(solution) · 100 %."
+          }
+        },
+        "phys-chem-phenomena": {
+          "mainSign": {
+            "ok": "Correct: a chemical change produces a new substance.",
+            "wrong": "Compare ice melting with magnesium burning: where did a new substance appear?"
+          },
+          "candle": {
+            "ok": "Correct: a candle shows both a physical and a chemical change.",
+            "wrong": "What happens to the wax: which change is melting and which is burning?"
+          },
+          "chemCount": {
+            "ok": "The chemical changes are counted correctly.",
+            "wrong": "Count the rows marked “chemical” in the observation table."
+          }
+        },
+        "substance-properties": {
+          "separate": {
+            "ok": "Correct: iron is attracted to a magnet, sulfur is not.",
+            "wrong": "Recall your observation: which substance was attracted to the magnet?"
+          },
+          "sugarSalt": {
+            "ok": "Correct: both dissolve in water.",
+            "wrong": "What did you see when you put sugar and salt in water?"
+          },
+          "copperDensity": {
+            "ok": "The density is correct.",
+            "wrong": "ρ = m / V: 89 g / 10 cm³."
+          }
+        },
+        "lab-equipment": {
+          "division": {
+            "ok": "Correct: one division is 2 mL.",
+            "wrong": "Division value = (20 − 10) mL / number of divisions."
+          },
+          "tubeMouth": {
+            "ok": "Correct: splashes must not hit anyone.",
+            "wrong": "The liquid may suddenly splash when heated — what must you do so it hits nobody?"
+          },
+          "cylinderHeat": {
+            "ok": "Correct: measuring glassware cracks or loses accuracy when heated.",
+            "wrong": "What happened in the experiment when you heated the cylinder?"
+          }
+        },
+        "lab-safety": {
+          "alkaliSkin": {
+            "ok": "Correct: first rinse with plenty of water, then neutralise with a weak acid.",
+            "wrong": "How do we remove an alkali from the skin? A strong acid would cause a new burn."
+          },
+          "fire": {
+            "ok": "Correct: without air the flame goes out.",
+            "wrong": "Alcohol mixes with water and the flame may spread — how do we cut the flame off from the air?"
+          },
+          "dilution": {
+            "ok": "Correct: 40 mL of water.",
+            "wrong": "If 1 part is 10 mL, how much are 4 parts?"
+          }
+        },
+        "measurements": {
+          "meniscus": {
+            "ok": "Correct: eye level with the meniscus, read at the bottom edge.",
+            "wrong": "Water climbs up the cylinder walls — which point shows the real level?"
+          },
+          "tare": {
+            "ok": "Correct: tare subtracts the container’s mass.",
+            "wrong": "What did the balance show without tare? Check in the experiment."
+          },
+          "bodyVolume": {
+            "ok": "Correct: 15 cm³.",
+            "wrong": "V(object) = V₂ − V₁."
+          }
+        }
+      },
+      "measureDone": "Mass and volume were measured.",
+      "measureNotDone": "Measuring is not finished: both the mass and the volume of the stone are needed."
     },
     "resultPage": {
       "title": "Experiment result",
@@ -2647,6 +2736,662 @@
           "balanced": "Balanced equations",
           "waterMass": "Mass of water, g"
         }
+      },
+      "pure-vs-mixture": {
+        "goal": "Test six samples and decide which are pure substances and which are homogeneous or heterogeneous mixtures.",
+        "theory": "A pure substance is made of one substance only, so its properties are constant: water boils at 100 °C, table salt melts at 801 °C. A mixture contains several substances. In a heterogeneous mixture you can see the particles by eye or with a magnifier (sand with iron filings, muddy water). In a homogeneous mixture (a solution, air) the particles are invisible, but when it is evaporated the dissolved substance stays behind as a residue, and the boiling point changes gradually.",
+        "safety": {
+          "goggles": "Wear safety goggles when heating.",
+          "hotDish": "Hold the hot evaporating dish with tongs only.",
+          "burner": "Put the spirit lamp out with its cap — do not blow on it.",
+          "noTaste": "Never taste the samples."
+        },
+        "prediction": {
+          "question": "Do you think sea water is a pure substance or a mixture?",
+          "options": {
+            "pure": "Pure substance",
+            "homogeneous": "Homogeneous mixture",
+            "heterogeneous": "Heterogeneous mixture"
+          }
+        },
+        "equipment": {
+          "magnifier": "Magnifier",
+          "dish": "Evaporating dish",
+          "burner": "Spirit lamp",
+          "thermometer": "Thermometer",
+          "ruler": "Ruler",
+          "compass": "Compasses",
+          "goggles": "Safety goggles"
+        },
+        "rows": {
+          "water": "Distilled water",
+          "seawater": "Sea water",
+          "salt": "Table salt (crystals)",
+          "sandIron": "Sand with iron filings",
+          "muddyWater": "Muddy water",
+          "copper": "Copper wire"
+        },
+        "tests": {
+          "lens": "Look through a magnifier",
+          "heat": "Heat / evaporate",
+          "temperature": "Melting / boiling point"
+        },
+        "seen": {
+          "lensClear": "uniform clear liquid",
+          "lensCrystals": "identical cube-shaped crystals",
+          "lensTwoKinds": "two kinds of particles: yellow sand and grey iron",
+          "lensParticles": "mud particles float and slowly settle",
+          "lensMetal": "uniform pinkish metal",
+          "noResidue": "all the water evaporated, the dish is clean",
+          "saltResidue": "a white salt residue is left in the dish",
+          "melts": "melts at {t} °C, composition unchanged",
+          "noChange": "no change: sand and iron stay separate",
+          "mudResidue": "a mud residue is left in the dish",
+          "constant": "constant: {t} °C",
+          "rising": "boiling point rises gradually (above 100 °C)",
+          "noPoint": "no single melting point"
+        },
+        "experiment": {
+          "hint": "Test every sample in three ways: look through a magnifier, heat or evaporate it, and measure its melting or boiling point."
+        },
+        "observation": {
+          "row": "Sample"
+        },
+        "columns": {
+          "class": {
+            "label": "Type",
+            "options": {
+              "pure": "Pure substance",
+              "homogeneous": "Homogeneous mixture",
+              "heterogeneous": "Heterogeneous mixture"
+            }
+          }
+        },
+        "observationHint": "Compare the results of the three tests and decide the type of each sample.",
+        "questions": {
+          "air": {
+            "label": "Air (nitrogen, oxygen and other gases) is…",
+            "options": {
+              "pure": "A pure substance",
+              "homogeneous": "A homogeneous mixture",
+              "heterogeneous": "A heterogeneous mixture"
+            }
+          },
+          "sign": {
+            "label": "Which sign tells a pure substance apart from a solution?",
+            "options": {
+              "clear": "A pure substance is always clear",
+              "constant": "A pure substance has a constant melting or boiling point",
+              "colored": "A mixture is always multicoloured",
+              "soluble": "A pure substance always dissolves in water"
+            }
+          },
+          "saltPct": {
+            "label": "Evaporating 100 g of sea water left 3.5 g of salt. What is the mass fraction of salt?",
+            "unit": "%"
+          }
+        },
+        "conclusionHint": "Tip: write which samples turned out to be pure substances and which were homogeneous or heterogeneous mixtures, and which test proved it.",
+        "reveal": {
+          "pureCount": "Number of pure substances"
+        }
+      },
+      "phys-chem-phenomena": {
+        "goal": "Observe eight phenomena and decide which are physical and which are chemical changes.",
+        "theory": "In a physical change the state, shape or size of a substance changes, but the substance itself stays the same: ice melts into water, water turns into steam. In a chemical change (a chemical reaction) new substances form. You can tell by the signs: a colour change, a gas given off, a precipitate, light and heat, a new smell. Many physical changes are reversible, while after a chemical change the starting substance cannot simply be got back.",
+        "safety": {
+          "goggles": "Wear safety goggles.",
+          "magnesium": "Do not look straight at burning magnesium — the bright flash harms the eyes.",
+          "tongs": "Hold the magnesium ribbon with crucible tongs only.",
+          "noTaste": "Even milk and vinegar must not be tasted in the lab."
+        },
+        "prediction": {
+          "question": "Do you think iron rusting is a physical or a chemical change?",
+          "options": {
+            "physical": "Physical",
+            "chemical": "Chemical"
+          }
+        },
+        "equipment": {
+          "goggles": "Safety goggles",
+          "burner": "Spirit lamp",
+          "tongs": "Crucible tongs",
+          "beaker": "Beaker",
+          "magnet": "Magnet",
+          "ruler": "Ruler",
+          "scales": "Balance"
+        },
+        "rows": {
+          "iceMelt": "Ice melting",
+          "waterBoil": "Water boiling",
+          "ironRust": "An iron nail rusting",
+          "milkSour": "Milk going sour",
+          "glassBreak": "A glass tube breaking",
+          "magnesiumBurn": "Magnesium burning",
+          "saltDissolve": "Salt dissolving in water",
+          "sodaVinegar": "Baking soda + vinegar"
+        },
+        "tests": {
+          "observe": "Observe",
+          "reverse": "Try to reverse"
+        },
+        "seen": {
+          "stateChange": "solid ice turned into liquid water — no new substance",
+          "freezeBack": "in the freezer it turns back into ice (reversible)",
+          "vapor": "water turned into steam — no new substance",
+          "condense": "the steam condenses as drops on cold glass (reversible)",
+          "rust": "red-brown rust appeared on the surface — a new substance",
+          "irreversible": "the starting substance cannot be got back",
+          "sour": "a sour smell appeared and the milk curdled — new substances",
+          "pieces": "the glass broke into pieces, still the same substance",
+          "sameSubstance": "the pieces can be melted and made into a tube again — the substance is unchanged",
+          "flash": "a bright white flame, heat and light given off, a white powder (MgO) left — a new substance",
+          "dissolved": "the salt disappeared from view — it spread through the solution",
+          "evaporateBack": "evaporating it leaves the salt again (reversible)",
+          "fizz": "bubbles — a gas (CO₂) was given off, a new substance"
+        },
+        "experiment": {
+          "hint": "Observe each phenomenon, then try to reverse it. Watch whether a new substance forms."
+        },
+        "observation": {
+          "row": "Phenomenon"
+        },
+        "columns": {
+          "kind": {
+            "label": "Type of change",
+            "options": {
+              "physical": "Physical",
+              "chemical": "Chemical"
+            }
+          }
+        },
+        "observationHint": "Use the signs of each phenomenon to choose its type.",
+        "questions": {
+          "mainSign": {
+            "label": "What is the main sign of a chemical change?",
+            "options": {
+              "stateChange": "A change of state",
+              "newSubstance": "A new substance forms",
+              "shapeChange": "A change of shape",
+              "temperature": "A change of temperature"
+            }
+          },
+          "candle": {
+            "label": "When a candle burns, the wax melts and burns near the wick. What kind of change is this?",
+            "options": {
+              "physical": "Physical only",
+              "chemical": "Chemical only",
+              "both": "Both: melting is physical, burning is chemical"
+            }
+          },
+          "chemCount": {
+            "label": "How many of the 8 phenomena are chemical changes?"
+          }
+        },
+        "conclusionHint": "Tip: write how many phenomena turned out to be chemical and which signs (new substance, gas, colour, light) proved it.",
+        "reveal": {
+          "chemCount": "Number of chemical changes"
+        }
+      },
+      "substance-properties": {
+        "goal": "Investigate and compare four properties of six substances: solubility in water, attraction to a magnet, electrical conductivity and density.",
+        "theory": "Every substance has its own properties — we use them to tell substances apart and to separate mixtures. Some substances dissolve in water (table salt, sugar), others do not (sulfur, metals). Iron is attracted to a magnet, while copper and sulfur are not. Metals conduct electricity. Density is the mass of a unit volume: ρ = m / V (g/cm³). Substances denser than water sink, and less dense ones (paraffin wax, 0.9 g/cm³) float.",
+        "safety": {
+          "goggles": "Wear safety goggles.",
+          "tester": "Use the conductivity tester (battery + bulb) only as given by the teacher — never plug it into a socket.",
+          "sulfur": "Do not make sulfur powder dusty and do not smell it.",
+          "noTaste": "Do not taste even the salt or the sugar."
+        },
+        "prediction": {
+          "question": "Which of the four substances do you think floats on water?",
+          "options": {
+            "iron": "Iron",
+            "copper": "Copper",
+            "paraffin": "Paraffin wax",
+            "salt": "Table salt"
+          }
+        },
+        "equipment": {
+          "beaker": "Beaker of water",
+          "magnet": "Magnet",
+          "tester": "Conductivity tester (battery + bulb)",
+          "scales": "Balance",
+          "cylinder": "Measuring cylinder",
+          "burner": "Spirit lamp",
+          "thermometer": "Thermometer"
+        },
+        "rows": {
+          "salt": "Table salt",
+          "sugar": "Sugar",
+          "sulfur": "Sulfur powder",
+          "iron": "Iron",
+          "copper": "Copper",
+          "paraffin": "Paraffin wax"
+        },
+        "tests": {
+          "water": "Put in water",
+          "magnet": "Magnet",
+          "current": "Electric current",
+          "massVolume": "Measure m and V"
+        },
+        "seen": {
+          "dissolves": "dissolves in water",
+          "floatsPowder": "does not dissolve; the powder is not wetted and stays on the surface",
+          "sinks": "does not dissolve, sinks",
+          "floats": "does not dissolve, floats",
+          "attract": "attracted to the magnet",
+          "noAttract": "not attracted to the magnet",
+          "current": "the bulb lights — it conducts",
+          "noCurrent": "the bulb stays off — it does not conduct",
+          "massVolume": "m = {m, number} g, V = {v, number} cm³"
+        },
+        "experiment": {
+          "hint": "Test every substance in four ways. Note the mass and volume — you will calculate the density yourself in the observation table."
+        },
+        "observation": {
+          "row": "Substance"
+        },
+        "columns": {
+          "density": {
+            "label": "Density ρ = m / V, g/cm³"
+          }
+        },
+        "observationHint": "Calculate the density of each substance: divide the mass by the volume (for example, 12 g / 4 cm³ = 3 g/cm³).",
+        "questions": {
+          "separate": {
+            "label": "How can a mixture of iron and sulfur powders be separated?",
+            "options": {
+              "evaporate": "By evaporation",
+              "magnet": "With a magnet",
+              "filter": "By filtration",
+              "heat": "By heating"
+            }
+          },
+          "sugarSalt": {
+            "label": "Which method can NOT tell sugar from table salt?",
+            "options": {
+              "water": "Putting them in water",
+              "heat": "Heating",
+              "density": "Measuring density"
+            }
+          },
+          "copperDensity": {
+            "label": "What is the density of a piece of copper with a mass of 89 g and a volume of 10 cm³?",
+            "unit": "g/cm³"
+          }
+        },
+        "conclusionHint": "Tip: write which properties made the substances different and which one has the greatest density (with the number)."
+      },
+      "lab-equipment": {
+        "goal": "Learn what laboratory glassware and tools are for: choose the right tool for each job.",
+        "theory": "Every job in the lab has its own tool. The volume of a liquid is measured with a measuring cylinder: keep your eye level with the meniscus and read its bottom edge. Mass is measured on a balance. Filtering needs a funnel and filter paper, evaporating needs an evaporating dish, and grinding a solid needs a mortar and pestle. A test tube is heated while held with a test tube holder. Measuring glassware (a cylinder) must never be heated, while beakers and flasks are heated on a wire gauze.",
+        "safety": {
+          "goggles": "Wear safety goggles.",
+          "glass": "Do not pick up broken glass with your hands — tell the teacher.",
+          "labels": "Never use a container without a label.",
+          "order": "Keep your workplace clean and do not put extra things on the bench."
+        },
+        "prediction": {
+          "question": "Which container do you think you need to measure exactly 25 mL of water?",
+          "options": {
+            "beaker": "Beaker",
+            "cylinder": "Measuring cylinder",
+            "flask": "Conical flask"
+          }
+        },
+        "equipmentHint": "Get your workplace ready: what do you bring into the lab? Each extra item costs 3 points.",
+        "equipment": {
+          "coat": "Lab coat",
+          "goggles": "Safety goggles",
+          "notebook": "Lab notebook",
+          "food": "Food and drinks",
+          "bag": "Bag (on the bench)"
+        },
+        "rows": {
+          "measureVolume": "Measure exactly 25 mL of water",
+          "heatTube": "Heat water in a test tube",
+          "filter": "Filter muddy water",
+          "weigh": "Weigh out 5 g of salt",
+          "evaporate": "Evaporate a salt solution",
+          "grind": "Grind crystals into powder",
+          "addDrops": "Add 2 drops of indicator",
+          "takeSolid": "Take a little powder"
+        },
+        "tests": {
+          "beaker": "Beaker",
+          "cylinder": "Measuring cylinder",
+          "flask": "Flask",
+          "hand": "Bare hands",
+          "crucibleTongs": "Crucible tongs",
+          "holder": "Test tube holder",
+          "funnel": "Funnel + filter paper",
+          "dropper": "Dropper",
+          "ruler": "Ruler",
+          "scales": "Balance",
+          "dish": "Evaporating dish",
+          "mortar": "Mortar and pestle",
+          "spatula": "Spatula"
+        },
+        "seen": {
+          "measureVolume": {
+            "beaker": "a beaker's marks are rough — only an approximate volume",
+            "cylinder": "correct: the cylinder has fine marks, 25 mL measured exactly",
+            "flask": "a flask cannot measure volume accurately"
+          },
+          "heatTube": {
+            "hand": "dangerous: the tube is hot — you burn your hand",
+            "crucibleTongs": "crucible tongs do not grip a test tube — it slips out",
+            "holder": "correct: the holder grips the tube safely"
+          },
+          "filter": {
+            "funnel": "correct: the mud stays on the filter paper, the water is clear",
+            "cylinder": "a cylinder does not filter — the mud stays in the water",
+            "dropper": "a dropper does not filter"
+          },
+          "weigh": {
+            "ruler": "a ruler measures length, not mass",
+            "scales": "correct: the balance shows 5.00 g",
+            "cylinder": "a cylinder measures volume, not mass"
+          },
+          "evaporate": {
+            "cylinder": "dangerous: a thick-walled cylinder cracks when heated",
+            "funnel": "you cannot evaporate in a funnel",
+            "dish": "correct: the water evaporated and salt is left in the dish"
+          },
+          "grind": {
+            "mortar": "correct: the crystals turned into a fine powder",
+            "funnel": "a funnel cannot grind",
+            "beaker": "the beaker may break — it is not for grinding"
+          },
+          "addDrops": {
+            "spatula": "you cannot add drops with a spatula",
+            "cylinder": "you cannot measure a drop from a cylinder — too much pours out",
+            "dropper": "correct: the dropper added 2 drops"
+          },
+          "takeSolid": {
+            "hand": "dangerous: never touch reagents with your hands",
+            "spatula": "correct: the powder is taken cleanly with a spatula",
+            "dropper": "a dropper cannot pick up powder"
+          }
+        },
+        "experiment": {
+          "hint": "Choose one tool for each job. The model shows the result; a wrong choice costs 3 points, so think first."
+        },
+        "observation": {
+          "row": "Glassware",
+          "rows": {
+            "cylinder": "Measuring cylinder",
+            "beaker": "Beaker",
+            "testTube": "Test tube",
+            "flask": "Flask",
+            "dish": "Evaporating dish",
+            "funnel": "Funnel"
+          }
+        },
+        "columns": {
+          "heat": {
+            "label": "Can it be heated?",
+            "options": {
+              "yes": "Yes",
+              "no": "No"
+            }
+          }
+        },
+        "observationHint": "Can each item be heated? Recall your results and the theory.",
+        "questions": {
+          "division": {
+            "label": "A measuring cylinder has 5 divisions between the 10 mL and 20 mL marks. What is one division worth?",
+            "unit": "mL"
+          },
+          "tubeMouth": {
+            "label": "Where should the mouth of a test tube point while it is heated?",
+            "options": {
+              "toYou": "Towards you",
+              "away": "Away from you and your neighbours",
+              "down": "Down at the bench"
+            }
+          },
+          "cylinderHeat": {
+            "label": "Why must a measuring cylinder never be heated?",
+            "options": {
+              "expensive": "It is expensive",
+              "crack": "The thick glass heats unevenly and cracks, and the marks lose accuracy",
+              "plastic": "It is made of plastic",
+              "slow": "It heats slowly"
+            }
+          }
+        },
+        "conclusionHint": "Tip: write which tool is needed for which job, which glassware must not be heated, and the value of one cylinder division (with the number)."
+      },
+      "lab-safety": {
+        "goal": "Learn to act safely in dangerous lab situations and recognise hazard symbols.",
+        "theory": "Safety is the first rule of the lab. When diluting an acid, always pour the acid into the water in a thin stream, never the other way round: water poured into acid boils up and splashes. To smell a substance, waft the vapour towards you with your hand. Light a spirit lamp only with a match and put it out with its cap. Never work with an unknown substance. If acid gets on your skin, wash it off with plenty of water. Pictograms on reagent bottles show the type of hazard: flammable, toxic, corrosive, oxidising, harmful.",
+        "safety": {
+          "teacher": "Start an experiment only with the teacher’s permission.",
+          "noFood": "Do not eat or drink in the lab.",
+          "hair": "Tie long hair back.",
+          "exits": "Know where the emergency exit and the fire extinguisher are."
+        },
+        "prediction": {
+          "question": "When diluting an acid, what do you think is poured into what?",
+          "options": {
+            "acidIntoWater": "Acid into water",
+            "waterIntoAcid": "Water into acid",
+            "any": "It makes no difference"
+          }
+        },
+        "equipment": {
+          "goggles": "Safety goggles",
+          "gloves": "Gloves",
+          "coat": "Lab coat",
+          "firstAid": "First-aid kit (know where it is)",
+          "food": "Food",
+          "headphones": "Headphones"
+        },
+        "rows": {
+          "dilute": "Sulfuric acid needs diluting",
+          "smell": "You need to identify a gas by its smell",
+          "heatTube": "Heat a solution in a test tube",
+          "lightBurner": "Light the spirit lamp",
+          "extinguish": "Put out the spirit lamp",
+          "acidSkin": "Acid dripped on your hand",
+          "unknownBottle": "You find a bottle with no label",
+          "brokenGlass": "A test tube broke"
+        },
+        "tests": {
+          "waterIntoAcid": "Pour water into the acid",
+          "acidIntoWater": "Pour the acid into water in a thin stream",
+          "sniff": "Lean over and sniff the container",
+          "wave": "Waft the vapour towards you with your hand",
+          "towardFace": "Point the mouth towards yourself",
+          "awayFromPeople": "Point the mouth away from you and others",
+          "fromBurner": "Light it from another burning lamp",
+          "match": "Light it with a match",
+          "cap": "Cover it with the cap",
+          "blow": "Blow it out",
+          "wipe": "Wipe it with a dry cloth",
+          "rinse": "Rinse with plenty of water and tell the teacher",
+          "ignore": "Do nothing",
+          "taste": "Taste it",
+          "use": "Use it in the experiment",
+          "ask": "Leave it and give it to the teacher",
+          "hands": "Pick up the pieces by hand",
+          "tell": "Tell the teacher and sweep up with a brush"
+        },
+        "seen": {
+          "dilute": {
+            "waterIntoAcid": "dangerous: the water boiled on the acid surface and acid splashed everywhere!",
+            "acidIntoWater": "correct: the solution warmed up gradually, no splashing"
+          },
+          "smell": {
+            "sniff": "dangerous: the toxic gas went straight into your airways",
+            "wave": "correct: only a little vapour reached you, enough to smell"
+          },
+          "heatTube": {
+            "towardFace": "dangerous: boiling liquid may splash into your face",
+            "awayFromPeople": "correct: even if it splashes, it hits nobody"
+          },
+          "lightBurner": {
+            "fromBurner": "dangerous: alcohol spilled and the bench caught fire",
+            "match": "correct: the lamp burns steadily"
+          },
+          "extinguish": {
+            "cap": "correct: the flame went out at once",
+            "blow": "dangerous: the flame may jump inside and ignite the alcohol"
+          },
+          "acidSkin": {
+            "wipe": "dangerous: the acid was smeared over the skin and the burn got bigger",
+            "rinse": "correct: the acid was washed off, no burn",
+            "ignore": "dangerous: a chemical burn appeared on the skin"
+          },
+          "unknownBottle": {
+            "taste": "very dangerous: an unknown substance may be poisonous!",
+            "use": "dangerous: an unknown substance may react unexpectedly",
+            "ask": "correct: the teacher checked the substance and labelled it"
+          },
+          "brokenGlass": {
+            "hands": "dangerous: the glass cut your hand",
+            "tell": "correct: the pieces were collected safely"
+          }
+        },
+        "experiment": {
+          "hint": "Choose the safe action in each situation. The model shows the consequences; an unsafe choice costs 3 points."
+        },
+        "observation": {
+          "row": "Symbol",
+          "rows": {
+            "flame": "◇ 🔥",
+            "skull": "◇ ☠️",
+            "corrosion": "◇ 🧪✋",
+            "oxidizer": "◇ ⭕🔥",
+            "exclamation": "◇ ❗"
+          }
+        },
+        "columns": {
+          "meaning": {
+            "label": "Meaning",
+            "options": {
+              "flammable": "Flammable",
+              "toxic": "Toxic",
+              "corrosive": "Corrosive",
+              "oxidizer": "Oxidising",
+              "harmful": "Harmful, irritant"
+            }
+          }
+        },
+        "observationHint": "Choose the meaning of each hazard symbol found on reagent bottles.",
+        "questions": {
+          "alkaliSkin": {
+            "label": "What do you do if an alkali gets on your skin?",
+            "options": {
+              "oil": "Rub oil on it",
+              "waterAcid": "Rinse with plenty of water, then with a weak acid solution (vinegar or boric acid)",
+              "nothing": "Do nothing",
+              "strongAcid": "Neutralise it with a strong acid"
+            }
+          },
+          "fire": {
+            "label": "Alcohol spilled on the bench has caught fire. What do you do?",
+            "options": {
+              "water": "Pour water on it",
+              "sand": "Cover it with sand or a fire blanket",
+              "run": "Run away",
+              "blow": "Blow on it"
+            }
+          },
+          "dilution": {
+            "label": "An acid must be diluted 1 : 4 (1 part acid to 4 parts water). How many mL of water are needed for 10 mL of acid?",
+            "unit": "mL"
+          }
+        },
+        "conclusionHint": "Tip: write how many situations you solved safely, the three most important rules and how to dilute an acid."
+      },
+      "measurements": {
+        "goal": "Use an electronic balance and a measuring cylinder correctly to find the mass, volume and density of a stone.",
+        "theory": "Mass is measured on an electronic balance. When a substance is weighed in a container, first put the empty container on and press “Tare” — the balance returns to zero and then shows only the mass of the substance. The volume of a liquid is measured with a measuring cylinder: keep your eye level with the meniscus and read the bottom of the curved meniscus. The volume of an irregular object is found by water displacement: V(object) = V₂ − V₁. Density ρ = m / V.",
+        "safety": {
+          "goggles": "Wear safety goggles.",
+          "glass": "The cylinder is glass — put it down carefully and tell the teacher if it breaks.",
+          "thread": "Lower the stone into the cylinder slowly on a thread — do not drop it.",
+          "dry": "Do not drip water on the balance — it is an electrical device."
+        },
+        "prediction": {
+          "question": "How do you think the volume of an irregular stone can be measured?",
+          "options": {
+            "displacement": "By water displacement (in a cylinder)",
+            "ruler": "With a ruler",
+            "scales": "On a balance"
+          }
+        },
+        "equipment": {
+          "scales": "Electronic balance",
+          "cylinder": "Measuring cylinder (50 mL)",
+          "beaker": "Small beaker",
+          "thread": "Thread",
+          "burner": "Spirit lamp",
+          "thermometer": "Thermometer",
+          "funnel": "Funnel"
+        },
+        "actions": {
+          "beakerOn": "Put the beaker on the balance",
+          "tare": "Tare (zero)",
+          "stoneInBeaker": "Put the stone in the beaker",
+          "pourWater": "Pour water into the cylinder",
+          "stoneInCylinder": "Lower the stone into the cylinder"
+        },
+        "mistake": {
+          "stoneInBeaker": "You did not press Tare: the balance shows the beaker and the stone together.",
+          "stoneInCylinder": "The cylinder is empty: the stone may break the glass, and without water you cannot measure the volume."
+        },
+        "experiment": {
+          "hint": "First measure the mass of the stone (beaker → tare → stone), then pour water into the cylinder and lower the stone. Read the cylinder yourself.",
+          "cylinder": "Measuring cylinder, 0–50 mL",
+          "done": "Measuring is finished. Note the balance reading and both water levels in the cylinder.",
+          "readHint": "Keep your eye level with the meniscus: read the volume at the bottom of the curved meniscus."
+        },
+        "observation": {
+          "before": "Cylinder: water only",
+          "after": "Cylinder: water + stone",
+          "quantity": "Quantity",
+          "value": "Value",
+          "rows": {
+            "mass": "Mass of the stone m, g",
+            "v1": "Volume of water V₁, mL",
+            "v2": "Water + stone V₂, mL",
+            "volume": "Volume of the stone V = V₂ − V₁, cm³",
+            "density": "Density ρ = m / V, g/cm³"
+          }
+        },
+        "observationHint": "Write the balance reading and the two cylinder levels (at the meniscus), then calculate the volume and density. 1 mL = 1 cm³.",
+        "questions": {
+          "meniscus": {
+            "label": "How do you read the water level in a cylinder correctly?",
+            "options": {
+              "top": "At the top edge of the meniscus",
+              "bottom": "Eye level with the meniscus, at its bottom edge",
+              "any": "Anywhere"
+            }
+          },
+          "tare": {
+            "label": "What is the Tare button for?",
+            "options": {
+              "faster": "To make the balance work faster",
+              "container": "To subtract the container’s mass and see only the substance",
+              "battery": "To save the battery"
+            }
+          },
+          "bodyVolume": {
+            "label": "A cylinder held 40 mL of water; with an object inside the level rose to 55 mL. What is the volume of the object?",
+            "unit": "cm³"
+          }
+        },
+        "conclusionHint": "Tip: write how you measured the mass and volume of the stone and what density you got (with the number).",
+        "reveal": {
+          "mass": "Mass of the stone, g",
+          "v1": "V₁, mL",
+          "v2": "V₂, mL",
+          "density": "Density, g/cm³"
+        }
       }
     },
     "catalog": {
@@ -2882,6 +3627,12 @@
       "title": "3D lab",
       "text": "A first-person virtual lab: take reagents from the cabinets, pour solutions, test gases with a splint, titrate and identify the unknown substance X. 23 tasks, XP and a safety score.",
       "cta": "Enter the lab"
+    },
+    "matrix": {
+      "progress": "Tested: {count}/{total}",
+      "solved": "Solved: {count}/{total}",
+      "notTested": "not tested",
+      "seen": "Observed"
     }
   },
   "VirtualLab3D": {

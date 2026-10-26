@@ -9,12 +9,12 @@ export type LabGrade = (typeof LAB_GRADES)[number];
 export const LAB_CATALOG = [
   // 7-сынып
   { slug: "mixture-separation", grades: [7], status: "ready" },
-  { slug: "lab-equipment", grades: [7], status: "soon" },
-  { slug: "lab-safety", grades: [7], status: "soon" },
-  { slug: "pure-vs-mixture", grades: [7], status: "soon" },
-  { slug: "phys-chem-phenomena", grades: [7], status: "soon" },
-  { slug: "substance-properties", grades: [7], status: "soon" },
-  { slug: "measurements", grades: [7], status: "soon" },
+  { slug: "lab-equipment", grades: [7], status: "ready" },
+  { slug: "lab-safety", grades: [7], status: "ready" },
+  { slug: "pure-vs-mixture", grades: [7], status: "ready" },
+  { slug: "phys-chem-phenomena", grades: [7], status: "ready" },
+  { slug: "substance-properties", grades: [7], status: "ready" },
+  { slug: "measurements", grades: [7], status: "ready" },
   // 8-сынып
   { slug: "atom-builder", grades: [8], status: "ready" },
   { slug: "molecule-builder", grades: [8], status: "ready", href: "/molecules/builder" },
@@ -52,7 +52,7 @@ export type LabEntry = (typeof LAB_CATALOG)[number];
 export type LabSlug = LabEntry["slug"];
 
 /** 8 қадамдық LabShell-де жұмыс істейтін тәжірибелер (сынып ретімен) */
-export const SHELL_LABS = ["mixture-separation", "atom-builder", "indicator-lab", "titration", "reaction-rate", "precipitation", "metal-activity", "unknown-substance", "balance-equations"] as const satisfies readonly LabSlug[];
+export const SHELL_LABS = ["mixture-separation", "atom-builder", "indicator-lab", "titration", "reaction-rate", "precipitation", "metal-activity", "unknown-substance", "balance-equations", "pure-vs-mixture", "phys-chem-phenomena", "substance-properties", "lab-equipment", "lab-safety", "measurements"] as const satisfies readonly LabSlug[];
 export type ShellLabSlug = (typeof SHELL_LABS)[number];
 
 export const isShellLab = (slug: string): slug is ShellLabSlug => (SHELL_LABS as readonly string[]).includes(slug);

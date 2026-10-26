@@ -22,6 +22,13 @@ import { GAMMA_OPTIONS } from "./experiments/reaction-rate/model";
 import { gradeTitration, titrationExperimentSchema } from "./experiments/titration/grade";
 import { gradeUnknown, SEED_MAX, unknownExperimentSchema, unknownIndex } from "./experiments/unknown-substance/grade";
 import { CONCENTRATION_RANGE } from "./experiments/titration/model";
+import { gradePure } from "./experiments/pure-vs-mixture/grade";
+import { gradePhenomena } from "./experiments/phys-chem-phenomena/grade";
+import { gradeProperties } from "./experiments/substance-properties/grade";
+import { gradeEquipment } from "./experiments/lab-equipment/grade";
+import { gradeSafety } from "./experiments/lab-safety/grade";
+import { gradeMeasure, measureExperimentSchema, measureParams } from "./experiments/measurements/grade";
+import { matrixExperimentSchema, type MatrixSubmission } from "./matrix/grade";
 import { labSecret as secret, signParams, verifyParams } from "./params-token";
 import { totalScore, type FeedbackItem, type ScoreBreakdown } from "./scoring";
 
@@ -32,15 +39,12 @@ import { totalScore, type FeedbackItem, type ScoreBreakdown } from "./scoring";
 
 
 /** Әр тәжірибенің жасырын параметрлері (сервер кездейсоқ таңдайды); level — деңгейі бар тәжірибеде сынып */
-const PARAMS: Record<ShellLabSlug, (level: number | null) => Record<string, number>> = {
+/** Жасырын параметрі жоқ тәжірибелер мұнда жазылмайды (әдепкі — {}) */
+const PARAMS: Partial<Record<ShellLabSlug, (level: number | null) => Record<string, number>>> = {
   // HCl концентрациясы 0,080–0,120 М (pH-метр оны жанама көрсетеді — бұл тәжірибенің өзі)
   titration: () => ({ c: randomInt(CONCENTRATION_RANGE.min * 1000, CONCENTRATION_RANGE.max * 1000 + 1) / 1000 }),
-  // Бұларда жасырын параметр жоқ (spec-тегі тұрақты деректер); токен тек уақыт пен тәжірибені бекітеді
-  "mixture-separation": () => ({}),
-  "atom-builder": () => ({}),
-  precipitation: () => ({}),
-  "metal-activity": () => ({}),
-  "balance-equations": () => ({}),
+  // Тастың массасы мен көлемі әр жолы басқа (көрсеткішті оқушы өзі оқиды)
+  measurements: measureParams,
   // Тек seed: X-ті одан тек сервер есептей алады (жауап клиентке берілмейді)
   "unknown-substance": () => ({ s: randomInt(1, SEED_MAX) }),
   // 9-сынып: γ = 2 белгілі; 10-сынып («Реакция кинетикасы»): γ жасырын, оқушы оны деректерінен табады
@@ -64,7 +68,7 @@ export async function startLab(slug: string, level?: number): Promise<StartLabRe
   if (!isShellLab(slug)) return { ok: false };
   const lab = getLab(slug);
   const chosen = typeof level === "number" && lab && "levels" in lab && (lab.levels as readonly number[]).includes(level) ? level : null;
-  const params = PARAMS[slug](chosen);
+  const params = PARAMS[slug]?.(chosen) ?? {};
   return { ok: true, params, token: signParams(slug, params, secret()) };
 }
 
@@ -99,7 +103,21 @@ export type SubmitLabResult =
   | ({ ok: true; attemptId: string | null; saved: boolean } & LabOutcome)
   | { ok: false; error: "invalid" | "expired" };
 
+/** «Матрица» үлгісіндегі тәжірибелер: бағалауы ортақ (matrix/grade.ts), кілті — әр тәжірибенің grade.ts-інде */
+const MATRIX_LABS: Partial<Record<ShellLabSlug, (submission: MatrixSubmission) => LabOutcome>> = {
+  "pure-vs-mixture": gradePure,
+  "phys-chem-phenomena": gradePhenomena,
+  "substance-properties": gradeProperties,
+  "lab-equipment": gradeEquipment,
+  "lab-safety": gradeSafety,
+};
+
 function grade(slug: ShellLabSlug, params: Record<string, number>, input: z.infer<typeof submissionSchema>): LabOutcome | null {
+  const matrix = MATRIX_LABS[slug];
+  if (matrix) {
+    const experiment = matrixExperimentSchema.safeParse(input.experiment);
+    return experiment.success ? matrix({ ...input, experiment: experiment.data }) : null;
+  }
   switch (slug) {
     case "titration": {
       const experiment = titrationExperimentSchema.safeParse(input.experiment);
@@ -140,6 +158,12 @@ function grade(slug: ShellLabSlug, params: Record<string, number>, input: z.infe
       if (!experiment.success || !Number.isInteger(params.s)) return null;
       return gradeUnknown(unknownIndex(params.s, secret()), { ...input, experiment: experiment.data });
     }
+    case "measurements": {
+      const experiment = measureExperimentSchema.safeParse(input.experiment);
+      return experiment.success ? gradeMeasure(params, { ...input, experiment: experiment.data }) : null;
+    }
+    default:
+      return null;
   }
 }
 
