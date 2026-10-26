@@ -18,6 +18,12 @@ import { EQUIPMENT_SPEC } from "@/features/virtual-lab/experiments/lab-equipment
 import { gradeSafety, SAFETY_KEY } from "@/features/virtual-lab/experiments/lab-safety/grade";
 import { SAFETY_META } from "@/features/virtual-lab/experiments/lab-safety/meta";
 import { SAFETY_SPEC } from "@/features/virtual-lab/experiments/lab-safety/model";
+import { gradeSigns, SIGNS_KEY } from "@/features/virtual-lab/experiments/reaction-signs/grade";
+import { SIGNS_META } from "@/features/virtual-lab/experiments/reaction-signs/meta";
+import { SIGNS_SPEC } from "@/features/virtual-lab/experiments/reaction-signs/model";
+import { gradeMetals, METALS_KEY } from "@/features/virtual-lab/experiments/metals-nonmetals/grade";
+import { METALS_META } from "@/features/virtual-lab/experiments/metals-nonmetals/meta";
+import { METALS_SPEC } from "@/features/virtual-lab/experiments/metals-nonmetals/model";
 
 type Tree = { [key: string]: string | Tree };
 const LOCALES = ["kk", "ru", "en"] as const;
@@ -74,6 +80,22 @@ const LABS: Lab[] = [
     key: SAFETY_KEY,
     grade: gradeSafety,
     conclusion: "Мен 8 жағдайдың бәрін қауіпсіз шештім. Қышқылды әрқашан суға құямыз және көзілдірік киеміз.",
+  },
+  {
+    slug: "reaction-signs",
+    spec: SIGNS_SPEC,
+    meta: SIGNS_META,
+    key: SIGNS_KEY,
+    grade: gradeSigns,
+    conclusion: "Реакцияның белгілері әртүрлі: газ, тұнба және түстің өзгеруі. Бейтараптанғанда ерітінді 4,6 °C-қа, ал магниймен 8,2 °C-қа қызды.",
+  },
+  {
+    slug: "metals-nonmetals",
+    spec: METALS_SPEC,
+    meta: METALS_META,
+    key: METALS_KEY,
+    grade: gradeMetals,
+    conclusion: "Алты заттың 3-еуі металл, 3-еуі бейметалл болды. Бейметалдардың оксиді сумен қышқыл береді, ал металл оксиді — негіз.",
   },
 ];
 

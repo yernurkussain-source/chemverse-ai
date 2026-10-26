@@ -27,7 +27,11 @@ import { gradePhenomena } from "./experiments/phys-chem-phenomena/grade";
 import { gradeProperties } from "./experiments/substance-properties/grade";
 import { gradeEquipment } from "./experiments/lab-equipment/grade";
 import { gradeSafety } from "./experiments/lab-safety/grade";
+import { gradeSigns } from "./experiments/reaction-signs/grade";
+import { gradeMetals } from "./experiments/metals-nonmetals/grade";
 import { gradeMeasure, measureExperimentSchema, measureParams } from "./experiments/measurements/grade";
+import { gradeSolubility, solubilityExperimentSchema } from "./experiments/solubility/grade";
+import { gradeMassFraction, massFractionExperimentSchema } from "./experiments/mass-fraction/grade";
 import { matrixExperimentSchema, type MatrixSubmission } from "./matrix/grade";
 import { labSecret as secret, signParams, verifyParams } from "./params-token";
 import { totalScore, type FeedbackItem, type ScoreBreakdown } from "./scoring";
@@ -110,6 +114,8 @@ const MATRIX_LABS: Partial<Record<ShellLabSlug, (submission: MatrixSubmission) =
   "substance-properties": gradeProperties,
   "lab-equipment": gradeEquipment,
   "lab-safety": gradeSafety,
+  "reaction-signs": gradeSigns,
+  "metals-nonmetals": gradeMetals,
 };
 
 function grade(slug: ShellLabSlug, params: Record<string, number>, input: z.infer<typeof submissionSchema>): LabOutcome | null {
@@ -161,6 +167,14 @@ function grade(slug: ShellLabSlug, params: Record<string, number>, input: z.infe
     case "measurements": {
       const experiment = measureExperimentSchema.safeParse(input.experiment);
       return experiment.success ? gradeMeasure(params, { ...input, experiment: experiment.data }) : null;
+    }
+    case "solubility": {
+      const experiment = solubilityExperimentSchema.safeParse(input.experiment);
+      return experiment.success ? gradeSolubility({ ...input, experiment: experiment.data }) : null;
+    }
+    case "mass-fraction": {
+      const experiment = massFractionExperimentSchema.safeParse(input.experiment);
+      return experiment.success ? gradeMassFraction({ ...input, experiment: experiment.data }) : null;
     }
     default:
       return null;

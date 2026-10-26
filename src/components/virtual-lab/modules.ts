@@ -15,6 +15,10 @@ import { propertiesModule } from "./experiments/substance-properties";
 import { equipmentModule } from "./experiments/lab-equipment";
 import { safetyModule } from "./experiments/lab-safety";
 import { measureModule } from "./experiments/measurements";
+import { signsModule } from "./experiments/reaction-signs";
+import { metalsModule } from "./experiments/metals-nonmetals";
+import { solubilityModule } from "./experiments/solubility";
+import { massFractionModule } from "./experiments/mass-fraction";
 
 /** slug → клиенттік модуль (жаңа тәжірибе осында қосылады) */
 export const LAB_MODULES: Record<ShellLabSlug, LabModule> = {
@@ -33,4 +37,8 @@ export const LAB_MODULES: Record<ShellLabSlug, LabModule> = {
   "lab-equipment": equipmentModule,
   "lab-safety": safetyModule,
   measurements: measureModule,
+  "reaction-signs": signsModule,
+  "metals-nonmetals": metalsModule,
+  solubility: solubilityModule,
+  "mass-fraction": massFractionModule,
 };

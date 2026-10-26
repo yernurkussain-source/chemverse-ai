@@ -1891,10 +1891,67 @@
             "ok": "Correct: 15 cm³.",
             "wrong": "V(object) = V₂ − V₁."
           }
+        },
+        "reaction-signs": {
+          "notSign": {
+            "ok": "Correct: melting is a physical change.",
+            "wrong": "In which process does no new substance form?"
+          },
+          "gasTest": {
+            "ok": "Correct: CO₂ turns limewater cloudy (CaCO₃ forms).",
+            "wrong": "A pop means hydrogen, a relit splint means oxygen. What about carbon dioxide?"
+          },
+          "heat": {
+            "ok": "The amount of heat is correct.",
+            "wrong": "Q = n · |ΔH| = 0.01 mol · 57 kJ/mol."
+          }
+        },
+        "metals-nonmetals": {
+          "graphite": {
+            "ok": "Correct: a substance is identified by several properties.",
+            "wrong": "Look at graphite's other properties (hammer blow, oxide)."
+          },
+          "oxide": {
+            "ok": "Correct: a non-metal oxide is an acidic oxide.",
+            "wrong": "What colour did litmus turn with the sulfur and phosphorus oxides?"
+          },
+          "mgo": {
+            "ok": "The mass of MgO is correct.",
+            "wrong": "n(Mg) = 2.4 / 24 = 0.1 mol; n(MgO) = n(Mg); m = n · 40 g/mol."
+          }
+        },
+        "solubility": {
+          "trend": {
+            "ok": "Correct: the solubility of KNO₃ rises sharply with temperature.",
+            "wrong": "Compare the KNO₃ points on the graph at 20 °C and 60 °C."
+          },
+          "recrystal": {
+            "ok": "Correct: on cooling, a lot of KNO₃ crystallises.",
+            "wrong": "Which salt has very different solubility in hot and cold water?"
+          },
+          "crystals": {
+            "ok": "The mass of crystals is correct.",
+            "wrong": "m = S(60 °C) − S(20 °C) = 110 − 31.6."
+          }
+        },
+        "mass-fraction": {
+          "dilute": {
+            "ok": "Correct: 12 %.",
+            "wrong": "Salt: 80 · 0.15 = 12 g; the new solution weighs 100 g."
+          },
+          "evaporate": {
+            "ok": "Correct: less water, the same salt — w increases.",
+            "wrong": "What decreases on evaporation: the salt or the water?"
+          },
+          "fraction": {
+            "ok": "Correct: 10 %.",
+            "wrong": "w = 25 / 250 · 100 %."
+          }
         }
       },
       "measureDone": "Mass and volume were measured.",
-      "measureNotDone": "Measuring is not finished: both the mass and the volume of the stone are needed."
+      "measureNotDone": "Measuring is not finished: both the mass and the volume of the stone are needed.",
+      "solutionsMade": "Solutions prepared: {count}/{total}."
     },
     "resultPage": {
       "title": "Experiment result",
@@ -3391,6 +3448,336 @@
           "v1": "V₁, mL",
           "v2": "V₂, mL",
           "density": "Density, g/cm³"
+        }
+      },
+      "reaction-signs": {
+        "goal": "Carry out six reactions, identify the sign of each one (gas, precipitate, colour change, heat) and measure the temperature change.",
+        "theory": "We know a chemical reaction is happening from its signs: a gas given off (bubbles), a precipitate forming, a colour change, heat and light released, a new smell. Some signs are seen by eye, while heat is shown by a thermometer: in an exothermic reaction the solution warms up. For example, when an acid neutralises an alkali, heat is released and the crimson colour of phenolphthalein disappears. One reaction can show several signs.",
+        "safety": {
+          "goggles": "Wear safety goggles and gloves.",
+          "acid": "Pour acids and alkalis carefully; if they get on your skin, rinse with plenty of water.",
+          "silver": "AgNO₃ stains skin dark — work in gloves.",
+          "noTaste": "Never taste or smell the solutions."
+        },
+        "prediction": {
+          "question": "What sign do you think you will see if you add an alkali to copper(II) sulfate?",
+          "options": {
+            "gas": "A gas is given off",
+            "precipitate": "A precipitate forms",
+            "nothing": "Nothing happens"
+          }
+        },
+        "equipment": {
+          "test-tubes": "Test tubes",
+          "rack": "Test tube rack",
+          "dropper": "Dropper",
+          "thermometer": "Thermometer",
+          "goggles": "Safety goggles",
+          "magnet": "Magnet",
+          "ruler": "Ruler"
+        },
+        "rows": {
+          "sodaAcid": "Na₂CO₃ + HCl",
+          "copperAlkali": "CuSO₄ + NaOH",
+          "magnesiumAcid": "Mg + HCl",
+          "neutralization": "NaOH (+ phenolphthalein) + HCl",
+          "silverChloride": "AgNO₃ + NaCl",
+          "ironAlkali": "FeCl₃ + NaOH"
+        },
+        "tests": {
+          "mix": "Mix",
+          "thermometer": "Thermometer"
+        },
+        "seen": {
+          "fizz": "fizzed strongly — a gas was given off",
+          "bluePpt": "a blue precipitate formed",
+          "metalFizz": "the magnesium dissolves with fizzing — a gas is given off",
+          "pinkGone": "the crimson colour disappeared, the solution became colourless",
+          "whitePpt": "a white curdy precipitate formed",
+          "brownPpt": "a red-brown precipitate formed",
+          "temperature": "{t0, number} °C → {t1, number} °C"
+        },
+        "experiment": {
+          "hint": "Mix each pair, watch for the sign, then measure the temperature with the thermometer."
+        },
+        "observation": {
+          "row": "Reaction"
+        },
+        "columns": {
+          "sign": {
+            "label": "Visible sign",
+            "options": {
+              "gas": "Gas",
+              "precipitate": "Precipitate",
+              "color": "Colour change",
+              "heat": "Heat only"
+            }
+          },
+          "dT": {
+            "label": "ΔT, °C"
+          }
+        },
+        "observationHint": "Choose the main visible sign, and work out the temperature change (ΔT = t₂ − t₁) from the thermometer readings. If it did not change, enter 0.",
+        "questions": {
+          "notSign": {
+            "label": "Which of these is NOT a sign of a chemical reaction?",
+            "options": {
+              "gas": "A gas given off",
+              "precipitate": "A precipitate forming",
+              "melting": "A substance melting",
+              "color": "A colour change"
+            }
+          },
+          "gasTest": {
+            "label": "How is the gas (CO₂) from baking soda and hydrochloric acid detected?",
+            "options": {
+              "pop": "A burning splint goes out with a pop",
+              "limewater": "Limewater turns cloudy",
+              "glowing": "A glowing splint relights"
+            }
+          },
+          "heat": {
+            "label": "0.01 mol of HCl was neutralised by 0.01 mol of NaOH (ΔH = −57 kJ/mol). How much heat was released?",
+            "unit": "kJ"
+          }
+        },
+        "conclusionHint": "Tip: write the sign of each reaction and in which ones the temperature rose (with the ΔT number)."
+      },
+      "metals-nonmetals": {
+        "goal": "Compare the properties of six elements and decide which are metals and which are non-metals.",
+        "theory": "Metals share common properties: metallic lustre, good electrical and thermal conductivity, malleability (they flatten under a hammer instead of crumbling). A metal oxide is basic: a soluble one forms a base with water (litmus turns blue). Non-metals are usually dull, brittle (they crumble) and do not conduct electricity, and their oxides are acidic: they form acids with water (litmus turns red). But there are exceptions: the non-metal graphite conducts electricity. So a substance is identified not by one sign but by several properties.",
+        "safety": {
+          "goggles": "Wear safety goggles.",
+          "fumes": "Burning sulfur and phosphorus give off toxic gases — burn them only in a fume cupboard.",
+          "magnesium": "Do not look straight at burning magnesium.",
+          "tongs": "Hold a burning substance only in a combustion spoon or with tongs."
+        },
+        "prediction": {
+          "question": "Do you think graphite (pencil lead) conducts electricity?",
+          "options": {
+            "yes": "Yes, it conducts",
+            "no": "No, it does not"
+          }
+        },
+        "equipment": {
+          "tester": "Conductivity tester",
+          "hammer": "Hammer",
+          "spoon": "Combustion spoon",
+          "burner": "Spirit lamp",
+          "litmus": "Litmus",
+          "goggles": "Safety goggles",
+          "thermometer": "Thermometer",
+          "funnel": "Funnel"
+        },
+        "rows": {
+          "Mg": "Magnesium (Mg)",
+          "Cu": "Copper (Cu)",
+          "Fe": "Iron (Fe)",
+          "S": "Sulfur (S)",
+          "C": "Graphite (C)",
+          "P": "Red phosphorus (P)"
+        },
+        "tests": {
+          "look": "Appearance",
+          "current": "Electric current",
+          "hammer": "Hammer blow",
+          "oxide": "Oxide + water + litmus"
+        },
+        "seen": {
+          "silverLuster": "silvery, metallic lustre",
+          "copperLuster": "pinkish, metallic lustre",
+          "greyLuster": "grey, metallic lustre",
+          "yellowDull": "yellow, dull",
+          "graphite": "dark grey, greasy, slightly shiny",
+          "redDull": "red-brown powder, dull",
+          "current": "the bulb lights — it conducts",
+          "noCurrent": "the bulb stays off — it does not conduct",
+          "flattens": "flattens, does not break",
+          "crumbles": "crumbles (brittle)",
+          "basicOxide": "MgO dissolves slightly in water — litmus turned blue",
+          "insolubleOxide": "the oxide does not dissolve in water — litmus unchanged",
+          "acidicOxide": "the oxide formed an acid with water — litmus turned red",
+          "weakAcidicOxide": "CO₂ formed a weak acid with water — litmus turned slightly red"
+        },
+        "experiment": {
+          "hint": "Test each element in four ways. Do not rely on one sign only — look carefully at graphite."
+        },
+        "observation": {
+          "row": "Element"
+        },
+        "columns": {
+          "class": {
+            "label": "Type",
+            "options": {
+              "metal": "Metal",
+              "nonmetal": "Non-metal"
+            }
+          }
+        },
+        "observationHint": "Look at the results of all four tests together and decide whether each element is a metal or a non-metal.",
+        "questions": {
+          "graphite": {
+            "label": "Graphite is a non-metal, but it conducts electricity. What can we conclude?",
+            "options": {
+              "isMetal": "Graphite is a metal",
+              "onlySign": "Conductivity is the only sign of a metal",
+              "several": "One property is not enough — several properties must be compared together",
+              "error": "The experiment was done wrongly"
+            }
+          },
+          "oxide": {
+            "label": "What forms when a non-metal oxide reacts with water?",
+            "options": {
+              "acid": "An acid",
+              "base": "A base",
+              "salt": "A salt"
+            }
+          },
+          "mgo": {
+            "label": "How many grams of MgO form when 2.4 g of magnesium burn completely? (Ar: Mg = 24, O = 16)",
+            "unit": "g"
+          }
+        },
+        "conclusionHint": "Tip: write how many elements turned out to be metals and how many non-metals, which properties told them apart, and what their oxides are like."
+      },
+      "solubility": {
+        "goal": "Find the solubility of potassium nitrate and table salt at different temperatures by experiment and plot a solubility curve.",
+        "theory": "Solubility is the largest mass of a substance that dissolves in 100 g of water at a given temperature (g per 100 g of water). If you add more, the extra salt stays at the bottom — the solution is saturated. For most solids solubility rises with temperature, but by different amounts: KNO₃ rises sharply, while NaCl hardly changes. When a hot saturated solution is cooled, the extra salt comes out as crystals — this is how substances are purified by recrystallisation.",
+        "safety": {
+          "goggles": "Wear safety goggles.",
+          "hot": "Hold a hot solution only with tongs or gloves.",
+          "stir": "Stir gently with a glass rod — do not hit the beaker.",
+          "noTaste": "Never taste the solutions."
+        },
+        "prediction": {
+          "question": "How do you think the solubility of potassium nitrate changes as the temperature rises?",
+          "options": {
+            "increases": "It increases",
+            "same": "It stays the same",
+            "decreases": "It decreases"
+          }
+        },
+        "equipment": {
+          "beaker": "Beaker (100 g of water)",
+          "scales": "Balance",
+          "thermometer": "Thermometer",
+          "stirrer": "Glass rod",
+          "hotplate": "Hot plate",
+          "goggles": "Safety goggles",
+          "funnel": "Funnel",
+          "magnet": "Magnet"
+        },
+        "experiment": {
+          "hint": "Choose a salt and a temperature, then add salt 10 g and 1 g at a time. If crystals remain, the solution is saturated: press “New sample” and find the limit more precisely. Measure each salt at 20, 40 and 60 °C.",
+          "salt": "Salt",
+          "temperature": "Temperature:",
+          "colder": "Cool down",
+          "warmer": "Warm up",
+          "reset": "New sample",
+          "added": "Added: {added} g",
+          "empty": "no salt yet",
+          "dissolved": "the salt dissolved completely",
+          "crystals": "undissolved crystals remain at the bottom",
+          "chart": "Solubility graph (g per 100 g of water)",
+          "progress": "Points measured: {count}/{total}"
+        },
+        "observation": {
+          "point": "Salt, t",
+          "range": "Your limit",
+          "value": "Solubility, g / 100 g water",
+          "between": "{low} g dissolves, {high} g is saturated",
+          "notFound": "not measured"
+        },
+        "observationHint": "For each point, write the value between “fully dissolved” and “saturated” (to the nearest 1 g).",
+        "questions": {
+          "trend": {
+            "label": "How does the solubility of KNO₃ change as the temperature rises?",
+            "options": {
+              "sharply": "It rises sharply",
+              "barely": "It rises a little",
+              "decreases": "It decreases"
+            }
+          },
+          "recrystal": {
+            "label": "Which salt is easy to purify by recrystallisation (dissolving hot and cooling)?",
+            "both": "Both equally"
+          },
+          "crystals": {
+            "label": "A saturated KNO₃ solution in 100 g of water (110 g of salt) was made at 60 °C and cooled to 20 °C. How many grams of crystals form?",
+            "unit": "g"
+          }
+        },
+        "conclusionHint": "Tip: write how the solubility of the two salts depends on temperature (with numbers) and what a saturated solution is."
+      },
+      "mass-fraction": {
+        "goal": "Calculate the mass fraction of a solute and prepare three solutions of given concentration.",
+        "theory": "The mass fraction of a solute is the ratio of its mass to the total mass of the solution: w = m(solute) / m(solution) · 100 %. The mass of the solution is the mass of the solute plus the mass of water. Water has a density of 1 g/mL, so 1 mL of water = 1 g. For example, 50 g of a 10 % solution needs 5 g of salt and 45 g of water. Adding water lowers w, evaporating raises it.",
+        "safety": {
+          "goggles": "Wear safety goggles.",
+          "spatula": "Take the salt with a spatula only.",
+          "clean": "Keep the balance pan clean and wipe up spilled salt.",
+          "noTaste": "Never taste the solutions."
+        },
+        "prediction": {
+          "question": "What do you think you need to make 50 g of a 10 % salt solution?",
+          "options": {
+            "right": "5 g of salt + 45 g of water",
+            "tooMuchSalt": "10 g of salt + 50 g of water",
+            "tooMuchWater": "5 g of salt + 50 g of water"
+          }
+        },
+        "equipment": {
+          "scales": "Balance",
+          "cylinder": "Measuring cylinder (250 mL)",
+          "beaker": "Beaker",
+          "stirrer": "Glass rod",
+          "spatula": "Spatula",
+          "goggles": "Safety goggles",
+          "burner": "Spirit lamp",
+          "funnel": "Funnel"
+        },
+        "solutes": {
+          "NaCl": "table salt (NaCl)",
+          "sugar": "sugar"
+        },
+        "experiment": {
+          "hint": "Choose a task. First calculate the mass of solute and the volume of water, then weigh the solute, measure the water in the cylinder and mix.",
+          "tasks": "Tasks",
+          "task": "Make {mass} g of a {w} % solution: {solute}",
+          "scales": "Balance: solute",
+          "cylinder": "Cylinder: water",
+          "mix": "Mix",
+          "result": "Solution: {mass} g, w = {w} %.",
+          "ok": "✓ Task done.",
+          "notOk": "This does not match the task — check your calculation."
+        },
+        "observation": {
+          "task": "Solution",
+          "used": "Used",
+          "usedValue": "{solute} g solute + {water} mL water",
+          "mass": "m(solution), g",
+          "w": "w, %"
+        },
+        "observationHint": "Use your own measurements: m(solution) = m(solute) + m(water), w = m(solute) / m(solution) · 100 %.",
+        "questions": {
+          "dilute": {
+            "label": "20 g of water was added to 80 g of a 15 % solution. What is the mass fraction in the new solution?"
+          },
+          "evaporate": {
+            "label": "If part of a solution is evaporated, the mass fraction of salt…",
+            "options": {
+              "decreases": "decreases",
+              "same": "stays the same",
+              "increases": "increases"
+            }
+          },
+          "fraction": {
+            "label": "250 g of solution contains 25 g of salt. What is the mass fraction of salt?"
+          }
+        },
+        "conclusionHint": "Tip: write how you calculated the solute for each solution and how you checked the mass fraction (with numbers).",
+        "reveal": {
+          "salt": "{task}: solute needed, g"
         }
       }
     },
