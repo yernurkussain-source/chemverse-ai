@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { getLab, type LabEntry } from "./catalog";
 import type { FeedbackItem, ScoreBreakdown } from "./scoring";
 
@@ -42,6 +43,8 @@ export type AttemptSummary = { id: string; lab: LabEntry; createdAt: string; tot
 
 export async function getMyAttempts(slug?: string, limit = 6): Promise<AttemptSummary[] | null> {
   await connection();
+  // Кілтсіз ортада (GitHub CI) — кірмеген пайдаланушыдай: createClient қате лақтырып, бүкіл бетті құлатады
+  if (!isSupabaseConfigured) return null;
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) return null;
