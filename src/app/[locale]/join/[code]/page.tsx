@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { LivePlayer } from "@/components/live/live-player";
 import { CODE_PATTERN } from "@/features/live/server";
+import { BackLink } from "@/components/layout/back-link";
 
 // Код алдын ала белгісіз — бет тек сұраныс кезінде сызылады
 export const instant = false;
@@ -21,6 +22,7 @@ export default function JoinCodePage({ params }: PageProps<"/[locale]/join/[code
   const t = useTranslations("LiveClass");
   return (
     <div className="page-wrap mx-auto max-w-lg py-5">
+      <BackLink href="/join">{t("joinPageTitle")}</BackLink>
       <Suspense fallback={<p className="text-muted-foreground">{t("loading")}</p>}>
         <Player params={params} />
       </Suspense>

@@ -5,6 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Eyebrow } from "@/components/landing/section";
 import { MoleculeCatalog } from "@/components/molecules/molecule-catalog";
 import { MOLECULES } from "@/lib/chemistry/molecules";
+import { BackLink } from "@/components/layout/back-link";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("MoleculesPage");
@@ -18,6 +19,7 @@ export default async function MoleculesPage() {
 
   return (
     <div className="page-wrap py-10 md:py-14">
+      <BackLink href="/learn" />
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <Eyebrow>3D Lab</Eyebrow>

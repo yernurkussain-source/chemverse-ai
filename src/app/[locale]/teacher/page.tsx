@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { getTeacherClasses, getTeacherId } from "@/features/teacher/queries";
 import { Link, redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
+import { BackLink } from "@/components/layout/back-link";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Teacher");
@@ -29,6 +30,7 @@ export default function TeacherPage() {
   const t = useTranslations("Teacher");
   return (
     <div className="page-wrap py-10 md:py-14">
+      <BackLink href="/" />
       <Eyebrow>{t("eyebrow")}</Eyebrow>
       <h1 className="mt-2.5 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold">{t("title")}</h1>
       <p className="mt-2 mb-8 max-w-[60ch] text-muted-foreground">{t("subtitle")}</p>

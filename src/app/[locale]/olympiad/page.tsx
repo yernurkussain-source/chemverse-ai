@@ -7,6 +7,7 @@ import { MasteryBar } from "@/components/olympiad/mastery-bar";
 import { buttonVariants } from "@/components/ui/button";
 import { getMyOlympiad, getTopics, type Topic } from "@/features/olympiad/server/queries";
 import { Link } from "@/i18n/navigation";
+import { BackLink } from "@/components/layout/back-link";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Olympiad");
@@ -18,6 +19,7 @@ export default function OlympiadPage() {
   const t = useTranslations("Olympiad");
   return (
     <div className="page-wrap py-8 md:py-12">
+      <BackLink href="/learn" />
       <Eyebrow>{t("eyebrow")}</Eyebrow>
       <h1 className="mt-2.5 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold">{t("title")}</h1>
       <p className="mt-2 mb-6 max-w-[62ch] text-muted-foreground">{t("subtitle")}</p>

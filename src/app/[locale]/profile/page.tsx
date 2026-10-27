@@ -15,6 +15,7 @@ import { getStudentAssignments } from "@/features/teacher/queries";
 import { cn } from "@/lib/utils";
 import { Link, redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
+import { BackLink } from "@/components/layout/back-link";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Profile");
@@ -25,6 +26,9 @@ export default function ProfilePage() {
   const t = useTranslations("Profile");
   return (
     <div className="page-wrap py-10 md:py-16">
+      <div className="mx-auto max-w-xl">
+        <BackLink href="/" />
+      </div>
       <Card className="mx-auto max-w-xl gap-5 rounded-3xl border border-line p-6 ring-0 shadow-[0_1px_2px_var(--shadow)] sm:p-8 dark:shadow-none">
         <h1 className="text-2xl font-bold">{t("title")}</h1>
         <Suspense fallback={<p className="text-muted-foreground">{t("loading")}</p>}>

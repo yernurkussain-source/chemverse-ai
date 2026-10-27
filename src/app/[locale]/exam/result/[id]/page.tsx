@@ -13,6 +13,7 @@ import { WEAK_TOPIC_THRESHOLD } from "@/features/exam/scoring";
 import { Link, redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
+import { BackLink } from "@/components/layout/back-link";
 
 // Сессия id-і алдын ала белгісіз (әр тестте жаңа) — бет тек сұраныс кезінде сызылады
 export const instant = false;
@@ -30,6 +31,7 @@ export default function ExamResultPage({ params }: PageProps<"/[locale]/exam/res
   return (
     <div className="page-wrap py-10 md:py-14">
       <div className="mx-auto max-w-3xl">
+        <BackLink href="/exam/unt">{t("untShort")}</BackLink>
         <Suspense fallback={<p className="text-muted-foreground">{t("loading")}</p>}>
           <ResultContent params={params} />
         </Suspense>

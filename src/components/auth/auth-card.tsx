@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { LogoMark } from "@/components/layout/logo";
 import { Card } from "@/components/ui/card";
+import { BackLink } from "@/components/layout/back-link";
 
 /** Кіру/тіркелу беттерінің ортақ қаптамасы */
 export function AuthCard({
@@ -16,6 +17,9 @@ export function AuthCard({
 }) {
   return (
     <div className="page-wrap py-10 md:py-16">
+      <div className="mx-auto max-w-md">
+        <BackLink href="/" />
+      </div>
       <Card className="mx-auto max-w-md gap-5 rounded-3xl border border-line p-6 ring-0 shadow-[0_1px_2px_var(--shadow)] sm:p-8 dark:shadow-none">
         <div className="flex flex-col items-center gap-3 text-center">
           <LogoMark size={44} />

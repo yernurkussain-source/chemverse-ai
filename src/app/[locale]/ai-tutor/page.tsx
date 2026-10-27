@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { TutorChat } from "@/components/ai/tutor-chat";
+import { BackLink } from "@/components/layout/back-link";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("AiTutor");
@@ -18,6 +19,7 @@ export default function AiTutorPage({ searchParams }: PageProps<"/[locale]/ai-tu
   return (
     <div className="page-wrap py-4 md:py-6">
       <div className="mx-auto max-w-3xl">
+        <BackLink href="/learn" className="mb-2" />
         <h1 className="sr-only">{t("title")}</h1>
         <Suspense fallback={<TutorChat />}>
           <ChatWithQuestion searchParams={searchParams} />

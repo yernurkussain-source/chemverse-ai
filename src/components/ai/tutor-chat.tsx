@@ -62,7 +62,7 @@ export function TutorChat({ initialQuestion = "", initialMode = "explain" }: { i
   }
 
   return (
-    <div className="flex h-[calc(100dvh-9.5rem-env(safe-area-inset-bottom))] min-h-[480px] flex-col overflow-hidden rounded-3xl border border-line bg-panel shadow-[0_1px_2px_var(--shadow)] lg:h-[calc(100dvh-8rem)] dark:shadow-none">
+    <div className="flex h-[calc(100dvh-11.5rem-env(safe-area-inset-bottom))] min-h-[480px] flex-col overflow-hidden rounded-3xl border border-line bg-panel shadow-[0_1px_2px_var(--shadow)] lg:h-[calc(100dvh-10rem)] dark:shadow-none">
       {/* Режим ауыстырғыш */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3">
         <div role="radiogroup" aria-label={t("modeLabel")} className="flex rounded-full border border-line bg-panel-2 p-1">

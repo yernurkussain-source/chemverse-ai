@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { Eyebrow } from "@/components/landing/section";
 import { AtomIcon, BookIcon, ScanIcon } from "@/components/layout/nav-icons";
 import { Link } from "@/i18n/navigation";
+import { BackLink } from "@/components/layout/back-link";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Learn");
@@ -27,6 +28,7 @@ export default function LearnPage() {
   const t = useTranslations("Learn");
   return (
     <div className="page-wrap py-10 md:py-14">
+      <BackLink href="/" />
       <Eyebrow>{t("eyebrow")}</Eyebrow>
       <h1 className="mt-2.5 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold">{t("title")}</h1>
       <p className="mt-2 mb-8 max-w-[60ch] text-muted-foreground">{t("subtitle")}</p>

@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { Eyebrow } from "@/components/landing/section";
 import { Game3DCard, GradeCard, LabCard, MyWorks } from "@/components/virtual-lab/catalog-cards";
 import { FEATURED_LABS, getLab, LAB_GRADES } from "@/features/virtual-lab/catalog";
+import { BackLink } from "@/components/layout/back-link";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("ChemLab");
@@ -17,6 +18,7 @@ export default function ChemLabPage() {
   const featured = FEATURED_LABS.map((slug) => getLab(slug)!);
   return (
     <div className="page-wrap py-8 md:py-12">
+      <BackLink href="/learn" />
       <Eyebrow>{t("eyebrow")}</Eyebrow>
       <h1 className="mt-2.5 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold">{t("title")}</h1>
       <p className="mt-2 font-display text-lg font-semibold text-cyan">{t("slogan")}</p>

@@ -20,6 +20,7 @@ import { getElement } from "@/lib/chemistry/elements";
 import { getMolecule } from "@/lib/chemistry/molecules";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
+import { BackLink } from "@/components/layout/back-link";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Qr");
@@ -29,9 +30,11 @@ export async function generateMetadata(): Promise<Metadata> {
 // Мұғалімнің QR генераторы және басып шығару беті (BLUEPRINT 6-бөлім)
 export default function TeacherQrPage() {
   const t = useTranslations("Qr");
+  const tTeacher = useTranslations("Teacher");
   return (
     <div className="page-wrap py-10 md:py-14 print:py-0">
       <div className="print:hidden">
+        <BackLink href="/teacher">{tTeacher("title")}</BackLink>
         <Eyebrow>{t("eyebrow")}</Eyebrow>
         <h1 className="mt-2.5 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold">{t("title")}</h1>
         <p className="mt-2 mb-8 max-w-[60ch] text-muted-foreground">{t("subtitle")}</p>
