@@ -7,6 +7,7 @@ import { z } from "zod";
 import { routing, type Locale } from "@/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { awardXp, labXp } from "@/features/auth/xp";
 import { aiConclusionScore, isAiAvailable, labContext } from "./ai";
 import { getLab, isShellLab, type ShellLabSlug } from "./catalog";
 import { CONCLUSION_MAX_LENGTH } from "./conclusion";
@@ -280,6 +281,16 @@ export async function submitLab(raw: LabSubmissionInput): Promise<SubmitLabResul
     conclusion: input.conclusion,
   };
   const base = { user_id: auth.user.id, experiment_id: slug, result };
+  // XP үшін бұрынғы ең жақсы ұпай (бағаны жоқ ескі дерекқорда — null)
+  const { data: best } = await admin
+    .from("lab_attempts")
+    .select("score_total")
+    .eq("user_id", userId)
+    .eq("experiment_id", slug)
+    .not("score_total", "is", null)
+    .order("score_total", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ score_total: number }>();
   // Оқушы бұл кестеге өзі жаза алмайды (RLS + revoke) — тек сервер, бағалағаннан кейін
   let { data, error } = await admin
     .from("lab_attempts")
@@ -305,6 +316,7 @@ export async function submitLab(raw: LabSubmissionInput): Promise<SubmitLabResul
     return { ok: true, attemptId: null, saved: false, ...outcome };
   }
   const attemptId = data.id as string;
+  after(() => awardXp(admin, userId, labXp(best?.score_total ?? null, outcome.breakdown.total)));
   if (aiLater) after(() => gradeConclusionLater(attemptId, outcome, input, slug, userId, admin, result));
   return { ok: true, attemptId, saved: true, ...outcome };
 }

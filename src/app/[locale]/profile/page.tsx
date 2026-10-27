@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { UserIcon } from "@/components/layout/nav-icons";
 import { JoinClassForm } from "@/components/teacher/forms";
+import { MyWorks } from "@/components/virtual-lab/catalog-cards";
 import { signOut } from "@/features/auth/actions";
 import { getCurrentAccount } from "@/features/auth/queries";
 import { getStudentAssignments } from "@/features/teacher/queries";
@@ -117,6 +118,7 @@ async function ProfileDetails() {
       </section>
 
       {profile?.role === "student" && <StudentAssignments userId={user.id} locale={locale} />}
+      {profile?.role === "student" && <MyWorks />}
 
       <div className="flex flex-wrap gap-2.5">
         {profile?.role === "teacher" ? (

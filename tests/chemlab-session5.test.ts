@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
+import { labXp } from "@/features/auth/xp";
 import { gradeMeasure, MEASURE_KEY, measureParams, type MeasureSubmission } from "@/features/virtual-lab/experiments/measurements/grade";
 import { expectedValues, isMeasureDone, paramsOf, runActions } from "@/features/virtual-lab/experiments/measurements/model";
 import { gradeSolubility, SOLUBILITY_KEY, type SolubilitySubmission } from "@/features/virtual-lab/experiments/solubility/grade";
@@ -165,5 +166,14 @@ describe("Органикалық конструктор: изомерлер", ()
       conclusion: "Мен 3 изомер жұбын құрастырдым: олардың формуласы бірдей, бірақ құрылысы әртүрлі. C₄H₁₀ молярлық массасы 58 г/моль.",
     });
     assert.deepEqual(breakdown, { procedure: 30, observation: 25, calc: 20, conclusion: 25, total: 100 });
+  });
+});
+
+describe("XP: ChemLab тек ұпай өскенде береді", () => {
+  test("бірінші тапсыру — ұпай / 10, жақсарту — тек өскені, нашарлау — 0", () => {
+    assert.equal(labXp(null, 87), 9);
+    assert.equal(labXp(60, 87), 3);
+    assert.equal(labXp(87, 87), 0);
+    assert.equal(labXp(90, 40), 0);
   });
 });

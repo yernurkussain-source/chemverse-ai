@@ -1,4 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { awardXp } from "@/features/auth/xp";
+import { XP_PER_CORRECT } from "@/features/exam/scoring";
 
 // Меңгеру деңгейі (OLYMPIAD_SPEC 6-бөлім): бірінші әрекетте дұрыс +, ишарамен/қайта әрекетпен дұрыс аз +, қате −.
 // 3-деңгейлі есептің салмағы көбірек. Деңгей 80-нен асса — тақырып меңгерілді, қайталау 3 → 7 → 21 күннен кейін.
@@ -95,5 +97,7 @@ export async function recordAttempt(
     admin.from("olympiad_mastery").upsert({ user_id: userId, topic: a.topic, ...next }, { onConflict: "user_id,topic" }),
   ]);
   if (attemptError || masteryError) console.error("Олимпиада: әрекет сақталмады", attemptError ?? masteryError);
+  // XP — тек меңгеру ұпайы берілгенде (бір есепті тәулігіне бір рет: қайталап шешіп XP жинау мүмкін емес)
+  else if (delta > 0) await awardXp(admin, userId, XP_PER_CORRECT);
   return next.level;
 }

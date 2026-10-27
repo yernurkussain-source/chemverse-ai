@@ -76,6 +76,12 @@ export function fakeSupabase(tables: Record<string, Row[]>) {
       },
       upsert: (rows: Row | Row[], options?: { onConflict?: string }) => upsert(name, rows, options, PRIMARY_KEYS[name]),
     }),
+    /** Тек award_xp (supabase/migrations/20261103000000_profile_xp.sql): профильдің XP-і өседі */
+    rpc: (fn: string, args: Row) => {
+      const profile = fn === "award_xp" ? table("profiles").find((r) => r.id === args.p_user) : undefined;
+      if (profile) profile.xp = (profile.xp as number) + Math.max(0, Number(args.p_amount));
+      return Promise.resolve({ data: null, error: null });
+    },
   };
 
   return { client: client as unknown as SupabaseClient, db };
