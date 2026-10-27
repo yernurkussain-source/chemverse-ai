@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Link, usePathname } from "@/i18n/navigation";
 import { AtomIcon, BookIcon, HomeIcon, ScanIcon, UserIcon } from "./nav-icons";
 
-const ITEMS = [
+export const NAV_ITEMS = [
   { href: "/", key: "home", Icon: HomeIcon },
   { href: "/learn", key: "learn", Icon: BookIcon },
   { href: "/scan", key: "scan", Icon: ScanIcon },
@@ -24,7 +24,7 @@ export function BottomNav() {
       className="fixed inset-x-0 bottom-0 z-30 print:hidden border-t border-line bg-panel/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden"
     >
       <ul className="mx-auto grid h-16 max-w-xl grid-cols-5 items-center px-2">
-        {ITEMS.map(({ href, key, Icon }) => {
+        {NAV_ITEMS.map(({ href, key, Icon }) => {
           const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
           const isScan = key === "scan";
           return (

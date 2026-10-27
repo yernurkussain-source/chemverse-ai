@@ -10,12 +10,10 @@
   "Header": {
     "menuLabel": "Main menu",
     "links": {
-      "modules": "Features",
       "lab": "Lab",
       "ai": "AI tutor",
       "class": "Live lesson",
-      "teacher": "For teachers",
-      "app": "App"
+      "teacher": "For teachers"
     },
     "demo": "Watch demo",
     "login": "Log in",

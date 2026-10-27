@@ -3,12 +3,10 @@ import { AuthButton } from "@/components/auth/auth-button";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { HeaderNav } from "./header-nav";
 import { LocaleSwitcher } from "./locale-switcher";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
-
-// Басты беттегі бөлімдер (id-лері landing компоненттерінде)
-const LINKS = ["modules", "lab", "ai", "class", "teacher", "app"] as const;
 
 export function SiteHeader() {
   const t = useTranslations("Header");
@@ -19,13 +17,7 @@ export function SiteHeader() {
         <Logo />
 
         {/* Компьютерде: жоғарғы мәзір */}
-        <nav aria-label={t("menuLabel")} className="ml-auto hidden gap-5 text-[0.9rem] text-muted-foreground lg:flex">
-          {LINKS.map((id) => (
-            <Link key={id} href={`/#${id}`} className="whitespace-nowrap transition-colors hover:text-foreground">
-              {t(`links.${id}`)}
-            </Link>
-          ))}
-        </nav>
+        <HeaderNav />
 
         <div className="ml-auto flex items-center gap-2 sm:gap-2.5 lg:ml-0">
           <ThemeToggle />
