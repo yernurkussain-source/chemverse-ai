@@ -16,12 +16,13 @@ const ITEMS = [
   { key: "olympiad", href: "/olympiad", icon: <TrophyIcon />, accent: true },
   { key: "ai", href: "/ai-tutor", icon: <SparkIcon />, accent: true },
   { key: "lab", href: "/virtual-lab", icon: <FlaskIcon /> },
+  { key: "game", href: "/game", icon: <CubeIcon /> },
   { key: "periodic", href: "/periodic-table", icon: <AtomIcon size={24} /> },
   { key: "molecules", href: "/molecules", icon: <AtomIcon size={24} /> },
   { key: "scan", href: "/scan", icon: <ScanIcon size={24} /> },
 ] as const;
 
-// Оқу бөлімі: ҰБТ-ға дайындық және оқу құралдары (сабақтар кейін қосылады)
+// Оқу бөлімі: ҰБТ-ға дайындық және оқу құралдары
 export default function LearnPage() {
   const t = useTranslations("Learn");
   return (
@@ -51,6 +52,15 @@ function FlaskIcon() {
     <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
       <path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 006.2 21.5h11.6a2 2 0 001.7-3L14 9V3" strokeLinejoin="round" />
       <path d="M7 15h10" />
+    </svg>
+  );
+}
+
+function CubeIcon() {
+  return (
+    <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
+      <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z" strokeLinejoin="round" />
+      <path d="M4 7.5l8 4.5 8-4.5M12 12v9" strokeLinejoin="round" />
     </svg>
   );
 }

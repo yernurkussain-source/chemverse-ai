@@ -316,7 +316,7 @@
       },
       "lab": {
         "title": "Virtual lab",
-        "text": "Titration, pH and indicators even in a school without reagents. Dangerous experiments — done safely.",
+        "text": "27 experiments for grades 7–10 and a first-person 3D lab. Safe, even in a school without reagents.",
         "who": "Student"
       },
       "tutor": {
@@ -361,7 +361,9 @@
     "drop": "+1 drop",
     "reset": "Start over",
     "conditions": "HCl + NaOH → NaCl + H₂O · c(HCl) = c(NaOH) = 0.1 mol/L · phenolphthalein: colorless to raspberry pink at pH 8.2–10",
-    "openLab": "Enter the lab"
+    "openLab": "Enter the lab",
+    "allLabs": "All 27 experiments",
+    "game3d": "3D lab"
   },
   "Ai": {
     "eyebrow": "AI tutor",
@@ -1075,7 +1077,7 @@
   "Learn": {
     "eyebrow": "Learn",
     "title": "Learning and UNT preparation",
-    "subtitle": "Take timed tests, find weak topics and review with 3D tools. Lessons are coming soon.",
+    "subtitle": "Take timed tests, find weak topics and review with 3D tools and the virtual lab.",
     "items": {
       "unt": {
         "title": "UNT practice test",
@@ -1104,6 +1106,10 @@
       "olympiad": {
         "title": "Olympiad preparation",
         "text": "“Daryn” club, grade 9: 34 topics, problems checked by code, a mistakes notebook and an AI helper."
+      },
+      "game": {
+        "title": "3D lab",
+        "text": "A first-person lab: mix reagents yourself, test gases and identify the unknown substance X. 23 tasks."
       }
     }
   },
@@ -1615,14 +1621,14 @@
       "9": "Acids and bases, solutions, reaction rate",
       "10": "Kinetics, equilibrium, electrochemistry, organic"
     },
-    "readyTitle": "Ready experiments",
+    "readyTitle": "Featured experiments",
     "myWorks": "My work",
     "myWorksEmpty": "No work yet. Try an experiment!",
     "scoreShort": "{score}/100",
     "soon": "Coming soon",
     "open": "Open",
     "back": "ChemLab",
-    "gradeSubtitle": "Pick a topic and start the experiment. Cards marked “Coming soon” are still being built.",
+    "gradeSubtitle": "Pick a topic and start the experiment.",
     "soonTitle": "This experiment is being built",
     "soonText": "“{title}” is coming soon. Meanwhile, try the ready experiments.",
     "steps": {

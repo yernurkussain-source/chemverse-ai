@@ -51,6 +51,9 @@ export const LAB_CATALOG = [
 export type LabEntry = (typeof LAB_CATALOG)[number];
 export type LabSlug = LabEntry["slug"];
 
+/** ChemLab басты бетіндегі «Ұсынылатын тәжірибелер» (әр сыныптан, әртүрлі жұмыс түрлері) */
+export const FEATURED_LABS = ["unknown-substance", "equilibrium", "measurements", "organic-builder", "reaction-signs", "solubility"] as const satisfies readonly LabSlug[];
+
 /** 8 қадамдық LabShell-де жұмыс істейтін тәжірибелер (сынып ретімен) */
 export const SHELL_LABS = ["mixture-separation", "atom-builder", "indicator-lab", "titration", "reaction-rate", "precipitation", "metal-activity", "unknown-substance", "balance-equations", "pure-vs-mixture", "phys-chem-phenomena", "substance-properties", "lab-equipment", "lab-safety", "measurements", "reaction-signs", "metals-nonmetals", "solubility", "mass-fraction", "equilibrium", "redox", "dissociation", "galvanic-cell", "organic-properties", "organic-builder"] as const satisfies readonly LabSlug[];
 export type ShellLabSlug = (typeof SHELL_LABS)[number];
