@@ -10,7 +10,7 @@ import { LabAssignmentForm } from "@/components/virtual-lab/teacher-forms";
 import { deleteAssignment } from "@/features/teacher/actions";
 import { getTeacherId } from "@/features/teacher/queries";
 import { QUEST_IDS } from "@/features/virtual-lab-3d/game/quest-ids";
-import { SHELL_LABS } from "@/features/virtual-lab/catalog";
+import { getLab, isLabGrade, LAB_GRADES, SHELL_LABS, type LabGrade, type ShellLabSlug } from "@/features/virtual-lab/catalog";
 import { getLabOverview, type LabClass } from "@/features/virtual-lab/teacher-queries";
 import { Link, redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
@@ -23,8 +23,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const scoreColor = (score: number) => (score >= 85 ? "text-good" : score >= 60 ? "text-cyan" : "text-amber");
 
-// Мұғалім: ChemLab тапсырмалары мен нәтижелері (docs/chemlab/CHEMLAB_SPEC.md 2-бөлім)
-export default function TeacherLabsPage() {
+type SearchParams = PageProps<"/[locale]/teacher/labs">["searchParams"];
+
+// Мұғалім: ChemLab тапсырмалары мен нәтижелері (docs/chemlab/CHEMLAB_SPEC.md 2-бөлім). ?grade=9 — тек сол сыныптың тәжірибелері
+export default function TeacherLabsPage({ searchParams }: PageProps<"/[locale]/teacher/labs">) {
   const t = useTranslations("ChemLab.teacherLabs");
   return (
     <div className="page-wrap py-10 md:py-14">
@@ -35,13 +37,13 @@ export default function TeacherLabsPage() {
       <h1 className="mt-2.5 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold">{t("title")}</h1>
       <p className="mt-2 mb-8 max-w-[68ch] text-muted-foreground">{t("subtitle")}</p>
       <Suspense fallback={<p className="text-muted-foreground">…</p>}>
-        <Content />
+        <Content searchParams={searchParams} />
       </Suspense>
     </div>
   );
 }
 
-async function Content() {
+async function Content({ searchParams }: { searchParams: SearchParams }) {
   const value = await rootLocale();
   const locale: Locale = hasLocale(routing.locales, value) ? value : routing.defaultLocale;
   const t = await getTranslations("ChemLab");
@@ -55,6 +57,9 @@ async function Content() {
   }
 
   const { classes, migrated } = await getLabOverview(userId);
+  const param = Number((await searchParams).grade);
+  const grade: LabGrade | null = isLabGrade(param) ? param : null;
+  const labs = grade ? SHELL_LABS.filter((slug) => (getLab(slug)!.grades as readonly number[]).includes(grade)) : SHELL_LABS;
   if (!classes.length) {
     return (
       <Card className="max-w-xl gap-3 rounded-3xl border border-line p-6 ring-0">
@@ -69,8 +74,23 @@ async function Content() {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
       <div className="flex min-w-0 flex-col gap-8">
+        <nav aria-label={t("teacherLabs.gradeFilter")} className="flex flex-wrap gap-1.5">
+          {[null, ...LAB_GRADES].map((g) => (
+            <Link
+              key={g ?? "all"}
+              href={g ? `/teacher/labs?grade=${g}` : "/teacher/labs"}
+              aria-current={g === grade ? "page" : undefined}
+              className={cn(
+                "rounded-full border px-3 py-1.5 text-[0.85rem]",
+                g === grade ? "border-cyan bg-cyan/10 font-semibold" : "border-line bg-panel-2 hover:border-cyan-dim",
+              )}
+            >
+              {g ? t("grade", { grade: g }) : t("teacherLabs.allGrades")}
+            </Link>
+          ))}
+        </nav>
         {classes.map((cls) => (
-          <ClassResults key={cls.id} cls={cls} />
+          <ClassResults key={cls.id} cls={cls} labs={labs} />
         ))}
       </div>
       <Card className="h-fit gap-4 rounded-3xl border border-line p-5 ring-0 shadow-[0_1px_2px_var(--shadow)] dark:shadow-none">
@@ -82,7 +102,7 @@ async function Content() {
   );
 }
 
-async function ClassResults({ cls }: { cls: LabClass }) {
+async function ClassResults({ cls, labs }: { cls: LabClass; labs: readonly ShellLabSlug[] }) {
   const t = await getTranslations("ChemLab");
   return (
     <section className="flex flex-col gap-4">
@@ -100,7 +120,7 @@ async function ClassResults({ cls }: { cls: LabClass }) {
                   <th scope="col" className="px-3 py-2.5 font-semibold">
                     {t("teacherLabs.student")}
                   </th>
-                  {SHELL_LABS.map((slug) => (
+                  {labs.map((slug) => (
                     <th key={slug} scope="col" className="px-2 py-2.5 text-center font-semibold">
                       {t(`catalog.${slug}.title`)}
                     </th>
@@ -113,7 +133,7 @@ async function ClassResults({ cls }: { cls: LabClass }) {
                     <th scope="row" className="px-3 py-2.5 text-left font-semibold">
                       {student.name}
                     </th>
-                    {SHELL_LABS.map((slug) => {
+                    {labs.map((slug) => {
                       const cell = student.labs[slug];
                       return (
                         <td key={slug} className="px-2 py-2.5 text-center font-mono">
@@ -134,7 +154,7 @@ async function ClassResults({ cls }: { cls: LabClass }) {
                   <th scope="row" className="px-3 py-2 text-left font-semibold text-muted-foreground">
                     {t("teacherLabs.average")}
                   </th>
-                  {SHELL_LABS.map((slug) => {
+                  {labs.map((slug) => {
                     const scores = cls.students.flatMap((s) => (s.labs[slug] ? [s.labs[slug].score] : []));
                     return (
                       <td key={slug} className="px-2 py-2 text-center font-mono">

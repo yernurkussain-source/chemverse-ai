@@ -4597,7 +4597,9 @@
       "gameSafety": "Safety",
       "gameUpdated": "Last played",
       "gameNone": "not played yet",
-      "gameDone": "{done}/{total}"
+      "gameDone": "{done}/{total}",
+      "allGrades": "All grades",
+      "gradeFilter": "Filter by grade"
     },
     "game3d": {
       "badge": "New",

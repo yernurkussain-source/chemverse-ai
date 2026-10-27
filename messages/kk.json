@@ -4597,7 +4597,9 @@
       "gameSafety": "Қауіпсіздік",
       "gameUpdated": "Соңғы рет",
       "gameNone": "әлі ойнаған жоқ",
-      "gameDone": "{done}/{total}"
+      "gameDone": "{done}/{total}",
+      "allGrades": "Барлық сынып",
+      "gradeFilter": "Сынып бойынша сүзгі"
     },
     "game3d": {
       "badge": "Жаңа",

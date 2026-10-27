@@ -4597,7 +4597,9 @@
       "gameSafety": "Безопасность",
       "gameUpdated": "Последний раз",
       "gameNone": "ещё не играл(а)",
-      "gameDone": "{done}/{total}"
+      "gameDone": "{done}/{total}",
+      "allGrades": "Все классы",
+      "gradeFilter": "Фильтр по классу"
     },
     "game3d": {
       "badge": "Новое",
