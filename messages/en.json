@@ -657,8 +657,21 @@
       "missing_fields": "Please fill in all fields.",
       "not_configured": "Supabase is not configured yet (.env.local).",
       "oauth_failed": "Google sign-in failed. Try again or sign in with email.",
-      "unknown": "Something went wrong. Please try again."
-    }
+      "unknown": "Something went wrong. Please try again.",
+      "password_mismatch": "The passwords do not match.",
+      "same_password": "The new password must be different from the old one.",
+      "link_expired": "The link has expired or was opened in another browser. Request a new link."
+    },
+    "forgotLink": "Forgot your password?",
+    "forgotTitle": "Reset your password",
+    "forgotSubtitle": "Enter the email you registered with. We will send you a link to set a new password.",
+    "sendReset": "Send link",
+    "resetSentText": "If {email} is registered, we have sent it an email. Open the link from the email in this browser.",
+    "resetTitle": "New password",
+    "resetSubtitle": "Enter your new password twice.",
+    "newPassword": "New password",
+    "confirmPassword": "Repeat the password",
+    "savePassword": "Save"
   },
   "Demo": {
     "title": "Demo mode",
@@ -5701,5 +5714,11 @@
       "invalid": "Failed the checker: {reason}",
       "failed": "Not saved — try again."
     }
+  },
+  "ErrorPage": {
+    "title": "Something went wrong",
+    "text": "An error occurred while opening this page. Try again. If it keeps happening, come back a little later.",
+    "retry": "Try again",
+    "code": "Error code: {digest}"
   }
 }

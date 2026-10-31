@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { login } from "@/features/auth/actions";
+import { Link } from "@/i18n/navigation";
 import { Field, FormError, SubmitButton, TextInput } from "./form-parts";
 import { GoogleSignIn } from "./google-button";
 
@@ -22,6 +23,9 @@ export function LoginForm() {
         <Field id="login-password" label={t("password")}>
           <TextInput id="login-password" name="password" type="password" autoComplete="current-password" required />
         </Field>
+        <Link href="/forgot-password" className="-mt-2 self-end text-[0.82rem] font-semibold text-cyan hover:underline">
+          {t("forgotLink")}
+        </Link>
         <FormError message={state?.error ? t(`errors.${state.error}`) : undefined} />
         <SubmitButton>{t("submitLogin")}</SubmitButton>
       </form>

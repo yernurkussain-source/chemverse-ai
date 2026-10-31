@@ -9,6 +9,9 @@ export type AuthErrorCode =
   | "missing_fields"
   | "not_configured"
   | "oauth_failed"
+  | "password_mismatch"
+  | "same_password"
+  | "link_expired"
   | "unknown";
 
 export type OnboardingErrorCode = "missing_fields" | "class_not_found" | "invalid_code" | "unknown";
@@ -25,6 +28,7 @@ export function mapAuthError(code: string | undefined): AuthErrorCode {
     case "email_not_confirmed":
     case "over_email_send_rate_limit":
     case "user_already_exists":
+    case "same_password":
       return code;
     case "email_exists":
       return "user_already_exists";

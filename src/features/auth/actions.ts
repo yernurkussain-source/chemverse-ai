@@ -10,6 +10,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import { ensureDemoAccounts, resetDemoPassword, type DemoRole } from "./demo";
 import { mapAuthError, type AuthState, type OnboardingState } from "./errors";
+import { canResetPassword } from "./recovery";
 
 // Server Action ішінде тіл URL-ден оқылмайды, сондықтан формада жасырын өріс ретінде келеді
 function readLocale(formData: FormData): Locale {
@@ -63,6 +64,40 @@ export async function register(_prev: AuthState, formData: FormData): Promise<Au
   // Email растау өшірулі болса, сессия бірден ашылады
   if (data.session) redirect({ href: "/onboarding", locale });
   return { checkEmail: email };
+}
+
+/** «Құпия сөзді ұмыттым»: хат жібереміз. Supabase email тіркелген-тіркелмегенін айтпайды — бөгде адам тексере алмайды */
+export async function requestPasswordReset(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const locale = readLocale(formData);
+  if (!isSupabaseConfigured) return { error: "not_configured" };
+
+  const email = text(formData, "email");
+  if (!email) return { error: "missing_fields" };
+
+  const origin = (await headers()).get("origin") ?? "";
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${origin}/${locale}/auth/callback?next=reset` });
+  if (error) return { error: mapAuthError(error.code) };
+  return { checkEmail: email };
+}
+
+/** Хаттағы сілтемемен келген пайдаланушының жаңа құпия сөзі (сессияны auth/callback ашады) */
+export async function updatePassword(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const locale = readLocale(formData);
+  if (!isSupabaseConfigured) return { error: "not_configured" };
+
+  const password = String(formData.get("password") ?? "");
+  if (password.length < 8) return { error: "weak_password" };
+  if (password !== String(formData.get("confirm") ?? "")) return { error: "password_mismatch" };
+
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!canResetPassword(auth.user)) return { error: "link_expired" };
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { error: mapAuthError(error.code) };
+  redirect({ href: "/profile", locale });
+  return null;
 }
 
 /**
