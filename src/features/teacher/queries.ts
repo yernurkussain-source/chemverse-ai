@@ -3,6 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { isAssignmentDone, type OlympiadAssignment } from "@/features/olympiad/assignments";
 import { isShellLab } from "@/features/virtual-lab/catalog";
 import type { Locale } from "@/i18n/routing";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { rankRows, type LeaderRow } from "./leaderboard";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -260,4 +262,29 @@ export async function getStudentAssignments(userId: string, locale: Locale): Pro
       overdue: !done && Boolean(a.due_at && Date.parse(a.due_at) < now),
     };
   });
+}
+
+/** Оқушының сыныбындағы рейтинг (бірнеше сыныпта болса — оқушысы ең көп сынып); сыныпта болмаса — null */
+export async function getClassLeaderboard(userId: string): Promise<{ className: string; rows: LeaderRow[] } | null> {
+  await connection();
+  const admin = createAdminClient();
+  if (!admin) return null;
+  const { data: memberships } = await admin
+    .from("class_members")
+    .select("class_id, classes(name)")
+    .eq("user_id", userId)
+    .returns<{ class_id: string; classes: { name: string } | null }[]>();
+  if (!memberships?.length) return null;
+  const { data: members } = await admin
+    .from("class_members")
+    .select("class_id, user_id, profiles(full_name, xp)")
+    .in("class_id", memberships.map((m) => m.class_id))
+    .returns<{ class_id: string; user_id: string; profiles: { full_name: string | null; xp: number } | null }[]>();
+  const size = (classId: string) => (members ?? []).filter((m) => m.class_id === classId).length;
+  const main = memberships.reduce((best, m) => (size(m.class_id) > size(best.class_id) ? m : best));
+  const rows = rankRows(
+    (members ?? []).filter((m) => m.class_id === main.class_id).map((m) => ({ userId: m.user_id, name: m.profiles?.full_name ?? null, xp: m.profiles?.xp ?? 0 })),
+    userId,
+  );
+  return { className: main.classes?.name ?? "", rows };
 }

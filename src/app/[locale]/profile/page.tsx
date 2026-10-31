@@ -14,7 +14,7 @@ import { signOut } from "@/features/auth/actions";
 import { BADGES, type BadgeId } from "@/features/auth/badges";
 import { getCurrentAccount } from "@/features/auth/queries";
 import { createClient } from "@/lib/supabase/server";
-import { getStudentAssignments } from "@/features/teacher/queries";
+import { getClassLeaderboard, getStudentAssignments } from "@/features/teacher/queries";
 import { cn } from "@/lib/utils";
 import { Link, redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
@@ -127,6 +127,7 @@ async function ProfileDetails() {
       {profile?.role === "student" && <StudentAssignments userId={user.id} locale={locale} />}
       {profile?.role === "student" && <MyWorks />}
       {profile?.role === "student" && <Badges userId={user.id} />}
+      {profile?.role === "student" && <ClassRating userId={user.id} />}
 
       <div className="flex flex-wrap gap-2.5">
         {profile?.role === "teacher" ? (
@@ -188,6 +189,33 @@ async function Badges({ userId }: { userId: string }) {
           );
         })}
       </ul>
+    </section>
+  );
+}
+
+/** Сыныптағы XP рейтингі: үздік 5 және өз орны */
+async function ClassRating({ userId }: { userId: string }) {
+  const board = await getClassLeaderboard(userId);
+  if (!board || board.rows.length < 2) return null;
+  const t = await getTranslations("Profile");
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="text-base font-semibold">{t("ratingTitle", { name: board.className })}</h2>
+      <ol className="flex flex-col gap-1.5">
+        {board.rows.map((row) => (
+          <li
+            key={row.rank}
+            className={cn(
+              "flex items-center gap-3 rounded-xl border px-3.5 py-2",
+              row.me ? "border-cyan-dim bg-cyan/5 font-semibold" : "border-line bg-panel-2",
+            )}
+          >
+            <span className="w-6 text-center font-mono text-[0.85rem] text-muted-foreground">{row.rank}</span>
+            <span className="flex-1 truncate">{row.me ? t("ratingMe", { name: row.name }) : row.name}</span>
+            <span className="font-mono text-[0.88rem] text-cyan">{row.xp} XP</span>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }

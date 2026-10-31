@@ -746,7 +746,9 @@
     "deleteYes": "Yes, delete permanently",
     "deleteCancel": "Cancel",
     "deleteDemo": "The demo account cannot be deleted.",
-    "deleteFailed": "The account was not deleted. Try again a little later."
+    "deleteFailed": "The account was not deleted. Try again a little later.",
+    "ratingTitle": "Class {name} ranking",
+    "ratingMe": "{name} (you)"
   },
   "MoleculeViewer": {
     "label": "3D molecule viewer. Drag to rotate; tap an atom.",
