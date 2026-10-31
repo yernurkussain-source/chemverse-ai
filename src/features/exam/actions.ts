@@ -7,6 +7,8 @@ import { routing, type Locale } from "@/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { DEADLINE_GRACE_MS, finalizeSession, isPastDeadline, type SessionRow } from "./grading";
+import { pickQuestions } from "./sampling";
+import { SESSION_SIZE, type ExamType } from "./scoring";
 
 function readLocale(formData: FormData): Locale {
   const value = String(formData.get("locale") ?? "");
@@ -17,16 +19,6 @@ async function currentUserId() {
   const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
   return data.user?.id ?? null;
-}
-
-/** Сұрақтардың ретін араластыру (Фишер–Йейтс, криптографиялық кездейсоқтық) */
-function shuffle<T>(items: T[]): T[] {
-  const result = [...items];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = randomInt(i + 1);
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
 }
 
 /**
@@ -44,9 +36,9 @@ export async function startExam(formData: FormData) {
 
   const { data: exam } = await admin
     .from("exams")
-    .select("id, duration_minutes")
+    .select("id, duration_minutes, exam_type")
     .eq("slug", slug)
-    .single<{ id: string; duration_minutes: number }>();
+    .single<{ id: string; duration_minutes: number; exam_type: ExamType }>();
   if (!exam) throw new Error(`Exam not found: ${slug}`);
 
   // Бұрын басталған сессия: уақыты бітпесе — жалғастырамыз, бітсе — бағалап жабамыз
@@ -63,8 +55,14 @@ export async function startExam(formData: FormData) {
   }
 
   if (!sessionId) {
-    const { data: links } = await admin.from("exam_questions").select("question_id").eq("exam_id", exam.id);
-    const questionIds = shuffle((links ?? []).map((l) => l.question_id as string));
+    // Банктен тақырыптар бойынша теңдей таңдау (криптографиялық кездейсоқтық)
+    const { data: links } = await admin
+      .from("exam_questions")
+      .select("question_id, questions(topic_id)")
+      .eq("exam_id", exam.id)
+      .returns<{ question_id: string; questions: { topic_id: string } | null }[]>();
+    const pool = (links ?? []).map((l) => ({ id: l.question_id, topicId: l.questions?.topic_id ?? "" }));
+    const questionIds = pickQuestions(pool, SESSION_SIZE[exam.exam_type] ?? pool.length, randomInt).map((q) => q.id);
     // Сұрақсыз тест беті ашылмайды (бос сессия жасамаймыз)
     if (!questionIds.length) throw new Error(`Exam has no questions: ${slug}`);
     const deadline = new Date(Date.now() + exam.duration_minutes * 60_000).toISOString();

@@ -163,7 +163,7 @@ select e.id, q.id, (row_number() over (order by t.position, q.created_at, q.id))
 from public.exams e
 cross join public.questions q
 join public.topics t on t.id = q.topic_id
-where e.slug = 'unt-demo';
+where e.slug = 'unt-demo' and q.exam_type = 'unt';
 
 -- ---------- Молекулалар (3D файлдары 3-күні қосылады) ----------
 insert into public.molecules (id, formula, name_kk, name_ru, name_en) values

@@ -16,6 +16,8 @@
     "android:apk": "node --env-file-if-exists=.env.local scripts/build-apk.mjs",
     "seed:demo": "node --env-file=.env.local --no-warnings scripts/seed-demo.mjs",
     "seed:olympiad": "node --env-file=.env.local --no-warnings scripts/seed-olympiad.mjs",
+    "seed:unt": "node --env-file=.env.local --no-warnings scripts/seed-unt.mjs",
+    "unt:preview": "node scripts/unt-preview.mjs",
     "cache:ai": "node --env-file=.env.local --no-warnings scripts/cache-ai.mjs",
     "ios:sync": "node --env-file-if-exists=.env.local node_modules/@capacitor/cli/bin/capacitor sync ios",
     "test": "node scripts/test.mjs"

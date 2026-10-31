@@ -1121,6 +1121,10 @@
       "game": {
         "title": "3D lab",
         "text": "A first-person lab: mix reagents yourself, test gases and identify the unknown substance X. 23 tasks."
+      },
+      "bbzhm": {
+        "title": "BBZhM practice",
+        "text": "Grade 9: a 20-question test on grade 8–9 chemistry with a map of weak chapters."
       }
     }
   },
@@ -1204,9 +1208,9 @@
   "Exam": {
     "untTitle": "UNT practice test",
     "untShort": "UNT",
-    "untSubtitle": "A timed chemistry test. The score is calculated on the server, and at the end you will see your weak topics.",
+    "untSubtitle": "A timed chemistry test: each attempt draws 25 questions evenly from grade 8–9 chapters. The score is calculated on the server, and at the end you will see your weak topics.",
     "loading": "Loading…",
-    "notSeeded": "Test not found. Run supabase/seed.sql in Supabase.",
+    "notSeeded": "Test not found. Load the question bank: npm run seed:unt.",
     "questions": "Questions",
     "duration": "Time",
     "minutes": "{count} min",
@@ -1254,7 +1258,10 @@
     "correctAnswer": "Correct answer",
     "yourAnswer": "Your answer",
     "askAi": "Ask AI to explain",
-    "askAiPrompt": "Explain this test question:\n{question}\n{options}\nMy answer: {chosen}. Correct answer: {correct}. Explain step by step why."
+    "askAiPrompt": "Explain this test question:\n{question}\n{options}\nMy answer: {chosen}. Correct answer: {correct}. Explain step by step why.",
+    "bbzhmTitle": "BBZhM practice",
+    "bbzhmShort": "BBZhM",
+    "bbzhmSubtitle": "For grade 9: 20 questions on grade 8–9 chemistry, 40 minutes. Questions are drawn anew on every attempt."
   },
   "AiTutor": {
     "title": "AI tutor",

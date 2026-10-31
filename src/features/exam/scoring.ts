@@ -42,6 +42,12 @@ export function scoreExam(
   );
 }
 
+/** Бір тапсыруға банктен алынатын сұрақтар саны (банк кіші болса — бәрі) */
+export const SESSION_SIZE: Record<ExamType, number> = { unt: 25, bbzhm: 20, practice: 10, olympiad: 20 };
+
+/** Тест түрінің беті (нәтиже және тест беттеріндегі «артқа» сілтемесі) */
+export const EXAM_PAGE: Record<ExamType, string> = { unt: "/exam/unt", bbzhm: "/exam/bbzhm", practice: "/exam/unt", olympiad: "/olympiad" };
+
 /** Тақырып «әлсіз» деп саналатын шек (дұрыс жауаптар үлесі) */
 export const WEAK_TOPIC_THRESHOLD = 0.6;
 

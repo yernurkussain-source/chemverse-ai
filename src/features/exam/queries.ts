@@ -4,7 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { shuffleOptions } from "@/lib/option-order";
 import { createClient } from "@/lib/supabase/server";
 import { finalizeSession, isPastDeadline, type SessionRow } from "./grading";
-import { WEAK_TOPIC_THRESHOLD } from "./scoring";
+import { SESSION_SIZE, WEAK_TOPIC_THRESHOLD, type ExamType } from "./scoring";
 
 type Localized = { [key: string]: unknown };
 
@@ -30,7 +30,7 @@ export async function getExamOverview(slug: string, locale: Locale): Promise<Exa
   const supabase = await createClient();
   const { data: exam } = await supabase
     .from("exams")
-    .select("id, slug, title_kk, title_ru, title_en, duration_minutes")
+    .select("id, slug, title_kk, title_ru, title_en, duration_minutes, exam_type")
     .eq("slug", slug)
     .maybeSingle();
   if (!exam) return null;
@@ -52,7 +52,7 @@ export async function getExamOverview(slug: string, locale: Locale): Promise<Exa
     slug: exam.slug,
     title: pick(exam, "title", locale),
     durationMinutes: exam.duration_minutes,
-    questionCount: links?.length ?? 0,
+    questionCount: Math.min(links?.length ?? 0, SESSION_SIZE[exam.exam_type as ExamType] ?? Infinity),
     topics: [...topics].sort((a, b) => a[1] - b[1]).map(([title]) => title),
   };
 }
@@ -152,6 +152,7 @@ export type SessionView = {
   /** Сервер уақыты (мс): таймер құрылғы сағатына тәуелді болмауы үшін */
   serverNow: number;
   title: string;
+  examType: ExamType;
   questions: ExamQuestion[];
   answers: Record<string, string>;
 };
@@ -160,7 +161,7 @@ export type SessionView = {
 export async function getSessionView(sessionId: string, locale: Locale): Promise<SessionView | null> {
   const session = await loadOwnSession(sessionId);
   if (!session) return null;
-  if (session.status !== "in_progress") return { session, serverNow: Date.now(), title: "", questions: [], answers: {} };
+  if (session.status !== "in_progress") return { session, serverNow: Date.now(), title: "", examType: "unt", questions: [], answers: {} };
 
   const supabase = await createClient();
   const [questions, { data: answers }, { data: exam }] = await Promise.all([
@@ -168,7 +169,7 @@ export async function getSessionView(sessionId: string, locale: Locale): Promise
     // Тек таңдалған нұсқа — is_correct бағаны оқылмайды
     supabase.from("student_answers").select("question_id, option_id").eq("session_id", sessionId),
     session.exam_id
-      ? supabase.from("exams").select("title_kk, title_ru, title_en").eq("id", session.exam_id).maybeSingle()
+      ? supabase.from("exams").select("title_kk, title_ru, title_en, exam_type").eq("id", session.exam_id).maybeSingle()
       : Promise.resolve({ data: null }),
   ]);
 
@@ -176,6 +177,7 @@ export async function getSessionView(sessionId: string, locale: Locale): Promise
     session,
     serverNow: Date.now(),
     title: exam ? pick(exam, "title", locale) : "",
+    examType: (exam?.exam_type as ExamType | undefined) ?? "unt",
     questions,
     answers: Object.fromEntries(
       (answers ?? []).filter((a) => a.option_id).map((a) => [a.question_id as string, a.option_id as string]),
@@ -193,6 +195,7 @@ export type ReviewItem = ExamQuestion & {
 export type ResultView = {
   session: SessionRow;
   title: string;
+  examType: ExamType;
   correctCount: number;
   topics: TopicStat[];
   review: ReviewItem[];
@@ -213,7 +216,7 @@ export async function getResultView(sessionId: string, locale: Locale): Promise<
     admin.from("question_options").select("id, question_id").in("question_id", session.question_ids).eq("is_correct", true),
     admin.from("student_answers").select("question_id, option_id").eq("session_id", sessionId),
     session.exam_id
-      ? admin.from("exams").select("title_kk, title_ru, title_en").eq("id", session.exam_id).maybeSingle()
+      ? admin.from("exams").select("title_kk, title_ru, title_en, exam_type").eq("id", session.exam_id).maybeSingle()
       : Promise.resolve({ data: null }),
   ]);
 
@@ -243,6 +246,7 @@ export async function getResultView(sessionId: string, locale: Locale): Promise<
   return {
     session,
     title: exam ? pick(exam, "title", locale) : "",
+    examType: (exam?.exam_type as ExamType | undefined) ?? "unt",
     correctCount: review.filter((r) => r.chosenId && r.chosenId === r.correctId).length,
     topics,
     review,

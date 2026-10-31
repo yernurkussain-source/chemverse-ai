@@ -6,6 +6,7 @@ import { hasLocale, useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { ExamRunner } from "@/components/exam/exam-runner";
 import { getSessionView } from "@/features/exam/queries";
+import { EXAM_PAGE } from "@/features/exam/scoring";
 import { redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { BackLink } from "@/components/layout/back-link";
@@ -25,7 +26,6 @@ export default function ExamSessionPage({ params }: PageProps<"/[locale]/exam/se
   const t = useTranslations("Exam");
   return (
     <div className="page-wrap py-6 md:py-10">
-      <BackLink href="/exam/unt">{t("untShort")}</BackLink>
       <Suspense fallback={<p className="text-muted-foreground">{t("loading")}</p>}>
         <SessionContent params={params} />
       </Suspense>
@@ -38,6 +38,7 @@ async function SessionContent({ params }: { params: Params }) {
   const value = await rootLocale();
   const locale: Locale = hasLocale(routing.locales, value) ? value : routing.defaultLocale;
 
+  const t = await getTranslations("Exam");
   const view = await getSessionView(id, locale);
   if (!view) notFound();
   if (view.session.status !== "in_progress" || !view.session.deadline_at) {
@@ -46,13 +47,16 @@ async function SessionContent({ params }: { params: Params }) {
   }
 
   return (
-    <ExamRunner
-      sessionId={id}
-      title={view.title}
-      deadline={view.session.deadline_at}
-      serverNow={view.serverNow}
-      questions={view.questions}
-      initialAnswers={view.answers}
-    />
+    <>
+      <BackLink href={EXAM_PAGE[view.examType]}>{view.examType === "bbzhm" ? t("bbzhmShort") : t("untShort")}</BackLink>
+      <ExamRunner
+        sessionId={id}
+        title={view.title}
+        deadline={view.session.deadline_at}
+        serverNow={view.serverNow}
+        questions={view.questions}
+        initialAnswers={view.answers}
+      />
+    </>
   );
 }

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getResultView, type ResultView } from "@/features/exam/queries";
+import { EXAM_PAGE } from "@/features/exam/scoring";
 import { WEAK_TOPIC_THRESHOLD } from "@/features/exam/scoring";
 import { Link, redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
@@ -31,7 +32,6 @@ export default function ExamResultPage({ params }: PageProps<"/[locale]/exam/res
   return (
     <div className="page-wrap py-10 md:py-14">
       <div className="mx-auto max-w-3xl">
-        <BackLink href="/exam/unt">{t("untShort")}</BackLink>
         <Suspense fallback={<p className="text-muted-foreground">{t("loading")}</p>}>
           <ResultContent params={params} />
         </Suspense>
@@ -67,6 +67,7 @@ async function ResultContent({ params }: { params: Params }) {
   return (
     <div className="flex flex-col gap-8">
       <div>
+        <BackLink href={EXAM_PAGE[result.examType]}>{result.examType === "bbzhm" ? t("bbzhmShort") : t("untShort")}</BackLink>
         <Eyebrow>{result.title}</Eyebrow>
         <h1 className="mt-2.5 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold">{t("resultTitle")}</h1>
         {session.status === "expired" && (
@@ -137,7 +138,7 @@ async function ResultContent({ params }: { params: Params }) {
       </section>
 
       <div className="flex flex-wrap gap-2">
-        <Link href="/exam/unt" className={buttonVariants({ variant: "glow", size: "pill" })}>
+        <Link href={EXAM_PAGE[result.examType]} className={buttonVariants({ variant: "glow", size: "pill" })}>
           {t("tryAgain")}
         </Link>
         <Link href="/profile" className={buttonVariants({ variant: "panel", size: "pill" })}>
