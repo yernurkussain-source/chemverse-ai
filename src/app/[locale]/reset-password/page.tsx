@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { AuthCard } from "@/components/auth/auth-card";
@@ -28,6 +29,7 @@ export default function ResetPasswordPage() {
 }
 
 async function ResetContent() {
+  await connection(); // сессия мен уақыт — тек сұраныс кезінде (кілтсіз build-те де алдын ала жиналмауы үшін)
   const t = await getTranslations("Auth");
   const user = isSupabaseConfigured ? (await (await createClient()).auth.getUser()).data.user : null;
   if (canResetPassword(user)) return <ResetPasswordForm />;
