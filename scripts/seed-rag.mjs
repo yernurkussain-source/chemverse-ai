@@ -75,13 +75,29 @@ for (const file of files) {
   for (const chunk of chunks) rows.push({ source, chunk, language: languageOf(file) });
 }
 
-console.log(`🧠 ${rows.length} үзінді үшін embedding жасалуда (Gemini)…`);
-const { embeddings } = await embedMany({
-  model: google.embedding("gemini-embedding-001"),
-  values: rows.map((r) => r.chunk),
-  maxParallelCalls: 2,
-  providerOptions: { google: { outputDimensionality: DIMENSIONS, taskType: "RETRIEVAL_DOCUMENT" } },
-});
+// Тегін тариф: минутына 30 000 токен. Қазақ мәтінінде 1 токен ≈ 2 таңба деп алып, минутына ~40 000 таңба жібереміз
+const CHARS_PER_MINUTE = 40_000;
+const batches = [[]];
+for (const row of rows) {
+  const last = batches.at(-1);
+  const size = last.reduce((sum, r) => sum + r.chunk.length, 0);
+  if (last.length && (size + row.chunk.length > CHARS_PER_MINUTE || last.length >= 100)) batches.push([row]);
+  else last.push(row);
+}
+
+console.log(`🧠 ${rows.length} үзінді үшін embedding жасалуда (Gemini, ${batches.length} топ, ~${batches.length} мин)…`);
+const embeddings = [];
+for (const [i, batch] of batches.entries()) {
+  if (i > 0) await new Promise((resolve) => setTimeout(resolve, 61_000));
+  const result = await embedMany({
+    model: google.embedding("gemini-embedding-001"),
+    values: batch.map((r) => r.chunk),
+    maxRetries: 0,
+    providerOptions: { google: { outputDimensionality: DIMENSIONS, taskType: "RETRIEVAL_DOCUMENT" } },
+  });
+  embeddings.push(...result.embeddings);
+  console.log(`   ${i + 1}/${batches.length} топ дайын`);
+}
 
 // Ескі үзінділерді толық ауыстырамыз
 const removed = await supabase.from("rag_documents").delete().not("id", "is", null);
