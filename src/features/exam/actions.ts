@@ -7,7 +7,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { DEADLINE_GRACE_MS, finalizeSession, isPastDeadline, type SessionRow } from "./grading";
-import { pickQuestions } from "./sampling";
+import { pickQuestions, pickUntFormat } from "./sampling";
 import { SESSION_SIZE, type ExamType } from "./scoring";
 
 function readLocale(formData: FormData): Locale {
@@ -58,11 +58,22 @@ export async function startExam(formData: FormData) {
     // Банктен тақырыптар бойынша теңдей таңдау (криптографиялық кездейсоқтық)
     const { data: links } = await admin
       .from("exam_questions")
-      .select("question_id, questions(topic_id)")
+      .select("question_id, position, questions(topic_id, kind, context_id)")
       .eq("exam_id", exam.id)
-      .returns<{ question_id: string; questions: { topic_id: string } | null }[]>();
-    const pool = (links ?? []).map((l) => ({ id: l.question_id, topicId: l.questions?.topic_id ?? "" }));
-    const questionIds = pickQuestions(pool, SESSION_SIZE[exam.exam_type] ?? pool.length, randomInt).map((q) => q.id);
+      .returns<{ question_id: string; position: number; questions: { topic_id: string; kind: string; context_id: string | null } | null }[]>();
+    const pool = (links ?? []).map((l) => ({
+      id: l.question_id,
+      topicId: l.questions?.topic_id ?? "",
+      kind: l.questions?.kind ?? "single",
+      contextId: l.questions?.context_id ?? null,
+      position: l.position,
+    }));
+    // ҰБТ — нақты пішіммен; басқа тесттер — тек бір жауапты сұрақтар
+    const picked =
+      exam.exam_type === "unt"
+        ? pickUntFormat(pool, randomInt)
+        : pickQuestions(pool.filter((q) => q.kind === "single" && !q.contextId), SESSION_SIZE[exam.exam_type] ?? pool.length, randomInt);
+    const questionIds = picked.map((q) => q.id);
     // Сұрақсыз тест беті ашылмайды (бос сессия жасамаймыз)
     if (!questionIds.length) throw new Error(`Exam has no questions: ${slug}`);
     const deadline = new Date(Date.now() + exam.duration_minutes * 60_000).toISOString();
@@ -81,13 +92,13 @@ export async function startExam(formData: FormData) {
 export type SaveAnswerResult = { ok: true } | { ok: false; error: "expired" | "invalid" | "unknown" };
 
 /**
- * Жауапты сақтау. Дұрыс-бұрысы мұнда ЕСЕПТЕЛМЕЙДІ және клиентке қайтарылмайды —
- * тек тест аяқталғанда (grading.ts).
+ * Жауапты сақтау (таңдалған нұсқалар; бос тізім — жауапты алып тастау).
+ * Дұрыс-бұрысы мұнда ЕСЕПТЕЛМЕЙДІ және клиентке қайтарылмайды — тек тест аяқталғанда (grading.ts).
  */
-export async function saveAnswer(sessionId: string, questionId: string, optionId: string | null): Promise<SaveAnswerResult> {
+export async function saveAnswer(sessionId: string, questionId: string, optionIds: string[]): Promise<SaveAnswerResult> {
   const userId = await currentUserId();
   const admin = createAdminClient();
-  if (!userId || !admin) return { ok: false, error: "invalid" };
+  if (!userId || !admin || !Array.isArray(optionIds)) return { ok: false, error: "invalid" };
 
   const { data: session } = await admin
     .from("exam_sessions")
@@ -101,22 +112,35 @@ export async function saveAnswer(sessionId: string, questionId: string, optionId
     return { ok: false, error: "expired" };
   }
 
-  if (optionId === null) {
+  if (!optionIds.length) {
     const { error } = await admin.from("student_answers").delete().eq("session_id", sessionId).eq("question_id", questionId);
     return error ? { ok: false, error: "unknown" } : { ok: true };
   }
 
-  // Нұсқа осы сұрақтікі ме
-  const { data: option } = await admin
-    .from("question_options")
-    .select("id")
-    .eq("id", optionId)
-    .eq("question_id", questionId)
-    .maybeSingle();
-  if (!option) return { ok: false, error: "invalid" };
+  // Нұсқалар осы сұрақтікі ме; бір жауаптыда — біреу, сәйкестендіруде — әр жолға біреу
+  const [{ data: question }, { data: options }] = await Promise.all([
+    admin.from("questions").select("kind").eq("id", questionId).maybeSingle<{ kind: string | null }>(),
+    admin.from("question_options").select("id, slot").eq("question_id", questionId).in("id", optionIds),
+  ]);
+  const kind = question?.kind ?? "single";
+  const slots = (options ?? []).map((o) => (o.slot as number | null) ?? 0);
+  const unique = new Set(optionIds).size === optionIds.length;
+  const valid =
+    unique &&
+    slots.length === optionIds.length &&
+    (kind === "multiple" || (kind === "matching" ? new Set(slots).size === slots.length : optionIds.length === 1));
+  if (!question || !valid) return { ok: false, error: "invalid" };
 
+  const single = kind === "single";
   const { error } = await admin.from("student_answers").upsert(
-    { session_id: sessionId, question_id: questionId, option_id: optionId, is_correct: null, answered_at: new Date().toISOString() },
+    {
+      session_id: sessionId,
+      question_id: questionId,
+      option_id: single ? optionIds[0] : null,
+      option_ids: single ? null : optionIds,
+      is_correct: null,
+      answered_at: new Date().toISOString(),
+    },
     { onConflict: "session_id,question_id" },
   );
   return error ? { ok: false, error: "unknown" } : { ok: true };

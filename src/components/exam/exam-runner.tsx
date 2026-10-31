@@ -14,7 +14,7 @@ type Props = {
   /** Сервер уақыты: телефон сағаты қате болса да таймер дұрыс көрсетуі үшін */
   serverNow: number;
   questions: ExamQuestion[];
-  initialAnswers: Record<string, string>;
+  initialAnswers: Record<string, string[]>;
 };
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -25,6 +25,19 @@ function formatRemaining(ms: number) {
   const m = Math.floor((total % 3600) / 60);
   const s = total % 60;
   return h ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+}
+
+type Option = ExamQuestion["options"][number];
+
+/** Нұсқаны басқанда жаңа жауап: бір жауапты — ауыстыру, бірнеше жауап — қосу/алу, сәйкестендіру — жолдағысын ауыстыру */
+function nextChoice(question: ExamQuestion, current: string[], option: Option): string[] {
+  if (current.includes(option.id)) return current.filter((id) => id !== option.id); // қайта басса — алып тастау
+  if (question.kind === "multiple") return [...current, option.id];
+  if (question.kind === "matching") {
+    const sameSlot = new Set(question.options.filter((o) => o.slot === option.slot).map((o) => o.id));
+    return [...current.filter((id) => !sameSlot.has(id)), option.id];
+  }
+  return [option.id];
 }
 
 /** ҰБТ тесті: таймер, сұрақтар торы, жауап таңдау. Бағалау — тек серверде */
@@ -64,17 +77,17 @@ export function ExamRunner({ sessionId, title, deadline, serverNow, questions, i
   }, [deadline, serverNow, finish]);
 
   const question = questions[index];
-  const answeredCount = questions.filter((q) => answers[q.id]).length;
+  const answeredCount = questions.filter((q) => answers[q.id]?.length).length;
   const unanswered = questions.length - answeredCount;
   const lowTime = remaining !== null && remaining < 5 * 60_000;
 
-  function choose(optionId: string) {
+  function choose(option: Option) {
     const questionId = question.id;
     const previous = answers[questionId];
-    const next = previous === optionId ? null : optionId; // қайта басса — жауапты алып тастау
+    const next = nextChoice(question, previous ?? [], option);
     setAnswers((current) => {
       const copy = { ...current };
-      if (next) copy[questionId] = next;
+      if (next.length) copy[questionId] = next;
       else delete copy[questionId];
       return copy;
     });
@@ -128,39 +141,43 @@ export function ExamRunner({ sessionId, title, deadline, serverNow, questions, i
             <span className="font-mono font-semibold text-cyan">
               {t("questionOf", { n: index + 1, total: questions.length })}
             </span>
+            <span className="rounded-full border border-line px-2 py-0.5">{t(`kinds.${question.context ? "context" : question.kind}`)}</span>
             {question.topic && <span>· {question.topic}</span>}
           </p>
-          <h2 id="question-title" className="mb-5 font-sans text-[1.08rem] leading-relaxed font-semibold">
+          {question.context && (
+            <div className="mb-5 rounded-2xl border border-line bg-panel-2 p-4">
+              <p className="mb-1.5 font-semibold">{question.context.title}</p>
+              <p className="text-[0.92rem] leading-relaxed whitespace-pre-line text-muted-foreground">{question.context.body}</p>
+            </div>
+          )}
+          <h2 id="question-title" className="mb-2 font-sans text-[1.08rem] leading-relaxed font-semibold">
             {question.body}
           </h2>
-          <ul className="flex flex-col gap-2.5">
-            {question.options.map((option) => {
-              const selected = answers[question.id] === option.id;
-              return (
-                <li key={option.id}>
-                  <button
-                    type="button"
-                    onClick={() => choose(option.id)}
-                    aria-pressed={selected}
-                    className={cn(
-                      "flex min-h-12 w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors",
-                      selected ? "border-cyan bg-cyan/10" : "border-line bg-panel-2 hover:border-cyan-dim",
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "grid size-8 shrink-0 place-items-center rounded-full border font-mono text-[0.9rem] font-semibold",
-                        selected ? "border-cyan bg-cyan text-on-accent" : "border-line",
-                      )}
-                    >
-                      {option.label}
-                    </span>
-                    <span>{option.body}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+          {question.kind !== "single" && (
+            <p className="text-[0.85rem] text-muted-foreground">{t(question.kind === "multiple" ? "hintMultiple" : "hintMatching")}</p>
+          )}
+          {question.kind === "matching" ? (
+            <div className="mt-4 flex flex-col gap-5">
+              {question.items.map((item, slot) => (
+                <fieldset key={slot}>
+                  <legend className="mb-2 flex gap-2 font-semibold">
+                    <span className="font-mono text-cyan">{"AB"[slot] ?? slot + 1})</span>
+                    <span>{item}</span>
+                  </legend>
+                  <OptionList
+                    options={question.options.filter((o) => o.slot === slot)}
+                    selected={answers[question.id] ?? []}
+                    onChoose={choose}
+                    showLabel={false}
+                  />
+                </fieldset>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-5">
+              <OptionList options={question.options} selected={answers[question.id] ?? []} onChoose={choose} square={question.kind === "multiple"} />
+            </div>
+          )}
           {saveError && (
             <p role="alert" className="mt-3 text-[0.85rem] text-pink">
               {t("saveError")}
@@ -201,7 +218,7 @@ export function ExamRunner({ sessionId, title, deadline, serverNow, questions, i
                     aria-label={t("goTo", { n: i + 1 })}
                     className={cn(
                       "grid aspect-square w-full min-w-8 place-items-center rounded-lg border font-mono text-[0.78rem] font-semibold",
-                      answers[q.id] ? "border-cyan-dim bg-cyan/15 text-cyan" : "border-line",
+                      answers[q.id]?.length ? "border-cyan-dim bg-cyan/15 text-cyan" : "border-line",
                       i === index && "outline-2 outline-offset-1 outline-cyan",
                     )}
                   >
@@ -241,5 +258,52 @@ export function ExamRunner({ sessionId, title, deadline, serverNow, questions, i
         <input type="hidden" name="sessionId" value={sessionId} />
       </form>
     </div>
+  );
+}
+
+/** Жауап нұсқалары: шеңбер — бір жауап, шаршы — бірнеше жауап (белгілеу) */
+function OptionList({
+  options,
+  selected,
+  onChoose,
+  square = false,
+  showLabel = true,
+}: {
+  options: Option[];
+  selected: string[];
+  onChoose: (option: Option) => void;
+  square?: boolean;
+  showLabel?: boolean;
+}) {
+  return (
+    <ul className="flex flex-col gap-2.5">
+      {options.map((option) => {
+        const isSelected = selected.includes(option.id);
+        return (
+          <li key={option.id}>
+            <button
+              type="button"
+              onClick={() => onChoose(option)}
+              aria-pressed={isSelected}
+              className={cn(
+                "flex min-h-12 w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors",
+                isSelected ? "border-cyan bg-cyan/10" : "border-line bg-panel-2 hover:border-cyan-dim",
+              )}
+            >
+              <span
+                className={cn(
+                  "grid size-8 shrink-0 place-items-center border font-mono text-[0.9rem] font-semibold",
+                  square ? "rounded-lg" : "rounded-full",
+                  isSelected ? "border-cyan bg-cyan text-on-accent" : "border-line",
+                )}
+              >
+                {showLabel ? option.label : isSelected ? "✓" : ""}
+              </span>
+              <span>{option.body}</span>
+            </button>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

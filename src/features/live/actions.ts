@@ -61,8 +61,14 @@ export async function createLiveSession(_prev: LiveFormState, formData: FormData
     return { error: "missing_fields" };
   }
 
-  const { data: links } = await admin.from("exam_questions").select("question_id").eq("exam_id", examId);
-  const questionIds = shuffle((links ?? []).map((l) => l.question_id as string)).slice(0, count);
+  // Тірі сабақ тек бір жауапты сұрақтарды көрсетеді (контекст, сәйкестендіру, бірнеше жауап — ҰБТ тестінде ғана)
+  const { data: links } = await admin
+    .from("exam_questions")
+    .select("question_id, questions(kind, context_id)")
+    .eq("exam_id", examId)
+    .returns<{ question_id: string; questions: { kind: string | null; context_id: string | null } | null }[]>();
+  const single = (links ?? []).filter((l) => (l.questions?.kind ?? "single") === "single" && !l.questions?.context_id);
+  const questionIds = shuffle(single.map((l) => l.question_id)).slice(0, count);
   if (!questionIds.length) return { error: "no_questions" };
 
   const sessionId = await insertLiveSession(supabase, {

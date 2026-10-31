@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { awardXp } from "@/features/auth/xp";
-import { scoreExam, XP_PER_CORRECT, type ExamType } from "./scoring";
+import { questionMax, questionPoints, scoreExam, XP_PER_CORRECT, type ExamType, type QuestionKind } from "./scoring";
 import { examBadges, grantBadges } from "@/features/auth/badges";
 
 /** Жауап мерзімі өткеннен кейін желі кідірісіне берілетін қосымша уақыт */
@@ -39,25 +39,36 @@ export async function finalizeSession(admin: SupabaseClient, sessionId: string) 
     session.exam_id
       ? admin.from("exams").select("exam_type").eq("id", session.exam_id).single<{ exam_type: ExamType }>()
       : Promise.resolve({ data: null }),
-    admin.from("questions").select("id, topic_id, difficulty").in("id", questionIds),
+    admin.from("questions").select("id, topic_id, difficulty, kind").in("id", questionIds),
     admin.from("question_options").select("id, question_id").in("question_id", questionIds).eq("is_correct", true),
-    admin.from("student_answers").select("question_id, option_id").eq("session_id", sessionId),
+    admin.from("student_answers").select("question_id, option_id, option_ids").eq("session_id", sessionId),
   ]);
+  const examType = exam?.exam_type ?? "unt";
 
-  const correctOption = new Map((correctOptions ?? []).map((o) => [o.question_id as string, o.id as string]));
-  const chosen = new Map((answers ?? []).map((a) => [a.question_id as string, a.option_id as string | null]));
+  const correctIds = new Map<string, Set<string>>();
+  for (const o of correctOptions ?? []) {
+    const set = correctIds.get(o.question_id as string) ?? new Set<string>();
+    correctIds.set(o.question_id as string, set.add(o.id as string));
+  }
+  const chosenRows = new Map((answers ?? []).map((a) => [a.question_id as string, a]));
   const graded = (questions ?? []).map((q) => {
-    const option = chosen.get(q.id);
-    return {
+    const row = chosenRows.get(q.id);
+    const chosen = row ? chosenIds(row) : [];
+    const correct = correctIds.get(q.id) ?? new Set<string>();
+    const hits = chosen.filter((id) => correct.has(id)).length;
+    const item = {
       id: q.id as string,
       topicId: q.topic_id as string,
       difficulty: q.difficulty as number,
-      answered: Boolean(option),
-      correct: Boolean(option) && option === correctOption.get(q.id),
+      kind: ((q.kind as QuestionKind | null) ?? "single") as QuestionKind,
+      total: correct.size,
+      hits,
+      wrong: chosen.length - hits,
     };
+    return { ...item, answered: chosen.length > 0, correct: questionPoints(examType, item) === questionMax(examType, item) };
   });
 
-  const { score, maxScore } = scoreExam(exam?.exam_type ?? "unt", graded);
+  const { score, maxScore } = scoreExam(examType, graded);
   const expired = isPastDeadline(session, DEADLINE_GRACE_MS);
 
   // Алдымен сессияны жабамыз: басқа сұраныс бізден бұрын жапса — қайта есептемейміз
@@ -77,7 +88,7 @@ export async function finalizeSession(admin: SupabaseClient, sessionId: string) 
   // Әр жауаптың дұрыс/қате белгісі (тест кезінде клиентке көрінбеуі үшін тек енді жазылады)
   const answeredRows = graded
     .filter((q) => q.answered)
-    .map((q) => ({ session_id: sessionId, question_id: q.id, option_id: chosen.get(q.id), is_correct: q.correct }));
+    .map((q) => ({ ...chosenRows.get(q.id), session_id: sessionId, question_id: q.id, is_correct: q.correct }));
   if (answeredRows.length) {
     await admin.from("student_answers").upsert(answeredRows, { onConflict: "session_id,question_id" });
   }
@@ -112,5 +123,11 @@ export async function finalizeSession(admin: SupabaseClient, sessionId: string) 
   // XP: әр дұрыс жауапқа
   const correctCount = graded.filter((q) => q.correct).length;
   await awardXp(admin, session.user_id, correctCount * XP_PER_CORRECT);
-  await grantBadges(admin, session.user_id, examBadges(exam?.exam_type ?? "unt", score, maxScore));
+  await grantBadges(admin, session.user_id, examBadges(examType, score, maxScore));
+}
+
+/** Жауап жолындағы таңдалған нұсқалар: бір жауаптыда option_id, қалғандарында option_ids */
+export function chosenIds(row: { option_id?: unknown; option_ids?: unknown }): string[] {
+  if (Array.isArray(row.option_ids)) return row.option_ids as string[];
+  return row.option_id ? [row.option_id as string] : [];
 }

@@ -3,8 +3,8 @@ import type { Locale } from "@/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { shuffleOptions } from "@/lib/option-order";
 import { createClient } from "@/lib/supabase/server";
-import { finalizeSession, isPastDeadline, type SessionRow } from "./grading";
-import { SESSION_SIZE, WEAK_TOPIC_THRESHOLD, type ExamType } from "./scoring";
+import { chosenIds, finalizeSession, isPastDeadline, type SessionRow } from "./grading";
+import { questionMax, questionPoints, SESSION_SIZE, WEAK_TOPIC_THRESHOLD, type ExamType, type QuestionKind } from "./scoring";
 
 type Localized = { [key: string]: unknown };
 
@@ -79,8 +79,13 @@ export async function getRecentSessions(examId: string) {
 export type ExamQuestion = {
   id: string;
   topic: string;
+  kind: QuestionKind;
   body: string;
-  options: { id: string; label: string; body: string }[];
+  /** Контекст тапсырмасының ортақ мәтіні */
+  context: { title: string; body: string } | null;
+  /** Сәйкестендірудің сол жақ жолдары (A, B); нұсқаның slot-ы — осы жолдың нөмірі */
+  items: string[];
+  options: { id: string; label: string; body: string; slot: number }[];
 };
 
 /**
@@ -92,31 +97,40 @@ async function loadQuestions(questionIds: string[], locale: Locale, sessionId: s
   const [{ data: questions }, { data: options }] = await Promise.all([
     supabase
       .from("questions")
-      .select("id, body_kk, body_ru, body_en, topics(title_kk, title_ru, title_en)")
+      .select("id, kind, context_id, body_kk, body_ru, body_en, items_kk, items_ru, items_en, topics(title_kk, title_ru, title_en)")
       .in("id", questionIds)
-      .returns<(Localized & { id: string; topics: Localized | null })[]>(),
+      .returns<(Localized & { id: string; kind: QuestionKind | null; context_id: string | null; topics: Localized | null })[]>(),
     supabase
       .from("question_options")
-      .select("id, question_id, label, body_kk, body_ru, body_en")
+      .select("id, question_id, label, slot, body_kk, body_ru, body_en")
       .in("question_id", questionIds)
       .order("label"),
   ]);
+  const contextIds = [...new Set((questions ?? []).flatMap((q) => (q.context_id ? [q.context_id] : [])))];
+  const { data: contexts } = contextIds.length
+    ? await supabase.from("question_contexts").select("id, title_kk, title_ru, title_en, body_kk, body_ru, body_en").in("id", contextIds)
+    : { data: [] };
+  const contextById = new Map((contexts ?? []).map((c) => [c.id as string, { title: pick(c, "title", locale), body: pick(c, "body", locale) }]));
 
   const byId = new Map((questions ?? []).map((q) => [q.id, q]));
   return questionIds.flatMap((id) => {
     const q = byId.get(id);
     if (!q) return [];
+    const own = (options ?? [])
+      .filter((o) => o.question_id === id)
+      .map((o) => ({ id: o.id as string, label: o.label as string, body: pick(o, "body", locale), slot: (o.slot as number | null) ?? 0 }));
+    // Сәйкестендіруде әр жолдың нұсқалары бөлек араласады (бір seed — екі жолда бірдей рет)
+    const slots = [...new Set(own.map((o) => o.slot))].sort();
+    const items = (q[`items_${locale}`] as string[] | null) ?? (q.items_kk as string[] | null) ?? [];
     return [
       {
         id,
         topic: q.topics ? pick(q.topics, "title", locale) : "",
+        kind: q.kind ?? "single",
         body: pick(q, "body", locale),
-        options: shuffleOptions(
-          (options ?? [])
-            .filter((o) => o.question_id === id)
-            .map((o) => ({ id: o.id as string, label: o.label as string, body: pick(o, "body", locale) })),
-          `${sessionId}:${id}`,
-        ),
+        context: q.context_id ? (contextById.get(q.context_id) ?? null) : null,
+        items,
+        options: slots.flatMap((slot) => shuffleOptions(own.filter((o) => o.slot === slot), `${sessionId}:${id}`)),
       },
     ];
   });
@@ -154,7 +168,7 @@ export type SessionView = {
   title: string;
   examType: ExamType;
   questions: ExamQuestion[];
-  answers: Record<string, string>;
+  answers: Record<string, string[]>;
 };
 
 /** Тест беті үшін: сұрақтар және оқушының осы уақытқа дейінгі жауаптары */
@@ -166,8 +180,8 @@ export async function getSessionView(sessionId: string, locale: Locale): Promise
   const supabase = await createClient();
   const [questions, { data: answers }, { data: exam }] = await Promise.all([
     loadQuestions(session.question_ids, locale, session.id),
-    // Тек таңдалған нұсқа — is_correct бағаны оқылмайды
-    supabase.from("student_answers").select("question_id, option_id").eq("session_id", sessionId),
+    // Тек таңдалған нұсқалар — is_correct бағаны оқылмайды
+    supabase.from("student_answers").select("question_id, option_id, option_ids").eq("session_id", sessionId),
     session.exam_id
       ? supabase.from("exams").select("title_kk, title_ru, title_en, exam_type").eq("id", session.exam_id).maybeSingle()
       : Promise.resolve({ data: null }),
@@ -180,17 +194,26 @@ export async function getSessionView(sessionId: string, locale: Locale): Promise
     examType: (exam?.exam_type as ExamType | undefined) ?? "unt",
     questions,
     answers: Object.fromEntries(
-      (answers ?? []).filter((a) => a.option_id).map((a) => [a.question_id as string, a.option_id as string]),
+      (answers ?? []).map((a) => [a.question_id as string, chosenIds(a)] as const).filter(([, ids]) => ids.length),
     ),
   };
 }
 
 export type TopicStat = { topic: string; total: number; correct: number; weak: boolean };
 export type ReviewItem = ExamQuestion & {
-  chosenId: string | null;
-  correctId: string | null;
+  chosenIds: string[];
+  correctIds: string[];
   explanation: string;
+  /** ҰБТ ережесі бойынша: бір жауапты — 1, қалғандары — 2 (ішінара 1) */
+  points: number;
+  maxPoints: number;
 };
+
+function toReview(q: ExamQuestion, chosen: string[], correct: string[], explanation: string): ReviewItem {
+  const hits = chosen.filter((id) => correct.includes(id)).length;
+  const graded = { difficulty: 1, kind: q.kind, total: correct.length, hits, wrong: chosen.length - hits };
+  return { ...q, chosenIds: chosen, correctIds: correct, explanation, points: questionPoints("unt", graded), maxPoints: questionMax("unt", graded) };
+}
 
 export type ResultView = {
   session: SessionRow;
@@ -207,9 +230,11 @@ async function loadAnswerKey(admin: NonNullable<ReturnType<typeof createAdminCli
     admin.from("questions").select("id, explanation_kk, explanation_ru, explanation_en").in("id", questionIds),
     admin.from("question_options").select("id, question_id").in("question_id", questionIds).eq("is_correct", true),
   ]);
+  const correct = new Map<string, string[]>();
+  for (const o of correctOptions ?? []) correct.set(o.question_id as string, [...(correct.get(o.question_id as string) ?? []), o.id as string]);
   return {
     explanation: new Map((secrets ?? []).map((q) => [q.id as string, pick(q, "explanation", locale)])),
-    correct: new Map((correctOptions ?? []).map((o) => [o.question_id as string, o.id as string])),
+    correct,
   };
 }
 
@@ -231,21 +256,21 @@ export async function getMistakes(locale: Locale): Promise<ReviewItem[] | null> 
   if (!sessions?.length) return [];
   const { data: answers } = await admin
     .from("student_answers")
-    .select("question_id, option_id, is_correct")
+    .select("question_id, option_id, option_ids, is_correct")
     .in("session_id", sessions.map((s) => s.id as string))
     .order("answered_at", { ascending: false })
     .limit(1000);
 
   // Әр сұрақтың ең соңғы жауабы ғана есептеледі
-  const latest = new Map<string, { option_id: string | null; is_correct: boolean | null }>();
+  const latest = new Map<string, { option_id: string | null; option_ids: string[] | null; is_correct: boolean | null }>();
   for (const a of answers ?? []) if (!latest.has(a.question_id as string)) latest.set(a.question_id as string, a);
   const wrong = [...latest].filter(([, a]) => a.is_correct === false).slice(0, MISTAKES_LIMIT);
   if (!wrong.length) return [];
 
   const ids = wrong.map(([id]) => id);
   const [questions, { explanation, correct }] = await Promise.all([loadQuestions(ids, locale, "mistakes"), loadAnswerKey(admin, ids, locale)]);
-  const chosen = new Map(wrong.map(([id, a]) => [id, a.option_id]));
-  return questions.map((q) => ({ ...q, chosenId: chosen.get(q.id) ?? null, correctId: correct.get(q.id) ?? null, explanation: explanation.get(q.id) ?? "" }));
+  const chosen = new Map(wrong.map(([id, a]) => [id, chosenIds(a)]));
+  return questions.map((q) => toReview(q, chosen.get(q.id) ?? [], correct.get(q.id) ?? [], explanation.get(q.id) ?? ""));
 }
 
 /** Нәтиже беті: тест аяқталғаннан кейін ғана дұрыс жауаптар мен түсіндірмелер ашылады */
@@ -260,27 +285,22 @@ export async function getResultView(sessionId: string, locale: Locale): Promise<
   const [questions, { explanation, correct }, { data: answers }, { data: exam }] = await Promise.all([
     loadQuestions(session.question_ids, locale, session.id),
     loadAnswerKey(admin, session.question_ids, locale),
-    admin.from("student_answers").select("question_id, option_id").eq("session_id", sessionId),
+    admin.from("student_answers").select("question_id, option_id, option_ids").eq("session_id", sessionId),
     session.exam_id
       ? admin.from("exams").select("title_kk, title_ru, title_en, exam_type").eq("id", session.exam_id).maybeSingle()
       : Promise.resolve({ data: null }),
   ]);
 
-  const chosen = new Map((answers ?? []).map((a) => [a.question_id as string, a.option_id as string | null]));
+  const chosen = new Map((answers ?? []).map((a) => [a.question_id as string, chosenIds(a)]));
 
-  const review: ReviewItem[] = questions.map((q) => ({
-    ...q,
-    chosenId: chosen.get(q.id) ?? null,
-    correctId: correct.get(q.id) ?? null,
-    explanation: explanation.get(q.id) ?? "",
-  }));
+  const review: ReviewItem[] = questions.map((q) => toReview(q, chosen.get(q.id) ?? [], correct.get(q.id) ?? [], explanation.get(q.id) ?? ""));
 
   // Тақырып бойынша «әлсіз жерлер» картасы
   const stats = new Map<string, { total: number; correct: number }>();
   for (const item of review) {
     const stat = stats.get(item.topic) ?? { total: 0, correct: 0 };
     stat.total += 1;
-    if (item.chosenId && item.chosenId === item.correctId) stat.correct += 1;
+    if (item.points === item.maxPoints) stat.correct += 1;
     stats.set(item.topic, stat);
   }
   const topics = [...stats]
@@ -291,7 +311,7 @@ export async function getResultView(sessionId: string, locale: Locale): Promise<
     session,
     title: exam ? pick(exam, "title", locale) : "",
     examType: (exam?.exam_type as ExamType | undefined) ?? "unt",
-    correctCount: review.filter((r) => r.chosenId && r.chosenId === r.correctId).length,
+    correctCount: review.filter((r) => r.points === r.maxPoints).length,
     topics,
     review,
   };

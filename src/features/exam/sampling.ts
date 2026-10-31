@@ -25,3 +25,25 @@ export function pickQuestions<T extends { topicId: string }>(pool: T[], count: n
   }
   return shuffle(picked);
 }
+
+/** ҰБТ химия пішімі (ҰТО спецификациясы, 2026 жылдан): 25 бір жауапты + 1 контекст + 5 сәйкестендіру + 5 бірнеше жауапты */
+export const UNT_FORMAT = { single: 25, context: 5, matching: 5, multiple: 5 } as const;
+
+type FormatItem = { topicId: string; kind: string; contextId: string | null; position: number };
+
+/**
+ * ҰБТ нұсқасы: бөлімдер нақты тесттегідей ретпен (1–25, 26–30 контекст, 31–35 сәйкестендіру, 36–40 бірнеше жауап).
+ * Контекст кездейсоқ біреу, оның сұрақтары өз ретімен. Банкте бір түр жетпесе — барынша.
+ */
+export function pickUntFormat<T extends FormatItem>(pool: T[], randomInt: (max: number) => number): T[] {
+  const single = pool.filter((q) => q.kind === "single" && !q.contextId);
+  const contexts = [...new Set(pool.flatMap((q) => (q.contextId ? [q.contextId] : [])))];
+  const contextId = contexts.length ? contexts[randomInt(contexts.length)] : null;
+  const context = pool.filter((q) => contextId && q.contextId === contextId).sort((a, b) => a.position - b.position);
+  return [
+    ...pickQuestions(single, UNT_FORMAT.single, randomInt),
+    ...context.slice(0, UNT_FORMAT.context),
+    ...pickQuestions(pool.filter((q) => q.kind === "matching"), UNT_FORMAT.matching, randomInt),
+    ...pickQuestions(pool.filter((q) => q.kind === "multiple"), UNT_FORMAT.multiple, randomInt),
+  ];
+}

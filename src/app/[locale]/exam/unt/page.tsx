@@ -11,6 +11,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("untTitle") };
 }
 
+// Ұлттық тестілеу орталығы: химия спецификациясы (2026 жылдан) және ресми үлгілік тест
+const SPEC_URL = "https://testcenter.kz/wp-content/uploads/2025/11/13_Химия_каз.pdf";
+const SAMPLE_URL = "https://testcenter.kz/wp-content/uploads/2025/06/Химия.pdf";
+
 // ҰБТ режимі: тест туралы ақпарат және «Бастау»
 export default function UntPage() {
   const t = useTranslations("Exam");
@@ -24,6 +28,25 @@ export default function UntPage() {
         <Suspense fallback={<p className="text-muted-foreground">{t("loading")}</p>}>
           <ExamLanding slug="unt-demo" />
         </Suspense>
+
+        {/* Дәлдік: пішім ресми ҰТО құжатынан, сұрақтар — авторлық (нақты ҰБТ-да кездесті деп белгіленбейді) */}
+        <section className="mt-6 rounded-3xl border border-line bg-panel p-5 text-[0.88rem] text-muted-foreground">
+          <h2 className="mb-2 font-display text-base font-semibold text-foreground">{t("source.title")}</h2>
+          <p>{t("source.spec")}</p>
+          <p className="mt-1.5">{t("source.authored")}</p>
+          <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 font-semibold">
+            <li>
+              <a href={SPEC_URL} target="_blank" rel="noopener noreferrer" className="text-cyan hover:underline">
+                {t("source.specLink")} ↗
+              </a>
+            </li>
+            <li>
+              <a href={SAMPLE_URL} target="_blank" rel="noopener noreferrer" className="text-cyan hover:underline">
+                {t("source.sampleLink")} ↗
+              </a>
+            </li>
+          </ul>
+        </section>
       </div>
     </div>
   );

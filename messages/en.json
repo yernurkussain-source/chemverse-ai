@@ -1224,7 +1224,7 @@
   "Exam": {
     "untTitle": "UNT practice test",
     "untShort": "UNT",
-    "untSubtitle": "A timed chemistry test: each attempt draws 25 questions evenly from grade 8–9 chapters. The score is calculated on the server, and at the end you will see your weak topics.",
+    "untSubtitle": "A chemistry test in the real UNT format: 40 tasks, 50 points, 80 minutes. 1–25 single answer, 26–30 context, 31–35 matching, 36–40 one or more correct answers. The score is calculated on the server by UNT rules, and at the end you will see your weak topics.",
     "loading": "Loading…",
     "notSeeded": "Test not found. Load the question bank: npm run seed:unt.",
     "questions": "Questions",
@@ -1281,7 +1281,23 @@
     "mistakesTitle": "Mistakes notebook",
     "mistakesSubtitle": "Questions from UNT and BBZhM tests you answered wrong, with the correct answer and an explanation. Answer correctly in a later test and the question leaves the notebook.",
     "mistakesEmpty": "The notebook is empty: no unfixed mistakes. Take a test.",
-    "mistakesLink": "Mistakes notebook →"
+    "mistakesLink": "Mistakes notebook →",
+    "kinds": {
+      "single": "Single answer",
+      "context": "Context",
+      "matching": "Matching",
+      "multiple": "One or more correct answers"
+    },
+    "hintMultiple": "Choose one or more answers (at most three are correct). All correct — 2 points, one mistake — 1 point.",
+    "hintMatching": "Choose one match for each row (A, B). Both correct — 2 points, one — 1 point.",
+    "pointsOf": "{points}/{max} pts",
+    "source": {
+      "title": "Source and format",
+      "spec": "Test structure and scoring follow the official specification of the National Testing Center (chemistry, in use from 2026) and point 18 of the UNT rules.",
+      "authored": "The questions in this bank are original practice material, not taken from real UNT papers.",
+      "specLink": "NTC specification (PDF)",
+      "sampleLink": "Official NTC sample test (PDF)"
+    }
   },
   "AiTutor": {
     "title": "AI tutor",

@@ -85,3 +85,38 @@ test("таңдалған нұсқа басқа сұрақтікі болса —
   await finalizeSession(client, "s1");
   assert.equal(db.exam_sessions[0].score, 1);
 });
+
+test("ҰБТ: сәйкестендіру және бірнеше жауап 2/1/0 ұпаймен, ішінара жауап «қате» белгісімен", async () => {
+  const { client, db } = fakeSupabase({
+    exams: [{ id: "e1", exam_type: "unt" }],
+    exam_sessions: [{ id: "s1", user_id: "u1", exam_id: "e1", question_ids: ["m1", "k1", "k2"], status: "in_progress", deadline_at: null }],
+    questions: [
+      { id: "m1", topic_id: "t1", difficulty: 2, kind: "matching" },
+      { id: "k1", topic_id: "t1", difficulty: 2, kind: "multiple" },
+      { id: "k2", topic_id: "t1", difficulty: 2, kind: "multiple" },
+    ],
+    question_options: [
+      // сәйкестендіру: A-жолда m1a0, B-жолда m1b2 дұрыс
+      { id: "m1a0", question_id: "m1", slot: 0, is_correct: true },
+      { id: "m1a1", question_id: "m1", slot: 0, is_correct: false },
+      { id: "m1b1", question_id: "m1", slot: 1, is_correct: false },
+      { id: "m1b2", question_id: "m1", slot: 1, is_correct: true },
+      // бірнеше жауап: k1 және k2-де екі дұрыс нұсқадан
+      ...["a", "b", "c", "d"].map((x, i) => ({ id: `k1${x}`, question_id: "k1", is_correct: i < 2 })),
+      ...["a", "b", "c", "d"].map((x, i) => ({ id: `k2${x}`, question_id: "k2", is_correct: i < 2 })),
+    ],
+    student_answers: [
+      { session_id: "s1", question_id: "m1", option_id: null, option_ids: ["m1a0", "m1b1"], is_correct: null }, // бір жол дұрыс → 1
+      { session_id: "s1", question_id: "k1", option_id: null, option_ids: ["k1a", "k1b"], is_correct: null }, // бәрі дұрыс → 2
+      { session_id: "s1", question_id: "k2", option_id: null, option_ids: ["k2a", "k2c", "k2d"], is_correct: null }, // 2 қате → 0
+    ],
+    student_progress: [],
+    profiles: [{ id: "u1", xp: 0 }],
+  });
+  await finalizeSession(client, "s1");
+  assert.deepEqual([db.exam_sessions[0].score, db.exam_sessions[0].max_score], [3, 6]);
+  const marks = Object.fromEntries(db.student_answers.map((a) => [a.question_id, a.is_correct]));
+  assert.deepEqual(marks, { m1: false, k1: true, k2: false });
+  assert.deepEqual(db.student_answers.find((a) => a.question_id === "m1")?.option_ids, ["m1a0", "m1b1"]);
+  assert.equal(db.profiles[0].xp, XP_PER_CORRECT);
+});

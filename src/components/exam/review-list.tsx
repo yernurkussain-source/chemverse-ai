@@ -3,13 +3,16 @@ import type { ReviewItem } from "@/features/exam/queries";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
-/** Сұрақтарды талдау: дұрыс/қате нұсқа, түсіндірме, «AI-дан сұрау» (нәтиже беті және қателер дәптері) */
+type T = Awaited<ReturnType<typeof getTranslations<"Exam">>>;
+
+/** Сұрақтарды талдау: дұрыс/қате нұсқа, ішінара ұпай, түсіндірме, «AI-дан сұрау» (нәтиже беті және қателер дәптері) */
 export async function ReviewList({ items, numbered = true }: { items: ReviewItem[]; numbered?: boolean }) {
   const t = await getTranslations("Exam");
   return (
     <ol className="flex flex-col gap-3">
       {items.map((item, i) => {
-        const isCorrect = Boolean(item.chosenId) && item.chosenId === item.correctId;
+        const isCorrect = item.points === item.maxPoints;
+        const answered = item.chosenIds.length > 0;
         return (
           <li key={item.id}>
             <details className="group rounded-2xl border border-line bg-panel" open={!isCorrect && i < 3 ? true : undefined}>
@@ -17,38 +20,36 @@ export async function ReviewList({ items, numbered = true }: { items: ReviewItem
                 <span
                   className={cn(
                     "grid size-7 shrink-0 place-items-center rounded-full font-mono text-[0.8rem] font-semibold",
-                    isCorrect ? "bg-good/15 text-good" : item.chosenId ? "bg-pink/15 text-pink" : "bg-panel-2 text-muted-foreground",
+                    isCorrect ? "bg-good/15 text-good" : answered ? "bg-pink/15 text-pink" : "bg-panel-2 text-muted-foreground",
                   )}
-                  aria-label={isCorrect ? t("correct") : item.chosenId ? t("wrong") : t("skipped")}
+                  aria-label={isCorrect ? t("correct") : answered ? t("wrong") : t("skipped")}
                 >
                   {numbered ? i + 1 : "✕"}
                 </span>
                 <span className="flex-1 text-[0.95rem]">{item.body}</span>
+                {item.kind !== "single" && (
+                  <span className={cn("shrink-0 font-mono text-[0.8rem] font-semibold", isCorrect ? "text-good" : "text-amber")}>
+                    {t("pointsOf", { points: item.points, max: item.maxPoints })}
+                  </span>
+                )}
                 <span aria-hidden className="text-muted-foreground transition-transform group-open:rotate-180">
                   ▾
                 </span>
               </summary>
               <div className="flex flex-col gap-2 border-t border-line p-4">
-                <ul className="flex flex-col gap-1.5">
-                  {item.options.map((option) => {
-                    const correct = option.id === item.correctId;
-                    const chosen = option.id === item.chosenId;
-                    return (
-                      <li
-                        key={option.id}
-                        className={cn(
-                          "flex items-start gap-2.5 rounded-xl border px-3 py-2 text-[0.9rem]",
-                          correct ? "border-good/50 bg-good/10" : chosen ? "border-pink/50 bg-pink/10" : "border-transparent",
-                        )}
-                      >
-                        <span className="font-mono font-semibold">{option.label}</span>
-                        <span className="flex-1">{option.body}</span>
-                        {correct && <span className="text-[0.78rem] font-semibold text-good">{t("correctAnswer")}</span>}
-                        {chosen && !correct && <span className="text-[0.78rem] font-semibold text-pink">{t("yourAnswer")}</span>}
-                      </li>
-                    );
-                  })}
-                </ul>
+                {item.context && <p className="text-[0.85rem] text-muted-foreground">{t("kinds.context")}: {item.context.title}</p>}
+                {item.kind === "matching" ? (
+                  item.items.map((left, slot) => (
+                    <div key={slot} className="flex flex-col gap-1.5">
+                      <p className="text-[0.9rem] font-semibold">
+                        {"AB"[slot] ?? slot + 1}) {left}
+                      </p>
+                      <Options item={item} slot={slot} t={t} />
+                    </div>
+                  ))
+                ) : (
+                  <Options item={item} t={t} />
+                )}
                 {item.explanation && (
                   <p className="rounded-xl bg-panel-2 px-3 py-2 text-[0.88rem] text-muted-foreground">{item.explanation}</p>
                 )}
@@ -69,15 +70,52 @@ export async function ReviewList({ items, numbered = true }: { items: ReviewItem
   );
 }
 
-/** AI мұғалімге жіберілетін сұрақ: шарты, нұсқалар, оқушының және дұрыс жауап */
-function askAiPrompt(item: ReviewItem, t: Awaited<ReturnType<typeof getTranslations<"Exam">>>) {
-  const label = (id: string | null) => item.options.find((o) => o.id === id)?.label ?? "—";
-  const options = item.options.map((o) => `${o.label}) ${o.body}`).join("\n");
-  return t("askAiPrompt", {
-    question: item.body,
-    options,
-    chosen: item.chosenId ? label(item.chosenId) : t("skipped"),
-    correct: label(item.correctId),
-  });
+function Options({ item, slot, t }: { item: ReviewItem; slot?: number; t: T }) {
+  return (
+    <ul className="flex flex-col gap-1.5">
+      {item.options
+        .filter((option) => slot === undefined || option.slot === slot)
+        .map((option) => {
+          const correct = item.correctIds.includes(option.id);
+          const chosen = item.chosenIds.includes(option.id);
+          return (
+            <li
+              key={option.id}
+              className={cn(
+                "flex items-start gap-2.5 rounded-xl border px-3 py-2 text-[0.9rem]",
+                correct ? "border-good/50 bg-good/10" : chosen ? "border-pink/50 bg-pink/10" : "border-transparent",
+              )}
+            >
+              {slot === undefined && <span className="font-mono font-semibold">{option.label}</span>}
+              <span className="flex-1">{option.body}</span>
+              {correct && <span className="text-[0.78rem] font-semibold text-good">{t("correctAnswer")}</span>}
+              {chosen && <span className={cn("text-[0.78rem] font-semibold", correct ? "text-good" : "text-pink")}>{t("yourAnswer")}</span>}
+            </li>
+          );
+        })}
+    </ul>
+  );
 }
 
+/** AI мұғалімге жіберілетін сұрақ: шарты, нұсқалар, оқушының және дұрыс жауап */
+function askAiPrompt(item: ReviewItem, t: T) {
+  // Сәйкестендіруде нұсқа «A-жол: мәтін» түрінде, қалғандарында әрпімен
+  const name = (id: string) => {
+    const option = item.options.find((o) => o.id === id);
+    if (!option) return "—";
+    return item.kind === "matching" ? `${"AB"[option.slot] ?? option.slot + 1} → ${option.body}` : option.label;
+  };
+  const list = (ids: string[]) => ids.map(name).join(", ") || "—";
+  const options =
+    item.kind === "matching"
+      ? item.items.map((left, slot) => `${"AB"[slot] ?? slot + 1}) ${left}`).join("\n") +
+        "\n" +
+        [...new Set(item.options.map((o) => o.body))].map((body) => `• ${body}`).join("\n")
+      : item.options.map((o) => `${o.label}) ${o.body}`).join("\n");
+  return t("askAiPrompt", {
+    question: item.context ? `${item.context.body}\n\n${item.body}` : item.body,
+    options,
+    chosen: item.chosenIds.length ? list(item.chosenIds) : t("skipped"),
+    correct: list(item.correctIds),
+  });
+}

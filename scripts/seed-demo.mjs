@@ -129,11 +129,17 @@ await cleanup({ removeStudents: false });
 // ---------- Тест сұрақтары ----------
 const exam = must(await db.from("exams").select("id, duration_minutes").eq("slug", "unt-demo").single(), "ҰБТ тесті");
 const links = must(await db.from("exam_questions").select("question_id").eq("exam_id", exam.id), "сұрақтар");
-const questionIds = links.map((l) => l.question_id);
+// Демо нәтижелер тек бір жауапты сұрақтардан (контекст/сәйкестендіру/бірнеше жауап — басқа бағалау)
 const questions = must(
-  await db.from("questions").select("id, difficulty, topics(slug)").in("id", questionIds),
+  await db
+    .from("questions")
+    .select("id, difficulty, topics(slug)")
+    .in("id", links.map((l) => l.question_id))
+    .eq("kind", "single")
+    .is("context_id", null),
   "сұрақтар",
 );
+const questionIds = questions.map((q) => q.id);
 const options = must(await db.from("question_options").select("id, question_id, is_correct").in("question_id", questionIds), "нұсқалар");
 const correctOf = new Map(options.filter((o) => o.is_correct).map((o) => [o.question_id, o.id]));
 const wrongOf = new Map();
