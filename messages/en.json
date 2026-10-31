@@ -620,7 +620,8 @@
     "prototype": "BETA · examples on the home page are demos",
     "install": "📱 Install the app",
     "privacy": "Privacy",
-    "terms": "Terms"
+    "terms": "Terms",
+    "about": "About"
   },
   "NotFound": {
     "title": "Page not found",
@@ -1121,7 +1122,7 @@
       },
       "molecules": {
         "title": "3D molecules",
-        "text": "Rotate 10 molecules, explore atoms, view them in AR."
+        "text": "Rotate 46 molecules, explore atoms, view them in AR."
       },
       "scan": {
         "title": "QR scanner",
@@ -5820,5 +5821,38 @@
         "text": "These rules may be updated. After important changes, the date on this page changes."
       }
     }
+  },
+  "About": {
+    "eyebrow": "About",
+    "title": "CHEMVERSE AI: chemistry you can see and touch",
+    "lead": "A chemistry platform that brings teachers and students together: 3D and AR molecules, a virtual lab, an AI tutor in Kazakh, UNT and olympiad preparation and live class quizzes.",
+    "stats": {
+      "labs": "virtual experiments",
+      "molecules": "3D molecules",
+      "elements": "elements",
+      "lessons": "textbook chapter summaries"
+    },
+    "problem": {
+      "title": "The problem",
+      "text": "Chemistry is abstract: students only see molecules as textbook drawings. Many schools lack lab equipment and reagents, UNT preparation materials are scattered, and teachers have little time to prepare lessons."
+    },
+    "solution": {
+      "title": "The solution",
+      "text": "Students rotate molecules in 3D, place them on the desk through the phone camera and control them with hand gestures. In the virtual lab they safely run grade 7–10 experiments that the server grades. The AI tutor answers in Kazakh, step by step, grounded in textbook summaries."
+    },
+    "teacher": {
+      "title": "For teachers",
+      "text": "Classes and assignments, students' test and lab results, live class quizzes (Kahoot-style), AI-assisted lesson plans and QR codes for textbooks and slides. Teachers review and approve every AI-generated plan."
+    },
+    "safety": {
+      "title": "Safety",
+      "text": "Camera frames are processed only on the device. Test answers are checked on the server and correct answers are never sent in advance. Students' names are never sent to the AI. A student's data is visible only to the student and their teacher."
+    },
+    "tech": {
+      "title": "Technology",
+      "text": "Next.js, Supabase (RLS access rules), Google Gemini with a knowledge base built from textbook summaries (RAG), 3Dmol.js and Three.js, MediaPipe (hand gestures) and AR. The site installs on phones as an app (PWA), and there is an Android APK. The interface is in Kazakh, Russian and English."
+    },
+    "demo": "See the demo",
+    "learn": "Start learning"
   }
 }

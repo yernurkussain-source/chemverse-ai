@@ -10,6 +10,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { ServiceWorkerRegister } from "@/components/layout/sw-register";
 import { ThemeScript } from "@/components/layout/theme-script";
 import { routing } from "@/i18n/routing";
+import { SITE_URL } from "@/lib/site";
 import "../globals.css";
 
 // Қаріптер қазақ әріптерін (ә, ғ, қ, ң, ө, ұ, ү, һ, і) толық қолдайды — тексерілген.
@@ -47,6 +48,7 @@ export function generateStaticParams() {
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Meta");
   return {
+    metadataBase: new URL(SITE_URL),
     title: { default: t("title"), template: "%s · CHEMVERSE AI" },
     description: t("description"),
     applicationName: "CHEMVERSE AI",

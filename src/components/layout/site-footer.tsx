@@ -14,6 +14,9 @@ export function SiteFooter() {
           <Link href="/install" className="font-semibold text-cyan hover:underline">
             {t("install")}
           </Link>
+          <Link href="/about" className="hover:text-foreground hover:underline">
+            {t("about")}
+          </Link>
           <Link href="/privacy" className="hover:text-foreground hover:underline">
             {t("privacy")}
           </Link>
