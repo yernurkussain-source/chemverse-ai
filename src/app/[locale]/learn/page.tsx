@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Eyebrow } from "@/components/landing/section";
 import { AtomIcon, BookIcon, ScanIcon } from "@/components/layout/nav-icons";
 import { Link } from "@/i18n/navigation";
 import { BackLink } from "@/components/layout/back-link";
+import { listLessons } from "@/features/lessons/lessons";
+import type { Locale } from "@/i18n/routing";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Learn");
@@ -27,6 +29,9 @@ const ITEMS = [
 // Оқу бөлімі: ҰБТ-ға дайындық және оқу құралдары
 export default function LearnPage() {
   const t = useTranslations("Learn");
+  const tl = useTranslations("Lessons");
+  const locale = useLocale() as Locale;
+  const lessons = listLessons();
   return (
     <div className="page-wrap py-10 md:py-14">
       <BackLink href="/" />
@@ -46,6 +51,31 @@ export default function LearnPage() {
           </li>
         ))}
       </ul>
+
+      {/* Оқулық тараулары бойынша конспектілер (docs/rag) */}
+      <section className="mt-10">
+        <h2 className="font-display text-lg font-semibold">{tl("sectionTitle")}</h2>
+        <p className="mt-1 mb-4 max-w-[60ch] text-[0.9rem] text-muted-foreground">{tl("sectionText")}</p>
+        {[...new Set(lessons.map((l) => l.grade))].map((grade) => (
+          <div key={grade} className="mb-5">
+            <h3 className="mb-2 text-[0.9rem] font-semibold text-muted-foreground">{tl("grade", { grade })}</h3>
+            <ul className="flex flex-wrap gap-2">
+              {lessons
+                .filter((l) => l.grade === grade)
+                .map((l) => (
+                  <li key={l.slug}>
+                    <Link
+                      href={`/learn/${l.slug}`}
+                      className="block rounded-full border border-line bg-panel-2 px-3 py-1.5 text-[0.85rem] hover:border-cyan-dim"
+                    >
+                      {l.title[locale].replace(/^\d+ · /, "")}
+                    </Link>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        ))}
+      </section>
     </div>
   );
 }

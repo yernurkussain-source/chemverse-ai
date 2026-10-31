@@ -5729,5 +5729,15 @@
     "text": "An error occurred while opening this page. Try again. If it keeps happening, come back a little later.",
     "retry": "Try again",
     "code": "Error code: {digest}"
+  },
+  "Lessons": {
+    "sectionTitle": "Textbook summaries",
+    "sectionText": "Short summaries of the grade 8–9 chemistry textbook chapters. Each section shows the textbook page.",
+    "grade": "Grade {grade}",
+    "kkOnly": "The summary is written in Kazakh.",
+    "askAi": "Ask the AI tutor",
+    "aiPrompt": "«{title}» тарауы бойынша маған 3 сұрақ қойып, жауаптарымды тексерші.",
+    "test": "Take the UNT test",
+    "chapters": "Chapters"
   }
 }
