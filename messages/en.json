@@ -1275,7 +1275,11 @@
     "askAiPrompt": "Explain this test question:\n{question}\n{options}\nMy answer: {chosen}. Correct answer: {correct}. Explain step by step why.",
     "bbzhmTitle": "BBZhM practice",
     "bbzhmShort": "BBZhM",
-    "bbzhmSubtitle": "For grade 9: 20 questions on grade 8–9 chemistry, 40 minutes. Questions are drawn anew on every attempt."
+    "bbzhmSubtitle": "For grade 9: 20 questions on grade 8–9 chemistry, 40 minutes. Questions are drawn anew on every attempt.",
+    "mistakesTitle": "Mistakes notebook",
+    "mistakesSubtitle": "Questions from UNT and BBZhM tests you answered wrong, with the correct answer and an explanation. Answer correctly in a later test and the question leaves the notebook.",
+    "mistakesEmpty": "The notebook is empty: no unfixed mistakes. Take a test.",
+    "mistakesLink": "Mistakes notebook →"
   },
   "AiTutor": {
     "title": "AI tutor",

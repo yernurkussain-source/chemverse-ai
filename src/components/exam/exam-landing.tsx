@@ -71,7 +71,12 @@ export async function ExamLanding({ slug }: { slug: string }) {
 
       {recent && recent.some((s) => s.status !== "in_progress") && (
         <section>
-          <h2 className="mb-3 font-display text-lg font-semibold">{t("recent")}</h2>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="font-display text-lg font-semibold">{t("recent")}</h2>
+            <Link href="/exam/mistakes" className="text-[0.9rem] font-semibold text-cyan hover:underline">
+              {t("mistakesLink")}
+            </Link>
+          </div>
           <ul className="flex flex-col gap-2">
             {recent
               .filter((s) => s.status !== "in_progress")

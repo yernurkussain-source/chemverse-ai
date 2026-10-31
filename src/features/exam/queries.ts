@@ -201,6 +201,53 @@ export type ResultView = {
   review: ReviewItem[];
 };
 
+/** Дұрыс нұсқалар мен түсіндірмелер — ТЕК аяқталған тест үшін (admin клиенті, клиентке алдын ала жіберілмейді) */
+async function loadAnswerKey(admin: NonNullable<ReturnType<typeof createAdminClient>>, questionIds: string[], locale: Locale) {
+  const [{ data: secrets }, { data: correctOptions }] = await Promise.all([
+    admin.from("questions").select("id, explanation_kk, explanation_ru, explanation_en").in("id", questionIds),
+    admin.from("question_options").select("id, question_id").in("question_id", questionIds).eq("is_correct", true),
+  ]);
+  return {
+    explanation: new Map((secrets ?? []).map((q) => [q.id as string, pick(q, "explanation", locale)])),
+    correct: new Map((correctOptions ?? []).map((o) => [o.question_id as string, o.id as string])),
+  };
+}
+
+const MISTAKES_LIMIT = 30;
+
+/**
+ * Қателер дәптері: аяқталған тесттерде соңғы рет ҚАТЕ жауап берілген сұрақтар (кейін дұрыс жауап берсе — шығады).
+ * null — кірмеген пайдаланушы.
+ */
+export async function getMistakes(locale: Locale): Promise<ReviewItem[] | null> {
+  await connection();
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) return null;
+  const admin = createAdminClient();
+  if (!admin) return [];
+
+  const { data: sessions } = await admin.from("exam_sessions").select("id").eq("user_id", auth.user.id).neq("status", "in_progress");
+  if (!sessions?.length) return [];
+  const { data: answers } = await admin
+    .from("student_answers")
+    .select("question_id, option_id, is_correct")
+    .in("session_id", sessions.map((s) => s.id as string))
+    .order("answered_at", { ascending: false })
+    .limit(1000);
+
+  // Әр сұрақтың ең соңғы жауабы ғана есептеледі
+  const latest = new Map<string, { option_id: string | null; is_correct: boolean | null }>();
+  for (const a of answers ?? []) if (!latest.has(a.question_id as string)) latest.set(a.question_id as string, a);
+  const wrong = [...latest].filter(([, a]) => a.is_correct === false).slice(0, MISTAKES_LIMIT);
+  if (!wrong.length) return [];
+
+  const ids = wrong.map(([id]) => id);
+  const [questions, { explanation, correct }] = await Promise.all([loadQuestions(ids, locale, "mistakes"), loadAnswerKey(admin, ids, locale)]);
+  const chosen = new Map(wrong.map(([id, a]) => [id, a.option_id]));
+  return questions.map((q) => ({ ...q, chosenId: chosen.get(q.id) ?? null, correctId: correct.get(q.id) ?? null, explanation: explanation.get(q.id) ?? "" }));
+}
+
 /** Нәтиже беті: тест аяқталғаннан кейін ғана дұрыс жауаптар мен түсіндірмелер ашылады */
 export async function getResultView(sessionId: string, locale: Locale): Promise<ResultView | { inProgress: true } | null> {
   const session = await loadOwnSession(sessionId, { allowTeacher: true });
@@ -210,18 +257,15 @@ export async function getResultView(sessionId: string, locale: Locale): Promise<
   const admin = createAdminClient();
   if (!admin) return null;
 
-  const [questions, { data: secrets }, { data: correctOptions }, { data: answers }, { data: exam }] = await Promise.all([
+  const [questions, { explanation, correct }, { data: answers }, { data: exam }] = await Promise.all([
     loadQuestions(session.question_ids, locale, session.id),
-    admin.from("questions").select("id, explanation_kk, explanation_ru, explanation_en").in("id", session.question_ids),
-    admin.from("question_options").select("id, question_id").in("question_id", session.question_ids).eq("is_correct", true),
+    loadAnswerKey(admin, session.question_ids, locale),
     admin.from("student_answers").select("question_id, option_id").eq("session_id", sessionId),
     session.exam_id
       ? admin.from("exams").select("title_kk, title_ru, title_en, exam_type").eq("id", session.exam_id).maybeSingle()
       : Promise.resolve({ data: null }),
   ]);
 
-  const explanation = new Map((secrets ?? []).map((q) => [q.id as string, pick(q, "explanation", locale)]));
-  const correct = new Map((correctOptions ?? []).map((o) => [o.question_id as string, o.id as string]));
   const chosen = new Map((answers ?? []).map((a) => [a.question_id as string, a.option_id as string | null]));
 
   const review: ReviewItem[] = questions.map((q) => ({
