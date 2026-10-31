@@ -119,3 +119,11 @@ describe("ҚМЖ: DOCX", () => {
     assert.equal((buf.toString("latin1").match(/word\/media\//g) ?? []).length >= 3, true);
   });
 });
+
+test("AI жазған LaTeX → Unicode (Word пен бетте $...$ шықпауы үшін)", async () => {
+  const { latexToUnicode } = await import("@/features/lesson-studio/kmzh");
+  assert.equal(latexToUnicode("4 моль оттек ($O_2$)"), "4 моль оттек (O₂)");
+  assert.equal(latexToUnicode("$n = 3,01\\cdot 10^{23} / 6,02\\cdot 10^{23} = 0,5 \\text{ моль}$"), "n = 3,01·10²³ / 6,02·10²³ = 0,5 моль");
+  assert.equal(latexToUnicode("$SO_4^{2-}$ және $Fe^{3+}$"), "SO₄²⁻ және Fe³⁺");
+  assert.equal(latexToUnicode("H₂O + CO₂ → H₂CO₃"), "H₂O + CO₂ → H₂CO₃");
+});

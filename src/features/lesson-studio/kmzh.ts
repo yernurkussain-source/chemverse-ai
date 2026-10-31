@@ -123,8 +123,44 @@ export type AiKmzh = z.infer<typeof aiKmzhSchema>;
 const blocks = (list: z.infer<typeof aiBlock>[]): KmzhRich[] =>
   list.flatMap((b) => (b.table ? [...(b.text.trim() ? [b.text] : []), { table: b.table }] : b.text.trim() ? [b.text] : []));
 
+const SUB: Record<string, string> = { 0: "₀", 1: "₁", 2: "₂", 3: "₃", 4: "₄", 5: "₅", 6: "₆", 7: "₇", 8: "₈", 9: "₉", "+": "₊", "-": "₋", "(": "₍", ")": "₎" };
+const SUP: Record<string, string> = { 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹", "+": "⁺", "-": "⁻", "−": "⁻" };
+const script = (map: Record<string, string>) => (_: string, group?: string, single?: string) => [...(group ?? single ?? "")].map((c) => map[c] ?? c).join("");
+
+/**
+ * AI кейде нұсқауға қарамай LaTeX жазады ($O_2$, 3,01\cdot 10^{23}, \text{ моль}). Word пен бетте ол сол күйі шығады,
+ * сондықтан Unicode-қа айналдырамыз: O₂, 3,01·10²³, моль.
+ */
+export function latexToUnicode(text: string): string {
+  if (!text.includes("$") && !text.includes("\\")) return text;
+  return text.replace(/\$\$?([^$]+)\$\$?/g, (_, math: string) =>
+    math
+      .replace(/\\text\{([^}]*)\}/g, "$1")
+      .replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, "$1/$2")
+      .replace(/\s*\\cdot\s*/g, "·")
+      .replace(/\s*\\times\s*/g, " × ")
+      .replace(/\\rightleftharpoons/g, "⇄")
+      .replace(/\\(rightarrow|to)\b/g, "→")
+      .replace(/\\approx/g, "≈")
+      .replace(/_\{([^}]*)\}|_(\S)/g, script(SUB))
+      .replace(/\^\{([^}]*)\}|\^(\S)/g, script(SUP))
+      .replace(/\\[,;!]/g, " ")
+      .replace(/\s{2,}/g, " ")
+      .trim(),
+  );
+}
+
+/** AI жауабындағы барлық мәтін өрістеріне (кесте ұяшықтарына да) */
+function mapStrings<T>(value: T, fn: (s: string) => string): T {
+  if (typeof value === "string") return fn(value) as T;
+  if (Array.isArray(value)) return value.map((v) => mapStrings(v, fn)) as T;
+  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, mapStrings(v, fn)])) as T;
+  return value;
+}
+
 /** AI жауабы + сервер қойған мета → сақталатын ҚМЖ */
-export function toKmzhPlan(ai: AiKmzh, meta: Omit<KmzhPlan["meta"], "lessonGoal">): KmzhPlan {
+export function toKmzhPlan(raw: AiKmzh, meta: Omit<KmzhPlan["meta"], "lessonGoal">): KmzhPlan {
+  const ai = mapStrings(raw, latexToUnicode);
   return {
     version: "1.0",
     meta: { ...meta, lessonGoal: ai.lessonGoal },

@@ -93,7 +93,8 @@ export function StudioForm() {
         <legend className="mb-1 text-[0.85rem] text-muted-foreground">{t("includeTitle")}</legend>
         {INCLUDES.map((key) => (
           <label key={key} className="flex items-center gap-2.5 text-[0.9rem]">
-            <input type="checkbox" name={key} defaultChecked className="size-4 accent-cyan" />
+            {/* «Зертхана» — әдепкі бойынша тек зертханалық/практикалық сабақта (әйтпесе AI жасанды «зертхана» ойлап табады) */}
+            <input key={key === "includeLab" ? String(isWork) : key} type="checkbox" name={key} defaultChecked={key !== "includeLab" || isWork} className="size-4 accent-cyan" />
             {t(`include.${key}`)}
           </label>
         ))}
