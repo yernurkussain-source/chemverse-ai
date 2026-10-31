@@ -1138,13 +1138,15 @@
       "ar": "AR molecule",
       "molecule": "3D molecule",
       "element": "Element",
-      "exam": "UNT test"
+      "exam": "UNT test",
+      "lab": "ChemLab experiment"
     },
     "hints": {
       "ar": "On a phone the molecule appears on the desk through the camera.",
       "molecule": "Opens the 3D molecule page: rotate it and tap atoms.",
       "element": "Opens the periodic table with this element selected.",
-      "exam": "The student goes to the UNT practice test page."
+      "exam": "The student goes to the UNT practice test page.",
+      "lab": "The student starts the virtual experiment right away. Handy for the lab door or a worksheet."
     },
     "create": "Create QR",
     "created": "QR created — it is at the top of the list.",

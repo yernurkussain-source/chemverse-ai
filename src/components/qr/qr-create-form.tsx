@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { FormError, SubmitButton, inputClass } from "@/components/auth/form-parts";
 import { createQr } from "@/features/qr/actions";
 import { EXAM_TARGETS, QR_TYPES, type QrType } from "@/features/qr/types";
+import { LAB_CATALOG } from "@/features/virtual-lab/catalog";
 import { ELEMENTS } from "@/lib/chemistry/elements";
 import { MOLECULES } from "@/lib/chemistry/molecules";
 import { cn } from "@/lib/utils";
@@ -14,6 +15,7 @@ export function QrCreateForm({ classes }: { classes: { id: string; name: string 
   const t = useTranslations("Qr");
   const tm = useTranslations("Molecules");
   const tExam = useTranslations("Exam");
+  const tLab = useTranslations("ChemLab");
   const locale = useLocale();
   const [type, setType] = useState<QrType>("ar");
   const [state, action] = useActionState(createQr, null);
@@ -62,6 +64,15 @@ export function QrCreateForm({ classes }: { classes: { id: string; name: string 
             {ELEMENTS.map((e) => (
               <option key={e.symbol} value={e.symbol}>
                 {e.number}. {e.symbol} — {e.name[locale]}
+              </option>
+            ))}
+          </select>
+        )}
+        {type === "lab" && (
+          <select name="target_lab" className={inputClass}>
+            {LAB_CATALOG.map((lab) => (
+              <option key={lab.slug} value={lab.slug}>
+                {lab.grades.join("–")} · {tLab(`catalog.${lab.slug}.title`)}
               </option>
             ))}
           </select>

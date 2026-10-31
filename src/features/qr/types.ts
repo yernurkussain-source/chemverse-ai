@@ -1,11 +1,12 @@
 import { getElement } from "@/lib/chemistry/elements";
 import { getMolecule } from "@/lib/chemistry/molecules";
+import { getLab, labHref } from "@/features/virtual-lab/catalog";
 
 /**
- * QR түрлері (BLUEPRINT 6-бөлім). Қалғандары (сабақ, тәжірибе, сыныпқа қосылу, үй тапсырмасы)
- * беттері дайын болғанда осында қосылады.
+ * QR түрлері (BLUEPRINT 6-бөлім). Сыныпқа қосылу QR-ы Live сабақ экранында (live-host.tsx);
+ * сабақ пен үй тапсырмасы беттері дайын болғанда осында қосылады (дерекқор оларды қабылдайды).
  */
-export const QR_TYPES = ["ar", "molecule", "element", "exam"] as const;
+export const QR_TYPES = ["ar", "molecule", "element", "lab", "exam"] as const;
 export type QrType = (typeof QR_TYPES)[number];
 
 /** Платформадағы тесттер (seed.sql) */
@@ -34,6 +35,8 @@ export function normalizeTarget(type: QrType, target: string): string | null {
       return getMolecule(target)?.id ?? null;
     case "element":
       return getElement(target)?.symbol ?? null;
+    case "lab":
+      return getLab(target)?.slug ?? null;
     case "exam":
       return (EXAM_TARGETS as readonly string[]).includes(target) ? target : null;
   }
@@ -48,6 +51,10 @@ export function qrDestination(type: QrType, target: string): string {
       return `/molecules/${target}`;
     case "element":
       return `/periodic-table?el=${encodeURIComponent(target)}`;
+    case "lab": {
+      const lab = getLab(target);
+      return lab ? labHref(lab) : "/virtual-lab";
+    }
     case "exam":
       return "/exam/unt";
   }

@@ -32,6 +32,8 @@ describe("QR", () => {
     assert.equal(normalizeTarget("element", "Zz"), null);
     assert.equal(normalizeTarget("exam", "unt-demo"), "unt-demo");
     assert.equal(normalizeTarget("exam", "../admin"), null);
+    assert.equal(normalizeTarget("lab", "titration"), "titration");
+    assert.equal(normalizeTarget("lab", "../admin"), null);
   });
 
   test("бағыттау жолдары тек сайт ішінде", () => {
@@ -39,6 +41,8 @@ describe("QR", () => {
     assert.equal(qrDestination("molecule", "co2"), "/molecules/co2");
     assert.equal(qrDestination("element", "Na"), "/periodic-table?el=Na");
     assert.equal(qrDestination("exam", "unt-demo"), "/exam/unt");
+    assert.equal(qrDestination("lab", "redox"), "/virtual-lab/redox");
+    assert.equal(qrDestination("lab", "periodic-explorer"), "/periodic-table");
   });
 
   test("токен мен түр тексерісі", () => {

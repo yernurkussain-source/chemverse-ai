@@ -21,6 +21,7 @@ import { getMolecule } from "@/lib/chemistry/molecules";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import { BackLink } from "@/components/layout/back-link";
+import { getLab } from "@/features/virtual-lab/catalog";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Qr");
@@ -177,6 +178,11 @@ async function describeTarget(type: QrType, target: string) {
   if (type === "element") {
     const element = getElement(target);
     return element ? { title: element.symbol, subtitle: element.name[locale] } : { title: target };
+  }
+  if (type === "lab") {
+    const lab = getLab(target);
+    const tLab = await getTranslations("ChemLab");
+    return lab ? { title: "ChemLab", subtitle: tLab(`catalog.${lab.slug}.title`) } : { title: target };
   }
   const tExam = await getTranslations("Exam");
   return { title: tExam("untShort"), subtitle: tExam("untTitle") };
