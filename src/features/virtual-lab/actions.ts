@@ -7,6 +7,7 @@ import { z } from "zod";
 import { routing, type Locale } from "@/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { grantLabBadges } from "@/features/auth/badges";
 import { awardXp, labXp } from "@/features/auth/xp";
 import { aiConclusionScore, isAiAvailable, labContext } from "./ai";
 import { getLab, isShellLab, type ShellLabSlug } from "./catalog";
@@ -316,7 +317,10 @@ export async function submitLab(raw: LabSubmissionInput): Promise<SubmitLabResul
     return { ok: true, attemptId: null, saved: false, ...outcome };
   }
   const attemptId = data.id as string;
-  after(() => awardXp(admin, userId, labXp(best?.score_total ?? null, outcome.breakdown.total)));
+  after(async () => {
+    await awardXp(admin, userId, labXp(best?.score_total ?? null, outcome.breakdown.total));
+    await grantLabBadges(admin, userId);
+  });
   if (aiLater) after(() => gradeConclusionLater(attemptId, outcome, input, slug, userId, admin, result));
   return { ok: true, attemptId, saved: true, ...outcome };
 }

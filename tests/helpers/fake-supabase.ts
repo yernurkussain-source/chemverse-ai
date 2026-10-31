@@ -41,6 +41,7 @@ export function fakeSupabase(tables: Record<string, Row[]>) {
       delete: () => ((action = { kind: "delete" }), builder),
       eq: (column: string, value: unknown) => (filters.push((r) => r[column] === value), builder),
       in: (column: string, values: unknown[]) => (filters.push((r) => values.includes(r[column])), builder),
+      gte: (column: string, value: number) => (filters.push((r) => (r[column] as number) >= value), builder),
       order: () => builder,
       limit: () => builder,
       returns: () => builder,
@@ -51,12 +52,14 @@ export function fakeSupabase(tables: Record<string, Row[]>) {
     return builder;
   }
 
-  /** upsert: кілт бағандары бойынша бар жолды жаңартады, болмаса қосады */
-  function upsert(name: string, input: Row | Row[], options?: { onConflict?: string }, keys: string[] = ["id"]) {
+  /** upsert: кілт бағандары бойынша бар жолды жаңартады (ignoreDuplicates — өзгертпейді), болмаса қосады */
+  function upsert(name: string, input: Row | Row[], options?: { onConflict?: string; ignoreDuplicates?: boolean }, keys: string[] = ["id"]) {
     const conflict = options?.onConflict?.split(",") ?? keys;
     for (const row of Array.isArray(input) ? input : [input]) {
       const existing = table(name).find((r) => conflict.every((k) => r[k] === row[k]));
-      if (existing) Object.assign(existing, row);
+      if (existing) {
+        if (!options?.ignoreDuplicates) Object.assign(existing, row);
+      }
       else table(name).push({ ...row });
     }
     return Promise.resolve({ data: null, error: null });
@@ -74,7 +77,7 @@ export function fakeSupabase(tables: Record<string, Row[]>) {
         table(name).push(...(Array.isArray(rows) ? rows : [rows]).map((r) => ({ ...r })));
         return Promise.resolve({ data: null, error: null });
       },
-      upsert: (rows: Row | Row[], options?: { onConflict?: string }) => upsert(name, rows, options, PRIMARY_KEYS[name]),
+      upsert: (rows: Row | Row[], options?: { onConflict?: string; ignoreDuplicates?: boolean }) => upsert(name, rows, options, PRIMARY_KEYS[name]),
     }),
     /** Тек award_xp (supabase/migrations/20261103000000_profile_xp.sql): профильдің XP-і өседі */
     rpc: (fn: string, args: Row) => {

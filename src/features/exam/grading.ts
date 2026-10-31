@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { awardXp } from "@/features/auth/xp";
 import { scoreExam, XP_PER_CORRECT, type ExamType } from "./scoring";
+import { examBadges, grantBadges } from "@/features/auth/badges";
 
 /** Жауап мерзімі өткеннен кейін желі кідірісіне берілетін қосымша уақыт */
 export const DEADLINE_GRACE_MS = 5_000;
@@ -111,4 +112,5 @@ export async function finalizeSession(admin: SupabaseClient, sessionId: string) 
   // XP: әр дұрыс жауапқа
   const correctCount = graded.filter((q) => q.correct).length;
   await awardXp(admin, session.user_id, correctCount * XP_PER_CORRECT);
+  await grantBadges(admin, session.user_id, examBadges(exam?.exam_type ?? "unt", score, maxScore));
 }

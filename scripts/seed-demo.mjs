@@ -258,6 +258,14 @@ for (const student of [...STUDENTS, MAIN_STUDENT]) {
 }
 console.log(`👩‍🎓 12 демо оқушы + Айгерім · ${sessionsCount} тест нәтижесі · 8А сыныбы`);
 
+// ---------- Айгерімнің бейдждері (src/features/auth/badges.ts) — профильде бос болмауы үшін ----------
+const DEMO_BADGES = ["first_test", "first_lab", "streak_7", "xp_1000"];
+must(await db.from("achievements").upsert(DEMO_BADGES.map((id) => ({ id, title_kk: id })), { onConflict: "id", ignoreDuplicates: true }), "бейдж анықтамасы");
+must(
+  await db.from("user_achievements").upsert(DEMO_BADGES.map((achievement_id) => ({ user_id: mainStudent.id, achievement_id })), { onConflict: "user_id,achievement_id", ignoreDuplicates: true }),
+  "бейдждер",
+);
+
 // ---------- Тапсырмалар ----------
 for (const a of SEED_ASSIGNMENTS) {
   must(

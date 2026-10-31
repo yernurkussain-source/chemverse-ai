@@ -5860,5 +5860,33 @@
     },
     "demo": "See the demo",
     "learn": "Start learning"
+  },
+  "Badges": {
+    "title": "Achievements",
+    "earned": "Earned ✓",
+    "first_test": {
+      "title": "First test",
+      "hint": "Finish a UNT or BBZhM test"
+    },
+    "first_lab": {
+      "title": "First experiment",
+      "hint": "Submit one ChemLab experiment"
+    },
+    "unt_80": {
+      "title": "Sharpshooter",
+      "hint": "Score 80 % or more in a test"
+    },
+    "lab_master": {
+      "title": "Lab master",
+      "hint": "Submit 10 experiments with 80+ points"
+    },
+    "streak_7": {
+      "title": "7-day streak",
+      "hint": "Earn XP 7 days in a row"
+    },
+    "xp_1000": {
+      "title": "1000 XP",
+      "hint": "Earn 1000 XP in total"
+    }
   }
 }

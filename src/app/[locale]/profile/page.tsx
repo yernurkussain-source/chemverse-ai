@@ -11,7 +11,9 @@ import { JoinClassForm } from "@/components/teacher/forms";
 import { MyWorks } from "@/components/virtual-lab/catalog-cards";
 import { DeleteAccount } from "@/components/auth/delete-account";
 import { signOut } from "@/features/auth/actions";
+import { BADGES, type BadgeId } from "@/features/auth/badges";
 import { getCurrentAccount } from "@/features/auth/queries";
+import { createClient } from "@/lib/supabase/server";
 import { getStudentAssignments } from "@/features/teacher/queries";
 import { cn } from "@/lib/utils";
 import { Link, redirect } from "@/i18n/navigation";
@@ -124,6 +126,7 @@ async function ProfileDetails() {
 
       {profile?.role === "student" && <StudentAssignments userId={user.id} locale={locale} />}
       {profile?.role === "student" && <MyWorks />}
+      {profile?.role === "student" && <Badges userId={user.id} />}
 
       <div className="flex flex-wrap gap-2.5">
         {profile?.role === "teacher" ? (
@@ -150,6 +153,42 @@ async function ProfileDetails() {
 
       {!profile?.is_demo && <DeleteAccount />}
     </div>
+  );
+}
+
+const BADGE_ICON: Record<BadgeId, string> = { first_test: "📝", first_lab: "🧪", unt_80: "🎯", lab_master: "⚗️", streak_7: "🔥", xp_1000: "⭐" };
+
+/** Жетістіктер: алынғандары түрлі түсті, қалғандары — сұр, астында қалай алуға болатыны */
+async function Badges({ userId }: { userId: string }) {
+  const t = await getTranslations("Badges");
+  const supabase = await createClient();
+  const { data } = await supabase.from("user_achievements").select("achievement_id").eq("user_id", userId);
+  const earned = new Set((data ?? []).map((row) => row.achievement_id as string));
+  const count = BADGES.filter((id) => earned.has(id)).length;
+
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="text-base font-semibold">
+        {t("title")} <span className="font-mono text-[0.9rem] text-muted-foreground">{count}/{BADGES.length}</span>
+      </h2>
+      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {BADGES.map((id) => {
+          const has = earned.has(id);
+          return (
+            <li
+              key={id}
+              className={cn("flex flex-col items-center gap-1 rounded-xl border p-2.5 text-center", has ? "border-cyan-dim bg-cyan/5" : "border-line")}
+            >
+              <span aria-hidden className={cn("text-2xl", !has && "opacity-40 grayscale")}>
+                {BADGE_ICON[id]}
+              </span>
+              <span className={cn("text-[0.78rem] font-semibold leading-tight", !has && "text-muted-foreground")}>{t(`${id}.title`)}</span>
+              <span className="text-[0.7rem] leading-snug text-muted-foreground">{has ? t("earned") : t(`${id}.hint`)}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
 
