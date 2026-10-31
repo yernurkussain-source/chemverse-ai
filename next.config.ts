@@ -4,7 +4,12 @@ import createNextIntlPlugin from "next-intl/plugin";
 const nextConfig: NextConfig = {
   cacheComponents: true,
   // Сабақ беттері конспектілер мен банкті файлдан оқиды (src/features/lessons/lessons.ts) — Vercel-ге кірсін
-  outputFileTracingIncludes: { "/[locale]/learn/**": ["./docs/rag/*.md", "./docs/unt/questions/*.json"] },
+  // ҚМЖ генераторы AI нұсқауын docs/kmzh/AI_SYSTEM_PROMPT.md-ден оқиды (src/features/lesson-studio/prompt.ts)
+  outputFileTracingIncludes: {
+    "/[locale]/learn/**": ["./docs/rag/*.md", "./docs/unt/questions/*.json"],
+    "/[locale]/teacher/lesson-studio": ["./docs/kmzh/AI_SYSTEM_PROMPT.md"],
+    "/[locale]/teacher/lesson-studio/**": ["./docs/kmzh/AI_SYSTEM_PROMPT.md"],
+  },
   partialPrefetching: true,
   // Тек `npm run dev` үшін: сайтты бір Wi-Fi-дағы телефоннан ашқанда жаңартулар бұғатталмасын
   // (жергілікті желі адрестері: 192.168.x.x, 10.x.x.x, 172.x.x.x, 169.254.x.x)

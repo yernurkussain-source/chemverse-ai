@@ -62,3 +62,5 @@
 - Телефонмен тексеру керек болса (камера, AR, PWA), қалай істеу керегін түсіндір (мысалы, Vercel preview сілтемесі арқылы).
 
 «- Олимпиада бөлімі: docs/olympiad/OLYMPIAD_SPEC.md, мазмұн: docs/olympiad/TOPICS.json және PROBLEMS.json, тексергіштер: docs/olympiad/core/»
+
+- AI Lesson Studio (ҚМЖ генераторы): docs/kmzh/KMZH_SPEC.md. Пішім эталоны: docs/kmzh/reference/teacher-sample.pdf. AI нұсқауы: docs/kmzh/AI_SYSTEM_PROMPT.md (ережені сол жерде өзгертіңіз). Код: src/features/lesson-studio/ (kmzh.ts, docx.ts, prompt.ts).

@@ -1458,11 +1458,11 @@
   "LessonStudio": {
     "eyebrow": "AI Lesson Studio",
     "title": "AI lesson planner",
-    "subtitle": "Type a topic — the AI drafts a short-term plan: objectives, stages and timing, tasks with descriptors, platform resources. The teacher has the final say.",
+    "subtitle": "Enter the unit, topic and learning objective — the AI fills in the short-term plan in the school's approved format: lesson start, new material, individual/pair/group tasks, lab work, functional literacy, SEN task, feedback, descriptors and points. Download it to Word to edit.",
     "loading": "Loading…",
-    "newPlan": "New plan",
+    "newPlan": "New lesson plan",
     "topic": "Topic",
-    "topicPlaceholder": "e.g. Types of chemical bonds",
+    "topicPlaceholder": "E.g.: Methods of separating mixtures",
     "grade": "Grade",
     "duration": "Duration",
     "minutes": "{count} min",
@@ -1477,15 +1477,16 @@
     "notesHint": "Optional: class specifics, methods, resources",
     "generate": "Create plan",
     "generating": "The AI is drafting…",
-    "generatingHint": "This takes 20–40 seconds, keep the page open.",
+    "generatingHint": "This takes 30–50 seconds, keep the page open.",
     "myPlans": "My plans",
     "noPlans": "No plans yet.",
     "errors": {
       "not_teacher": "Only teachers can create plans.",
-      "missing_fields": "Enter a topic and choose all fields.",
+      "missing_fields": "Enter the unit and topic and fill in all fields correctly.",
       "not_configured": "AI is not configured yet: add GOOGLE_GENERATIVE_AI_API_KEY to .env.local.",
       "rate_limited": "Too many requests. Try again in a minute.",
-      "ai_error": "The AI could not create a plan. Refine the topic and try again."
+      "ai_error": "The AI could not create a plan. Refine the topic and try again.",
+      "ai_busy": "The AI server is unavailable right now: Google Gemini is overloaded or the daily limit is used up. Try again later."
     },
     "planTitle": "Short-term plan",
     "planEyebrow": "Short-term lesson plan",
@@ -1530,7 +1531,36 @@
       "periodic": "Periodic table",
       "ai": "AI tutor"
     },
-    "aiNote": "This plan was drafted by AI. The teacher must check curriculum codes and content."
+    "aiNote": "This plan was drafted by AI. The teacher must check curriculum codes and content.",
+    "date": "Date",
+    "section": "Unit",
+    "sectionPlaceholder": "E.g.: 7.1A Introduction to chemistry. Pure substances and mixtures",
+    "objectives": "Learning objective from the curriculum",
+    "objectivesHint": "One objective per line: code - text. The AI never invents codes — if empty, it writes [код].",
+    "objectivesPlaceholder": "7.4.1.6 - plan and carry out an experiment to separate a mixture",
+    "kmzhTypes": {
+      "new": "New lesson",
+      "lab": "Lab work",
+      "practical": "Practical work",
+      "problem_solving": "Problem solving",
+      "review": "Review",
+      "summative": "Summative assessment"
+    },
+    "labNumber": "No.",
+    "labTitle": "Work title",
+    "labTitlePlaceholder": "E.g.: Purifying contaminated table salt",
+    "groupCount": "Groups",
+    "includeTitle": "Include in the plan",
+    "include": {
+      "includeSEN": "Task for a student with SEN",
+      "includeFunctionalLiteracy": "Functional literacy task",
+      "includeLab": "Lab experiment"
+    },
+    "aiTools": "AI tools used (listed in resources)",
+    "downloadDocx": "Download Word (DOCX)",
+    "kmzhNote": "This plan was filled in by AI. Check the content, chemistry and timing, and edit it in Word if needed.",
+    "timeTotal": "Time: {sum}/{total} min",
+    "pointsTotal": "Total points: {count}"
   },
   "LiveClass": {
     "eyebrow": "Live lesson",

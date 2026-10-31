@@ -1,54 +1,62 @@
 "use server";
 
-import { generateText, Output } from "ai";
+import { APICallError, generateText, Output, RetryError } from "ai";
 import { refresh } from "next/cache";
 import { hasLocale } from "next-intl";
+import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
-import { chatModel, isAiConfigured } from "@/lib/ai/provider";
+import { chatModel, fallbackChatModel, isAiConfigured } from "@/lib/ai/provider";
+import { searchKnowledge } from "@/lib/ai/rag";
 import { isRateLimited, logUsage, saveTokenUsage } from "@/lib/ai/rate-limit";
-import { MOLECULES } from "@/lib/chemistry/molecules";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { LESSON_DURATIONS, LESSON_TYPES, lessonPlanSchema, type LessonType } from "./schema";
+import { aiKmzhSchema, fixMinutes, KMZH_LESSON_TYPES, monthValue, parseObjectives, toKmzhPlan, validateKmzh } from "./kmzh";
+import { kmzhFixPrompt, kmzhSystemPrompt, kmzhUserPrompt, type KmzhInput } from "./prompt";
 
-export type StudioState = { error?: "not_teacher" | "missing_fields" | "not_configured" | "rate_limited" | "ai_error" } | null;
-
-const LANGUAGE: Record<Locale, string> = { kk: "қазақ", ru: "орыс", en: "ағылшын" };
-const TYPE_TEXT: Record<LessonType, string> = {
-  new: "жаңа білімді меңгерту",
-  practice: "білік пен дағдыны қалыптастыру (есеп шығару)",
-  lab: "практикалық / зертханалық жұмыс",
-  review: "қайталау және жинақтау",
-};
+export type StudioState = { error?: "not_teacher" | "missing_fields" | "not_configured" | "rate_limited" | "ai_busy" | "ai_error" } | null;
 
 const text = (formData: FormData, key: string) => String(formData.get(key) ?? "").trim();
 
-/** AI-ға жіберілетін нұсқау: ҚМЖ құрылымы, уақыт, платформа ресурстары */
-function studioInstructions(locale: Locale) {
-  const molecules = MOLECULES.map((m) => `${m.id} (${m.formula})`).join(", ");
-  return `Сен — Қазақстан мектебінің тәжірибелі химия мұғалімісің және қысқа мерзімді жоспар (ҚМЖ) құрастырасың.
-Жоспарды ${LANGUAGE[locale]} тілінде жаз. Қазақша жазғанда мектептегі қазақша химия терминдерін қолдан.
+const inputSchema = z.object({
+  grade: z.coerce.number().int().min(7).max(11),
+  section: z.string().min(1).max(200),
+  topic: z.string().min(1).max(200),
+  lessonType: z.enum(KMZH_LESSON_TYPES),
+  labNumber: z.string().max(4),
+  labTitle: z.string().max(150),
+  objectives: z.string().max(1500),
+  date: z.string().regex(/^(\d{4}-\d{2}-\d{2})?$/),
+  lessonMinutes: z.coerce.number().int().min(20).max(90),
+  groupCount: z.coerce.number().int().min(2).max(6),
+  aiTools: z.string().max(150),
+  notes: z.string().max(600),
+});
 
-ТАЛАПТАР:
-- Кезеңдердің минуттарының қосындысы сабақ ұзақтығына ДӘЛ тең болсын.
-- Кезеңдер: start (басы), бірнеше middle (ортасы), end (соңы).
-- Оқу мақсаттары нақты және өлшенетін болсын; критерийлер мақсатқа сай; әр тапсырманың дескрипторлары мен балы болсын.
-- Белсенді әдістер: жұптық/топтық жұмыс, саралау, формативті бағалау, рефлексия.
-- Химиялық формулаларды Unicode индекспен жаз (H₂SO₄), LaTeX қолданба.
-- Қауіпсіздік ережесін зертханалық сабақта міндетті түрде ескер.
-- Оқу бағдарламасының кодын нақты білмесең — кодсыз жаз, ойдан шығарма.
+/** 503 — модельге жүктеме көп, 429 — сұрау лимиті (тегін тарифте күніне бірнеше ондаған) бітті */
+const isBusy = (error: unknown) => {
+  const last = RetryError.isInstance(error) ? error.lastError : error;
+  return APICallError.isInstance(last) && (last.statusCode === 503 || last.statusCode === 429);
+};
 
-CHEMVERSE AI ПЛАТФОРМАСЫНЫҢ РЕСУРСТАРЫ (platformResources өрісінде 2–4 ресурс ұсын):
-- molecule3d — 3D молекула (target: ${molecules})
-- ar — молекуланы AR-да телефонмен үстелге шығару (target: сол молекула id-лері)
-- lab — виртуалды зертхана: қышқылды сілтімен титрлеу
-- test — ҰБТ форматындағы тест (автоматты бағалау)
-- periodic — интерактивті периодтық кесте
-- ai — AI мұғалім (оқушы сұрақ қояды, сократтық режим бар)`;
+/** Негізгі модель қолжетімсіз болса (503/429) — резерв модельмен (лимиті бөлек) қайталау; басқа қате өзгеріссіз шығады */
+async function withFallback<T>(run: (model: ReturnType<typeof chatModel>) => Promise<T>): Promise<T> {
+  try {
+    return await run(chatModel());
+  } catch (error) {
+    if (!isBusy(error)) throw error;
+    console.warn("ҚМЖ: негізгі модель қолжетімсіз (503/429), резерв модельге ауысамыз");
+    return run(fallbackChatModel());
+  }
 }
 
-/** ҚМЖ жасау: тек мұғалім; нәтиже lesson_plans кестесіне сақталып, жоспар бетіне өтеді */
+/** Құрылымдық жауап AI-дан келгенше (сабақ ≈ 20–40 с); қайта түзету тек уақыт жетсе (бет maxDuration = 60 с) */
+const FIX_BUDGET_MS = 25_000;
+
+/**
+ * ҚМЖ жасау (мектептің пішімі, docs/kmzh/KMZH_SPEC.md 5-бөлім): тек мұғалім.
+ * Оқу мақсатының коды, айдың құндылығы, күні — сервер қояды (AI ойдан шығармайды); педагогтің аты AI-ға жіберілмейді.
+ */
 export async function generateLessonPlan(_prev: StudioState, formData: FormData): Promise<StudioState> {
   const localeValue = text(formData, "locale");
   const locale: Locale = hasLocale(routing.locales, localeValue) ? localeValue : routing.defaultLocale;
@@ -62,53 +70,91 @@ export async function generateLessonPlan(_prev: StudioState, formData: FormData)
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", auth.user.id).single();
   if (profile?.role !== "teacher") return { error: "not_teacher" };
 
-  const topic = text(formData, "topic").slice(0, 150);
-  const grade = Number(text(formData, "grade"));
-  const duration = Number(text(formData, "duration"));
-  const type = text(formData, "type") as LessonType;
-  const notes = text(formData, "notes").slice(0, 600);
-  if (
-    !topic ||
-    !(grade >= 7 && grade <= 11) ||
-    !(LESSON_DURATIONS as readonly number[]).includes(duration) ||
-    !LESSON_TYPES.includes(type)
-  ) {
-    return { error: "missing_fields" };
-  }
+  const parsed = inputSchema.safeParse(Object.fromEntries([...inputSchema.keyof().options].map((key) => [key, text(formData, key)])));
+  if (!parsed.success) return { error: "missing_fields" };
+  const form = parsed.data;
+  const isWork = form.lessonType === "lab" || form.lessonType === "practical";
+  const input: KmzhInput = {
+    grade: form.grade,
+    section: form.section,
+    topic: form.topic,
+    lessonType: form.lessonType,
+    labTitle: isWork ? form.labTitle : "",
+    objectives: parseObjectives(form.objectives),
+    lessonMinutes: form.lessonMinutes,
+    groupCount: form.groupCount,
+    includeSEN: formData.get("includeSEN") === "on",
+    includeFunctionalLiteracy: formData.get("includeFunctionalLiteracy") === "on",
+    includeLab: formData.get("includeLab") === "on",
+    aiTools: form.aiTools,
+    teacherNotes: form.notes,
+  };
+  const value = monthValue(form.date || undefined);
+  const workNote = form.lessonType === "lab" ? "зертханалық жұмыс." : "практикалық жұмыс.";
 
   if (await isRateLimited(admin, auth.user.id)) return { error: "rate_limited" };
   const usageId = await logUsage(admin, auth.user.id, "lesson-plan");
 
   let planId: string;
   try {
-    const result = await generateText({
-      model: chatModel(),
-      instructions: studioInstructions(locale),
-      prompt: `Сынып: ${grade}. Тақырып: ${topic}. Ұзақтығы: ${duration} минут. Сабақ түрі: ${TYPE_TEXT[type]}.${
-        notes ? `\nМұғалімнің қосымша тілегі: ${notes}` : ""
-      }`,
-      output: Output.object({ schema: lessonPlanSchema, name: "lesson_plan" }),
-      temperature: 0.4,
-      maxOutputTokens: 6000,
-    });
-    await saveTokenUsage(admin, usageId, result.totalUsage.inputTokens, result.totalUsage.outputTokens);
+    const started = Date.now();
+    // Оқулық конспектілерінен үзінділер: осы сыныптың тараулары алдымен
+    const chunks = (await searchKnowledge(admin, `${input.topic}. ${input.objectives.map((o) => o.text).join(". ")}`)).sort(
+      (a, b) => Number(b.source.startsWith(`${input.grade}-`)) - Number(a.source.startsWith(`${input.grade}-`)),
+    );
+    const prompt = kmzhUserPrompt(input, value, chunks);
+    const request = { instructions: kmzhSystemPrompt(), output: Output.object({ schema: aiKmzhSchema, name: "kmzh" }), temperature: 0.4, maxOutputTokens: 16000, maxRetries: 1 };
+    const meta = {
+      section: input.section,
+      teacher: "",
+      date: form.date,
+      grade: input.grade,
+      present: "",
+      absent: "",
+      topic: input.topic,
+      // «2-зертханалық жұмыс.»; нөмірсіз — «Зертханалық жұмыс.»
+      topicNote: !isWork ? "" : form.labNumber ? `${form.labNumber}-${workNote}` : workNote[0].toUpperCase() + workNote.slice(1),
+      topicNoteTitle: isWork ? input.labTitle : "",
+      objectives: input.objectives,
+      value,
+      lessonMinutes: input.lessonMinutes,
+      headerEmptyRow: true,
+      trailingEmptyRows: 2,
+    };
 
-    // RLS: мұғалім тек өз атынан жаза алады
+    let result = await withFallback((model) => generateText({ ...request, model, prompt }));
+    let plan = fixMinutes(toKmzhPlan(result.output, meta));
+    let tokens = { input: result.totalUsage.inputTokens ?? 0, output: result.totalUsage.outputTokens ?? 0 };
+    const check = validateKmzh(plan);
+    if (!check.ok && Date.now() - started < FIX_BUDGET_MS) {
+      result = await withFallback((model) =>
+        generateText({
+          ...request,
+          model,
+          messages: [
+            { role: "user", content: prompt },
+            { role: "assistant", content: JSON.stringify(result.output) },
+            { role: "user", content: kmzhFixPrompt(check.errors) },
+          ],
+        }),
+      );
+      plan = fixMinutes(toKmzhPlan(result.output, meta));
+      tokens = { input: tokens.input + (result.totalUsage.inputTokens ?? 0), output: tokens.output + (result.totalUsage.outputTokens ?? 0) };
+    }
+    await saveTokenUsage(admin, usageId, tokens.input, tokens.output);
+
+    // Қате қалса да сақталады — бетте тексергіштің ескертулері көрсетіледі. RLS: мұғалім тек өз атынан жазады
     const { data, error } = await supabase
       .from("lesson_plans")
-      .insert({
-        teacher_id: auth.user.id,
-        topic,
-        grade,
-        content_json: { ...result.output, meta: { duration, type, locale } },
-      })
+      .insert({ teacher_id: auth.user.id, topic: input.topic, grade: input.grade, content_json: plan })
       .select("id")
       .single();
     if (error || !data) throw error ?? new Error("Plan was not saved");
     planId = data.id as string;
   } catch (error) {
     console.error("ҚМЖ жасау қатесі:", error);
-    return { error: "ai_error" };
+    // Екі модель де қолжетімсіз — мұғалімге «кейінірек қайталаңыз» дейміз, тақырыпта қате жоқ
+    return { error: isBusy(error) ? "ai_busy" : "ai_error" };
   }
 
   redirect({ href: `/teacher/lesson-studio/${planId}`, locale });

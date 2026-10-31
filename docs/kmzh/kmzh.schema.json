@@ -1,0 +1,374 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chemverse.ai/schemas/kmzh-1.0.json",
+  "title": "ҚМЖ (қысқа мерзімді жоспар) — CHEMVERSE AI Lesson Studio",
+  "description": "AI толтыратын және DOCX-ке айналатын сабақ жоспарының құрылымы. Мәтін өрістерінде қарапайым белгілеу рұқсат: **қалың**, *курсив*, __асты сызылған__. Бір жолдың ішінде жаңа жол керек болса — \\n.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "meta",
+    "rows"
+  ],
+  "properties": {
+    "version": {
+      "const": "1.0"
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "section",
+        "grade",
+        "topic",
+        "objectives",
+        "lessonGoal",
+        "value",
+        "lessonMinutes"
+      ],
+      "properties": {
+        "section": {
+          "type": "string",
+          "description": "Бөлім, мысалы: «7.1А Химия пәніне кіріспе. Таза заттар және қоспалар»"
+        },
+        "teacher": {
+          "type": "string",
+          "default": "",
+          "description": "Педагогтің аты-жөні. AI-ға жіберілмейді, экспорт алдында қойылады."
+        },
+        "date": {
+          "type": "string",
+          "default": "",
+          "description": "ISO күн (2026-09-15) немесе бос. DOCX-те 15.09.2026 болып шығады."
+        },
+        "grade": {
+          "type": [
+            "integer",
+            "string"
+          ],
+          "description": "Сынып, мысалы 7 немесе «8 А»"
+        },
+        "present": {
+          "type": "string",
+          "default": ""
+        },
+        "absent": {
+          "type": "string",
+          "default": ""
+        },
+        "topic": {
+          "type": "string",
+          "description": "Сабақтың тақырыбы"
+        },
+        "topicNote": {
+          "type": "string",
+          "default": "",
+          "description": "Тақырыптан кейін қалың әріппен: мысалы «2-зертханалық жұмыс.»"
+        },
+        "topicNoteTitle": {
+          "type": "string",
+          "default": "",
+          "description": "Жұмыстың атауы тырнақшамен: «Лас ас тұзын тазарту»"
+        },
+        "objectives": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "text"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "Оқу бағдарламасындағы код, мысалы 7.4.1.6. Белгісіз болса: [код]"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "lessonGoal": {
+          "type": "string",
+          "description": "Сабақтың мақсаты (1–2 сөйлем)"
+        },
+        "value": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "monthTitle"
+          ],
+          "description": "«Адал азамат» біртұтас тәрбие бағдарламасының ай құндылығы. Мәтінді AI ойдан шығармайды — values-calendar.json-нан алынады.",
+          "properties": {
+            "monthTitle": {
+              "type": "string",
+              "description": "ҚЫРКҮЙЕК – ЕҢБЕКҚОРЛЫҚ ЖӘНЕ КӘСІБИ БІЛІКТІЛІК АЙЫ"
+            },
+            "competency": {
+              "type": "string",
+              "default": ""
+            },
+            "graduate": {
+              "type": "string",
+              "default": "",
+              "description": "Түлек моделінің сипаттамасы (мұғалім бір рет енгізеді)"
+            },
+            "quote": {
+              "type": "string",
+              "default": "",
+              "description": "Аптаның дәйек сөзі, тырнақшасыз"
+            },
+            "quoteAuthor": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        },
+        "lessonMinutes": {
+          "type": "integer",
+          "minimum": 20,
+          "maximum": 90,
+          "default": 45
+        },
+        "headerEmptyRow": {
+          "type": "boolean",
+          "default": true,
+          "description": "Үлгідегідей бірінші кестенің соңында бос жол"
+        },
+        "trailingEmptyRows": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5,
+          "default": 2,
+          "description": "Сабақ барысы кестесінің соңындағы бос жолдар"
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/row"
+      }
+    }
+  },
+  "$defs": {
+    "rich": {
+      "description": "Ұяшық ішіндегі бір абзац (жол), кесте немесе сурет",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "table"
+          ],
+          "properties": {
+            "table": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "header",
+                "rows"
+              ],
+              "properties": {
+                "header": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                },
+                "rows": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "widths": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "description": "Бағандардың салыстырмалы ені, мысалы [1,2,1]"
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "image"
+          ],
+          "properties": {
+            "image": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "src"
+              ],
+              "properties": {
+                "src": {
+                  "type": "string",
+                  "description": "Supabase Storage жолы немесе файл. AI сурет жолын ойдан шығармайды — тек мұғалім жүктеген сурет."
+                },
+                "alt": {
+                  "type": "string",
+                  "default": ""
+                },
+                "widthCm": {
+                  "type": "number",
+                  "default": 4.6
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "richList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/rich"
+      }
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage",
+        "kind",
+        "title",
+        "teacher",
+        "student",
+        "assessment",
+        "resources"
+      ],
+      "properties": {
+        "stage": {
+          "type": "string",
+          "description": "Бірінші бағандағы кезең атауы. Алдыңғы жолдың жалғасы болса — бос жол \"\".",
+          "examples": [
+            "Сабақтың басы",
+            "Жаңа сабақ",
+            "Сабақтың ортасы",
+            "",
+            "Функционалдық сауаттылық тапсырмасы",
+            "ЕБҚ оқушы тапсырмасы",
+            "Сабақтың соңы"
+          ]
+        },
+        "minutes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 45,
+          "description": "Осы жолдың уақыты (мин). Кезең бағанында «5 мин» болып шығады."
+        },
+        "stageAccent": {
+          "type": "boolean",
+          "default": false,
+          "description": "Кезең атауы көк әріппен (үлгідегі ЕБҚ жолындай)"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "organization",
+            "brainstorm",
+            "new_material",
+            "individual",
+            "pair",
+            "group",
+            "lab",
+            "practical",
+            "functional_literacy",
+            "sen",
+            "consolidation",
+            "homework",
+            "feedback"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "description": "Тапсырма атауы: «Жеке тапсырма — «Әдісті дұрыс таңда» 🔍». Қалың болып шығады."
+        },
+        "teacher": {
+          "$ref": "#/$defs/richList",
+          "description": "Педагогтің іс-әрекеті: нұсқау, сұрақтар, тапсырма мәтіні, кестелер"
+        },
+        "expectedAnswer": {
+          "$ref": "#/$defs/richList",
+          "description": "Күтілетін жауап (міндетті емес)"
+        },
+        "valueNote": {
+          "$ref": "#/$defs/richList",
+          "description": "Құндылықпен байланыс (міндетті емес)"
+        },
+        "differentiation": {
+          "type": "string",
+          "default": "",
+          "description": "Саралау тәсілі"
+        },
+        "student": {
+          "$ref": "#/$defs/richList",
+          "description": "Оқушының іс-әрекеті"
+        },
+        "assessment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "items"
+          ],
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "Дескриптор: | Ауызша бағалау: | Жұптық бағалау: | Өзін-өзі бағалау: | Кері байланыс"
+            },
+            "items": {
+              "$ref": "#/$defs/richList"
+            },
+            "points": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "Жалпы балл. Дескриптор болса міндетті."
+            },
+            "extra": {
+              "$ref": "#/$defs/richList",
+              "description": "Қосымша бағалау түрі, мысалы «**Жұптық бағалау:** «Екі жұлдыз, бір ұсыныс»»"
+            },
+            "accent": {
+              "type": "boolean",
+              "default": false,
+              "description": "Бағалау ұяшығын көк әріппен (ЕБҚ жолы)"
+            }
+          }
+        },
+        "resources": {
+          "$ref": "#/$defs/richList",
+          "description": "Ресурстар: оқулық, ЖИ құралдары, видео, карточкалар"
+        },
+        "titleInline": {
+          "type": "boolean",
+          "default": false,
+          "description": "Атауды бірінші абзацпен бір жолда жазу (үлгідегі «Өзіме алғыс» атты ... сияқты)"
+        }
+      }
+    }
+  }
+}

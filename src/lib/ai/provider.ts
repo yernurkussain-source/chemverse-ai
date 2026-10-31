@@ -17,6 +17,11 @@ export function chatModel() {
   return google(process.env.AI_CHAT_MODEL || "gemini-flash-latest");
 }
 
+/** Негізгі модельге жүктеме көп болса (503) — жеңілірек резерв модель */
+export function fallbackChatModel() {
+  return google(process.env.AI_FALLBACK_MODEL || "gemini-flash-lite-latest");
+}
+
 /** Embedding өлшемі дерекқордағы rag_documents.embedding vector(1536) бағанымен бірдей болуы керек */
 export const EMBEDDING_DIMENSIONS = 1536;
 

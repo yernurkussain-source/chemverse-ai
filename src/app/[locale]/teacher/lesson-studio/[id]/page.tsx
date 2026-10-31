@@ -4,9 +4,12 @@ import { notFound } from "next/navigation";
 import { locale as rootLocale } from "next/root-params";
 import { hasLocale, useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { KmzhView } from "@/components/lesson-studio/kmzh-view";
 import { LessonPlanView } from "@/components/lesson-studio/lesson-plan-view";
 import { PrintButton } from "@/components/qr/print-button";
+import { buttonVariants } from "@/components/ui/button";
 import { deleteLessonPlan } from "@/features/lesson-studio/actions";
+import { kmzhSchema, validateKmzh } from "@/features/lesson-studio/kmzh";
 import { lessonPlanSchema } from "@/features/lesson-studio/schema";
 import { getTeacherId } from "@/features/teacher/queries";
 import { Link, redirect } from "@/i18n/navigation";
@@ -53,9 +56,15 @@ async function PlanContent({ params }: { params: Params }) {
     supabase.from("profiles").select("full_name").eq("id", userId).single(),
   ]);
   if (!row) notFound();
-  const parsed = lessonPlanSchema.safeParse(row.content_json);
-  if (!parsed.success) notFound();
+  // Жаңа пішім (мектептің ҚМЖ-сы, version 1.0) немесе бұрынғы жоспарлар
+  const kmzh = kmzhSchema.safeParse(row.content_json);
+  const parsed = kmzh.success ? null : lessonPlanSchema.safeParse(row.content_json);
+  if (!kmzh.success && !parsed?.success) notFound();
   const meta = (row.content_json as { meta?: { duration?: number } }).meta;
+  const plan = kmzh.success ? { ...kmzh.data, meta: { ...kmzh.data.meta, teacher: profile?.full_name ?? "" } } : null;
+  const check = plan ? validateKmzh(plan) : null;
+  const minutes = plan?.rows.reduce((sum, r) => sum + (r.minutes ?? 0), 0) ?? 0;
+  const points = plan?.rows.reduce((sum, r) => sum + (r.assessment.points ?? 0), 0) ?? 0;
 
   return (
     <>
@@ -64,6 +73,12 @@ async function PlanContent({ params }: { params: Params }) {
           ← {t("backToStudio")}
         </Link>
         <div className="flex flex-wrap gap-2">
+          {plan && (
+            // Файл жүктеледі (route handler), сондықтан Link емес
+            <a href={`/${locale}/teacher/lesson-studio/${row.id}/docx`} download className={buttonVariants({ variant: "glow", size: "pill-sm" })}>
+              ⬇ {t("downloadDocx")}
+            </a>
+          )}
           <PrintButton label={t("exportPdf")} />
           <form action={deleteLessonPlan}>
             <input type="hidden" name="id" value={row.id} />
@@ -80,7 +95,26 @@ async function PlanContent({ params }: { params: Params }) {
       <p className="mb-4 rounded-xl border border-dashed border-line px-3.5 py-2 text-[0.82rem] text-muted-foreground print:hidden">
         {t("pdfHint")}
       </p>
-      <LessonPlanView plan={parsed.data} grade={row.grade} duration={meta?.duration ?? null} teacherName={profile?.full_name ?? null} />
+      {plan && check ? (
+        <>
+          <div className="mb-4 flex flex-col gap-2 print:hidden">
+            <p className="rounded-xl border border-amber/50 bg-amber/10 px-3.5 py-2 text-[0.88rem]">{t("kmzhNote")}</p>
+            <p className="text-[0.88rem] text-muted-foreground">
+              <span className={minutes === plan.meta.lessonMinutes ? "text-good" : "font-semibold text-pink"}>
+                {t("timeTotal", { sum: minutes, total: plan.meta.lessonMinutes })}
+              </span>
+              {" · "}
+              {t("pointsTotal", { count: points })}
+            </p>
+            {[...check.errors.map((e) => ["text-pink", e]), ...check.warnings.map((w) => ["text-amber", w])].map(([color, message]) => (
+              <p key={message} className={`text-[0.82rem] ${color}`}>⚠ {message}</p>
+            ))}
+          </div>
+          <KmzhView plan={plan} />
+        </>
+      ) : (
+        parsed?.success && <LessonPlanView plan={parsed.data} grade={row.grade} duration={meta?.duration ?? null} teacherName={profile?.full_name ?? null} />
+      )}
     </>
   );
 }

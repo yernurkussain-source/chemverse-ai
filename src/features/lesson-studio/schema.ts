@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 /**
- * Қысқа мерзімді жоспардың (ҚМЖ) құрылымы. AI дәл осы пішінде JSON қайтарады,
- * бет пен PDF осыдан сызылады. Өрістер ҚМЖ үлгісіне сай (оқу мақсаты, критерий, дескриптор, кезеңдер).
+ * БҰРЫНҒЫ ҚМЖ құрылымы (2026-10-31-ге дейін жасалған жоспарларды көрсету үшін ғана).
+ * Жаңа жоспарлар мектептің пішімінде: kmzh.ts. Өрістер ҚМЖ үлгісіне сай (оқу мақсаты, критерий, дескриптор, кезеңдер).
  */
 export const RESOURCE_KINDS = ["molecule3d", "ar", "lab", "test", "periodic", "ai"] as const;
 
@@ -61,8 +61,3 @@ export const lessonPlanSchema = z.object({
 });
 
 export type LessonPlan = z.infer<typeof lessonPlanSchema>;
-
-/** Форма өрістері */
-export const LESSON_DURATIONS = [40, 45] as const;
-export const LESSON_TYPES = ["new", "practice", "lab", "review"] as const;
-export type LessonType = (typeof LESSON_TYPES)[number];
