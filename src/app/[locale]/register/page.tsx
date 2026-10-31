@@ -17,12 +17,15 @@ export default function RegisterPage() {
       title={t("registerTitle")}
       subtitle={t("registerSubtitle")}
       footer={
-        <span className="text-muted-foreground">
-          {t("haveAccount")}{" "}
-          <Link href="/login" className="font-semibold text-cyan hover:underline">
-            {t("toLogin")}
-          </Link>
-        </span>
+        <>
+          <span className="text-muted-foreground">
+            {t("haveAccount")}{" "}
+            <Link href="/login" className="font-semibold text-cyan hover:underline">
+              {t("toLogin")}
+            </Link>
+          </span>
+          <span className="text-[0.78rem] text-muted-foreground">{t("consentGoogle")}</span>
+        </>
       }
     >
       <RegisterForm />

@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { UserIcon } from "@/components/layout/nav-icons";
 import { JoinClassForm } from "@/components/teacher/forms";
 import { MyWorks } from "@/components/virtual-lab/catalog-cards";
+import { DeleteAccount } from "@/components/auth/delete-account";
 import { signOut } from "@/features/auth/actions";
 import { getCurrentAccount } from "@/features/auth/queries";
 import { getStudentAssignments } from "@/features/teacher/queries";
@@ -146,6 +147,8 @@ async function ProfileDetails() {
           </button>
         </form>
       </div>
+
+      {!profile?.is_demo && <DeleteAccount />}
     </div>
   );
 }

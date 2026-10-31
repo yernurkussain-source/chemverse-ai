@@ -618,7 +618,9 @@
   "Footer": {
     "tagline": "a platform to see chemistry and explore it with your own hands",
     "prototype": "BETA · examples on the home page are demos",
-    "install": "📱 Install the app"
+    "install": "📱 Install the app",
+    "privacy": "Privacy",
+    "terms": "Terms"
   },
   "NotFound": {
     "title": "Page not found",
@@ -660,7 +662,8 @@
       "unknown": "Something went wrong. Please try again.",
       "password_mismatch": "The passwords do not match.",
       "same_password": "The new password must be different from the old one.",
-      "link_expired": "The link has expired or was opened in another browser. Request a new link."
+      "link_expired": "The link has expired or was opened in another browser. Request a new link.",
+      "consent_required": "Tick the consent box to sign up."
     },
     "forgotLink": "Forgot your password?",
     "forgotTitle": "Reset your password",
@@ -671,7 +674,9 @@
     "resetSubtitle": "Enter your new password twice.",
     "newPassword": "New password",
     "confirmPassword": "Repeat the password",
-    "savePassword": "Save"
+    "savePassword": "Save",
+    "consent": "I have read the privacy policy and terms of use. If I am under 16, I have my parent's consent.",
+    "consentGoogle": "By signing up with Google you accept the privacy policy and terms of use."
   },
   "Demo": {
     "title": "Demo mode",
@@ -732,7 +737,15 @@
     "due": "due {date}",
     "assignmentDone": "Done ✓",
     "assignmentTodo": "To do",
-    "assignmentOverdue": "Overdue"
+    "assignmentOverdue": "Overdue",
+    "deleteTitle": "Delete account",
+    "deleteText": "Your account and all results (tests, experiments, XP) will be deleted permanently. If you are a teacher, your classes will be deleted too.",
+    "deleteButton": "Delete account",
+    "deleteConfirm": "Delete for sure? This cannot be undone.",
+    "deleteYes": "Yes, delete permanently",
+    "deleteCancel": "Cancel",
+    "deleteDemo": "The demo account cannot be deleted.",
+    "deleteFailed": "The account was not deleted. Try again a little later."
   },
   "MoleculeViewer": {
     "label": "3D molecule viewer. Drag to rotate; tap an atom.",
@@ -5739,5 +5752,73 @@
     "aiPrompt": "«{title}» тарауы бойынша маған 3 сұрақ қойып, жауаптарымды тексерші.",
     "test": "Take the UNT test",
     "chapters": "Chapters"
+  },
+  "Legal": {
+    "privacyTitle": "Privacy policy",
+    "termsTitle": "Terms of use",
+    "privacyLink": "Privacy policy",
+    "termsLink": "Terms of use",
+    "updated": "Last updated: 31.10.2026",
+    "note": "These are the platform's short, plain-language rules. Before using it at school, agree them with the school administration.",
+    "privacy": {
+      "collect": {
+        "title": "What data we collect",
+        "text": "When you create an account: name, email, role (student or teacher), grade and school (optional). When you use the platform: test, experiment and olympiad results, XP, questions to the AI tutor, and classes and assignments created by teachers."
+      },
+      "purpose": {
+        "title": "What it is used for",
+        "text": "Data is used only for learning: saving results, showing a student's progress to their teacher and finding weak topics. There are no ads, and data is not sold or shared with other organisations."
+      },
+      "camera": {
+        "title": "Camera",
+        "text": "During QR scanning, hand gestures and AR, camera frames are processed only on your device. They are never sent to the server or stored."
+      },
+      "ai": {
+        "title": "AI tutor",
+        "text": "Only the text of your question is sent to the AI tutor (Google Gemini). Your name and email are never sent to the AI. Do not write personal details about yourself in the chat."
+      },
+      "storage": {
+        "title": "Where it is stored",
+        "text": "Data is stored in a Supabase database over a secure connection with strict access rules (RLS). The site runs on Vercel. A student's results are visible only to the student and their class teacher."
+      },
+      "minors": {
+        "title": "Minors",
+        "text": "Students under 16 use the platform with the consent of a parent (legal guardian) or the school. When it is used in class, the teacher and school arrange the consent."
+      },
+      "rights": {
+        "title": "Your rights",
+        "text": "Under the Law of Kazakhstan on Personal Data and its Protection you may view, correct and delete your data. The “Delete account” button on the profile page permanently deletes the account and all results."
+      },
+      "contact": {
+        "title": "Contact",
+        "text": "Ask your teacher or the school administration about your data."
+      }
+    },
+    "terms": {
+      "purpose": {
+        "title": "Purpose",
+        "text": "CHEMVERSE AI is an educational platform for learning chemistry. It complements the teacher's lessons but does not replace the textbook or the teacher."
+      },
+      "ai": {
+        "title": "AI answers",
+        "text": "The AI tutor and AI-generated plans can make mistakes. Check important information against the textbook or with your teacher. Lesson plans generated by AI are reviewed and approved by the teacher."
+      },
+      "labs": {
+        "title": "Virtual lab",
+        "text": "Virtual experiment results are a learning model, not real measurements. Do real experiments only with a teacher and following safety rules."
+      },
+      "accounts": {
+        "title": "Account",
+        "text": "Never share your password, and sign out on shared computers. Demo accounts are shared: other people see changes made in them."
+      },
+      "conduct": {
+        "title": "Conduct",
+        "text": "Use the platform only for learning. Do not insult others, deliberately break the system or use the AI for things unrelated to chemistry."
+      },
+      "changes": {
+        "title": "Changes",
+        "text": "These rules may be updated. After important changes, the date on this page changes."
+      }
+    }
   }
 }

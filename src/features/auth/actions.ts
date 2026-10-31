@@ -9,7 +9,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import { ensureDemoAccounts, resetDemoPassword, type DemoRole } from "./demo";
-import { mapAuthError, type AuthState, type OnboardingState } from "./errors";
+import { mapAuthError, type AuthState, type DeleteAccountState, type OnboardingState } from "./errors";
 import { canResetPassword } from "./recovery";
 
 // Server Action ішінде тіл URL-ден оқылмайды, сондықтан формада жасырын өріс ретінде келеді
@@ -48,6 +48,8 @@ export async function register(_prev: AuthState, formData: FormData): Promise<Au
   const password = String(formData.get("password") ?? "");
   if (!fullName || !email || !password) return { error: "missing_fields" };
   if (password.length < 8) return { error: "weak_password" };
+  // Құпиялық саясаты мен шарттарға келісім (16 жасқа толмағанда — ата-ананың келісімі)
+  if (formData.get("consent") !== "on") return { error: "consent_required" };
 
   const origin = (await headers()).get("origin") ?? "";
   const supabase = await createClient();
@@ -120,6 +122,31 @@ export async function googleLogin(_prev: AuthState, formData: FormData): Promise
     return { error: "oauth_failed" };
   }
   externalRedirect(data.url);
+}
+
+/** Аккаунтты біржола өшіру (Профиль): нәтижелер мен сыныптар on delete cascade арқылы бірге өшеді. Демо — жоқ */
+export async function deleteAccount(_prev: DeleteAccountState, formData: FormData): Promise<DeleteAccountState> {
+  const locale = readLocale(formData);
+  const admin = createAdminClient();
+  if (!isSupabaseConfigured || !admin) return { error: "failed" };
+
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) {
+    redirect({ href: "/login", locale });
+    return null;
+  }
+  const { data: profile } = await supabase.from("profiles").select("is_demo").eq("id", auth.user.id).maybeSingle();
+  if (profile?.is_demo) return { error: "demo" };
+
+  const { error } = await admin.auth.admin.deleteUser(auth.user.id);
+  if (error) {
+    console.error("Аккаунтты өшіру қатесі:", error);
+    return { error: "failed" };
+  }
+  await supabase.auth.signOut();
+  redirect({ href: "/", locale });
+  return null;
 }
 
 /** Шығу */

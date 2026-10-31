@@ -3,11 +3,13 @@
 import { useActionState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { register } from "@/features/auth/actions";
+import { Link } from "@/i18n/navigation";
 import { Field, FormError, SubmitButton, TextInput } from "./form-parts";
 import { GoogleSignIn } from "./google-button";
 
 export function RegisterForm() {
   const t = useTranslations("Auth");
+  const tl = useTranslations("Legal");
   const locale = useLocale();
   const [state, action] = useActionState(register, null);
 
@@ -35,6 +37,19 @@ export function RegisterForm() {
         <Field id="register-password" label={t("password")} hint={t("passwordHint")}>
           <TextInput id="register-password" name="password" type="password" autoComplete="new-password" minLength={8} required />
         </Field>
+        <label className="flex items-start gap-2.5 text-[0.85rem] text-muted-foreground">
+          <input type="checkbox" name="consent" required className="mt-0.5 size-4 shrink-0 accent-cyan" />
+          <span>
+            {t("consent")}{" "}
+            <Link href="/privacy" target="_blank" className="font-semibold text-cyan hover:underline">
+              {tl("privacyLink")}
+            </Link>{" "}
+            ·{" "}
+            <Link href="/terms" target="_blank" className="font-semibold text-cyan hover:underline">
+              {tl("termsLink")}
+            </Link>
+          </span>
+        </label>
         <FormError message={state?.error ? t(`errors.${state.error}`) : undefined} />
         <SubmitButton>{t("submitRegister")}</SubmitButton>
       </form>

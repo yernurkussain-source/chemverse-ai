@@ -12,12 +12,14 @@ export type AuthErrorCode =
   | "password_mismatch"
   | "same_password"
   | "link_expired"
+  | "consent_required"
   | "unknown";
 
 export type OnboardingErrorCode = "missing_fields" | "class_not_found" | "invalid_code" | "unknown";
 
 export type AuthState = { error?: AuthErrorCode; checkEmail?: string } | null;
 export type OnboardingState = { error?: OnboardingErrorCode } | null;
+export type DeleteAccountState = { error?: "demo" | "failed" } | null;
 
 /** Supabase қате кодын біздің аударылған хабарламаға сәйкестендіру */
 export function mapAuthError(code: string | undefined): AuthErrorCode {
