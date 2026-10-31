@@ -1449,7 +1449,9 @@
     "deleteClass": "Сыныпты жою",
     "deleteClassConfirm": "«{name}» сыныбы жойылады: {count} оқушы сыныптан шығады, тапсырмалар жойылады. Оқушылардың тест пен зертхана нәтижелері сақталады. Жоясыз ба?",
     "deleteClassYes": "Иә, жою",
-    "cancel": "Болдырмау"
+    "cancel": "Болдырмау",
+    "csvExport": "Нәтижелерді Excel-ге жүктеу (CSV)",
+    "csvBestError": "Зертхана: үздік қателік, %"
   },
   "LessonStudio": {
     "eyebrow": "AI Lesson Studio",

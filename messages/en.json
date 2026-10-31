@@ -1449,7 +1449,9 @@
     "deleteClass": "Delete class",
     "deleteClassConfirm": "Class “{name}” will be deleted: {count} student(s) will leave it and its assignments will be removed. Test and lab results are kept. Delete?",
     "deleteClassYes": "Yes, delete",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "csvExport": "Download results for Excel (CSV)",
+    "csvBestError": "Lab: best error, %"
   },
   "LessonStudio": {
     "eyebrow": "AI Lesson Studio",

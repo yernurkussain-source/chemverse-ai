@@ -75,7 +75,15 @@ async function ClassContent({ params }: { params: Params }) {
 
       {/* Оқушылар және нәтижелері */}
       <section>
-        <h2 className="mb-3 font-display text-lg font-semibold">{t("students")}</h2>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-display text-lg font-semibold">{t("students")}</h2>
+          {detail.students.length > 0 && (
+            // Файл жүктеледі (route handler), сондықтан Link емес, кәдімгі сілтеме
+            <a href={`/${locale}/teacher/classes/${detail.id}/export`} download className="text-[0.9rem] font-semibold text-cyan hover:underline">
+              ⬇ {t("csvExport")}
+            </a>
+          )}
+        </div>
         {detail.students.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-line p-6 text-center text-muted-foreground">{t("noStudents")}</p>
         ) : (

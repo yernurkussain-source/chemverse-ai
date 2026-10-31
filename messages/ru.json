@@ -1449,7 +1449,9 @@
     "deleteClass": "Удалить класс",
     "deleteClassConfirm": "Класс «{name}» будет удалён: учеников в нём — {count}, они покинут класс, задания удалятся. Результаты тестов и лаборатории сохранятся. Удалить?",
     "deleteClassYes": "Да, удалить",
-    "cancel": "Отмена"
+    "cancel": "Отмена",
+    "csvExport": "Скачать результаты для Excel (CSV)",
+    "csvBestError": "Лаборатория: лучшая погрешность, %"
   },
   "LessonStudio": {
     "eyebrow": "AI Lesson Studio",
