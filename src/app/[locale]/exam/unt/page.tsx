@@ -25,7 +25,8 @@ export default function UntPage() {
         <Eyebrow>UNT Master</Eyebrow>
         <h1 className="mt-2.5 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold">{t("untTitle")}</h1>
         <p className="mt-2 mb-8 text-muted-foreground">{t("untSubtitle")}</p>
-        <Suspense fallback={<p className="text-muted-foreground">{t("loading")}</p>}>
+        {/* Карточка жүктелгенше орны сақталады — астындағы «Дереккөз» блогы секірмеуі үшін (CLS) */}
+        <Suspense fallback={<p className="min-h-svh text-muted-foreground">{t("loading")}</p>}>
           <ExamLanding slug="unt-demo" />
         </Suspense>
 

@@ -2,7 +2,7 @@
  * Демо AI жауаптарын жасап, ai_cache кестесіне сақтайды (scripts/cache-ai.mjs іске қосады).
  * AI мұғалімнің чат маршрутымен бірдей: сол жүйелік нұсқау, сол RAG, сол molarMass құралы.
  */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { generateText, stepCountIs } from "ai";
 import type { Locale } from "@/i18n/routing";
 import { questionKey } from "@/lib/ai/cache";
@@ -48,6 +48,13 @@ async function main() {
   if (check.error) {
     console.error("❌ ai_cache кестесі жоқ. Supabase-те supabase/migrations/20261022000000_ai_cache.sql іске қосыңыз.");
     process.exit(1);
+  }
+
+  // Мұғалім файлда қойған ☑ белгілері дерекқорға сақталады — файл соңында қайта жазылады, белгі жоғалмауы үшін
+  const FILE = "docs/demo/ai-answers.md";
+  const ticked = existsSync(FILE) ? readFileSync(FILE, "utf8").matchAll(/^## \d+\. \[(\w+)\] (.+?)\r?\n\r?\n- \[x\] /gim) : [];
+  for (const [, locale, question] of ticked) {
+    await admin.from("ai_cache").update({ verified: true }).eq("locale", locale).eq("question_key", questionKey(question));
   }
 
   const items: { locale: Locale; question: string }[] = [
@@ -120,7 +127,7 @@ async function main() {
     lines.push(`## ${i + 1}. [${row.locale}] ${row.question}`, "", `- [${row.verified ? "x" : " "}] Мұғалім тексерді`, "", row.answer, "", "---", "");
   }
   mkdirSync("docs/demo", { recursive: true });
-  writeFileSync("docs/demo/ai-answers.md", lines.join("\n"));
+  writeFileSync(FILE, lines.join("\n"));
   console.log(`✅ Кэште ${all?.length ?? 0} жауап · тексеруге: docs/demo/ai-answers.md`);
 }
 

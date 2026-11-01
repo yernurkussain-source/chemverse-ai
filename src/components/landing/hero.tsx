@@ -12,15 +12,16 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden pt-9 pb-6 lg:pt-14 lg:pb-10">
-      {/* Оң жақ жоғарыдағы көгілдір жарқыл */}
+      {/* Оң жақ жоғарыдағы көгілдір жарқыл. Орны бөлім биіктігінің %-ымен емес, тұрақты: қаріп жүктелгенде бөлім биіктігі өзгеріп, жарқыл «секірмеуі» үшін (CLS) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-[20%] -right-[10%] size-[720px] bg-[radial-gradient(closest-side,var(--glow-soft),transparent_70%)]"
+        className="pointer-events-none absolute -top-44 -right-[10%] size-[720px] bg-[radial-gradient(closest-side,var(--glow-soft),transparent_70%)]"
       />
       <div className="page-wrap relative grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
         <div className="min-w-0">
           <Eyebrow>{t("eyebrow")}</Eyebrow>
-          <h1 className="mt-3.5 text-[clamp(2rem,5.2vw,3.7rem)] font-extrabold">
+          {/* Телефонда әр жол Montserrat-пен де, оның fallback-ымен де бір жолға сыяды (3 тілде, 360–412 px) — қаріп жүктелгенде тақырып «өспейді» (CLS) */}
+          <h1 className="mt-3.5 text-[clamp(1.6rem,7vw,2.2rem)] font-extrabold lg:text-[clamp(2rem,5.2vw,3.7rem)]">
             {t.rich("titleLine1", {
               em: (chunks) => (
                 <em className="text-cyan not-italic [text-shadow:0_0_30px_var(--glow-soft)]">{chunks}</em>

@@ -5,7 +5,143 @@
 
 Файлды қайта жасау: `npm run cache:ai`
 
-## 1. [kk] H₂SO₄-тің молярлық массасын есептеп, қадамдап түсіндір
+## 1. [en] Calculate the molar mass of H₂SO₄ step by step
+
+- [ ] Мұғалім тексерді
+
+Here is the step-by-step calculation of the molar mass of sulfuric acid ($\mathrm{H_2SO_4}$):
+
+---
+
+### **1. Identify the composition of the formula**
+In one molecule of $\mathrm{H_2SO_4}$, there are:
+* **2** atoms of Hydrogen ($\mathrm{H}$)
+* **1** atom of Sulfur ($\mathrm{S}$)
+* **4** atoms of Oxygen ($\mathrm{O}$)
+
+---
+
+### **2. Determine the atomic masses ($A_r$)**
+From the periodic table:
+* $A_r(\mathrm{H}) \approx 1.01\text{ g/mol}$ (rounded to $1\text{ g/mol}$ in typical school problems)
+* $A_r(\mathrm{S}) \approx 32.07\text{ g/mol}$ (rounded to $32\text{ g/mol}$)
+* $A_r(\mathrm{O}) \approx 16.00\text{ g/mol}$
+
+---
+
+### **3. Formula**
+The molar mass ($M$) is the sum of the atomic masses of all constituent atoms [1]:
+$$M(\mathrm{H_2SO_4}) = 2 \cdot A_r(\mathrm{H}) + 1 \cdot A_r(\mathrm{S}) + 4 \cdot A_r(\mathrm{O})$$
+
+---
+
+### **4. Calculation**
+
+* **Standard school calculation (rounded integers):** [1]
+  $$M(\mathrm{H_2SO_4}) = (2 \cdot 1) + (1 \cdot 32) + (4 \cdot 16)$$
+  $$M(\mathrm{H_2SO_4}) = 2 + 32 + 64 = 98\text{ g/mol}$$
+
+* **Precise calculation:**
+  $$M(\mathrm{H_2SO_4}) = (2 \cdot 1.008) + 32.066 + (4 \cdot 15.999) \approx 98.08\text{ g/mol}$$
+
+---
+
+### **Answer:**
+The molar mass of $\mathrm{H_2SO_4}$ is **$98\text{ g/mol}$** (or **$98.08\text{ g/mol}$** with higher precision).
+
+---
+
+## 2. [en] What is the difference between ionic and covalent bonds?
+
+- [ ] Мұғалім тексерді
+
+The main differences between **ionic** and **covalent** bonds can be broken down into several key aspects:
+
+---
+
+### 1. Definition and Nature of the Bond
+* **Ionic bond:** The electrostatic attraction between oppositely charged ions (cations and anions) [1].
+* **Covalent bond:** A chemical bond formed by the sharing of one or more electron pairs between atoms [2].
+
+---
+
+### 2. Types of Elements Involved
+* **Ionic bond:** Typically forms between an **active metal** and an **active non-metal** with a large difference in electronegativity [1].
+* **Covalent bond:** Typically forms between **non-metal atoms** with identical or relatively close electronegativity values [2], [3].
+
+---
+
+### 3. Mechanism of Formation
+* **Ionic bond (Electron transfer):**
+  * The metal atom loses valence electrons to form a positively charged cation.
+  * The non-metal atom gains those electrons to form a negatively charged anion.
+  * *Example:* Sodium gives up one electron to chlorine:
+    $$\mathrm{Na \cdot + \cdot Cl: \longrightarrow Na^+ + [:Cl:]^-}$$
+    Both ions achieve a stable noble gas electron configuration [1].
+
+* **Covalent bond (Electron sharing):**
+  * Atoms share unpaired valence electrons so that each atom attains a stable noble gas configuration (an octet, or a duplet for hydrogen) [2].
+  * **Covalent non-polar:** Shared equally between atoms of the same electronegativity (e.g., $\mathrm{H_2}$, $\mathrm{O_2}$, $\mathrm{N_2}$) [2].
+  * **Covalent polar:** Shared unequally toward the more electronegative atom, resulting in partial charges ($\delta^+$ and $\delta^-$) (e.g., $\mathrm{H^{\delta+} - Cl^{\delta-}}$, $\mathrm{H_2O}$) [3].
+
+---
+
+### 4. Directionality and Structure
+* **Ionic bond:** 
+  * It is **non-directional** and **non-saturated** because an ion attracts oppositely charged ions from all directions [1].
+  * It forms an **ionic crystal lattice** rather than discrete individual molecules (e.g., solid $\mathrm{NaCl}$) [1], [5].
+* **Covalent bond:** 
+  * It is **directional** (pointing along the orbitals that overlap) and **saturated** (limited by the number of valence electrons an atom can share) [2], [3].
+  * It typically forms individual **molecules** (molecular crystal lattice like ice $\mathrm{H_2O}$, $\mathrm{CO_2}$) or continuous covalent networks (atomic crystal lattice like diamond, $\mathrm{SiO_2}$) [5].
+
+---
+
+### Summary Comparison Table
+
+| Feature | Ionic Bond | Covalent Bond |
+| :--- | :--- | :--- |
+| **Electron behavior** | Complete transfer of electrons [1] | Sharing of electron pairs [2] |
+| **Elements involved** | Metal + Non-metal [1] | Non-metal + Non-metal [2] |
+| **Bond character** | Non-directional, non-saturated [1] | Directional, saturated [2] |
+| **Resulting units** | Crystal lattice of ions [1], [5] | Discrete molecules or network solids [2], [5] |
+| **Examples** | $\mathrm{NaCl}$, $\mathrm{KF}$, $\mathrm{CaO}$, $\mathrm{MgCl_2}$ [1] | $\mathrm{H_2}$, $\mathrm{O_2}$, $\mathrm{H_2O}$, $\mathrm{HCl}$, $\mathrm{CH_4}$ [2], [3] |
+
+---
+
+## 3. [en] What is the H⁺ concentration in a solution with pH = 3?
+
+- [ ] Мұғалім тексерді
+
+To find the hydrogen ion ($\mathrm{H^+}$) concentration from the given $\mathrm{pH}$ value, we follow these steps:
+
+### 1. Given:
+* $\mathrm{pH} = 3$
+
+---
+
+### 2. Formula:
+The $\mathrm{pH}$ of a solution is defined as the negative base-10 logarithm of the hydrogen ion concentration:
+$$\mathrm{pH} = -\log_{10}[\mathrm{H^+}]$$
+
+Rearranging the formula to solve for the hydrogen ion concentration ($[\mathrm{H^+}]$):
+$$[\mathrm{H^+}] = 10^{-\mathrm{pH}}\ \text{mol/L}$$
+
+---
+
+### 3. Calculation:
+Substitute the given $\mathrm{pH}$ value into the equation:
+$$[\mathrm{H^+}] = 10^{-3}\ \text{mol/L} = 0.001\ \text{mol/L}\ (\text{or}\ \text{M})$$
+
+---
+
+### 4. Answer:
+The $\mathrm{H^+}$ concentration in the solution is **$10^{-3}\ \text{mol/L}$** (or **$0.001\ \text{M}$**). 
+
+*(Note: Since $\mathrm{pH} < 7$, this is an acidic solution [1]).*
+
+---
+
+## 4. [kk] H₂SO₄-тің молярлық массасын есептеп, қадамдап түсіндір
 
 - [ ] Мұғалім тексерді
 
@@ -46,7 +182,7 @@ $$M(\mathrm{H_2SO_4}) = 2 \cdot 1{,}008 + 32{,}06 + 4 \cdot 16{,}00 = 98{,}076\t
 
 ---
 
-## 2. [kk] Иондық және коваленттік байланыстың айырмашылығы неде?
+## 5. [kk] Иондық және коваленттік байланыстың айырмашылығы неде?
 
 - [ ] Мұғалім тексерді
 
@@ -106,7 +242,7 @@ $$M(\mathrm{H_2SO_4}) = 2 \cdot 1{,}008 + 32{,}06 + 4 \cdot 16{,}00 = 98{,}076\t
 
 ---
 
-## 3. [kk] pH = 3 ерітіндідегі H⁺ иондарының концентрациясы қанша?
+## 6. [kk] pH = 3 ерітіндідегі H⁺ иондарының концентрациясы қанша?
 
 - [ ] Мұғалім тексерді
 
@@ -137,7 +273,7 @@ $$[\mathrm{H^+}] = 10^{-3} \text{ моль/л} = 0{,}001 \text{ моль/л}$$
 
 ---
 
-## 4. [kk] Судың молекуласы неге бұрыштық пішінді?
+## 7. [kk] Судың молекуласы неге бұрыштық пішінді?
 
 - [ ] Мұғалім тексерді
 
@@ -167,7 +303,7 @@ $$\text{Бөлінбеген – бөлінбеген} > \text{Бөлінбег�
 
 ---
 
-## 5. [kk] Метанның кеңістіктегі пішіні қандай және неге?
+## 8. [kk] Метанның кеңістіктегі пішіні қандай және неге?
 
 - [ ] Мұғалім тексерді
 
@@ -199,7 +335,7 @@ $$\mathrm{C^*: 2s^1 2p^3}$$
 
 ---
 
-## 6. [kk] Электртерістік дегеніміз не? Мысал келтір.
+## 9. [kk] Электртерістік дегеніміз не? Мысал келтір.
 
 - [ ] Мұғалім тексерді
 
@@ -233,7 +369,7 @@ $$\mathrm{H^{\delta+} \!-\! Cl^{\delta-}}$$
 
 ---
 
-## 7. [kk] 10 г NaOH-та неше моль зат бар?
+## 10. [kk] 10 г NaOH-та неше моль зат бар?
 
 - [ ] Мұғалім тексерді
 
@@ -255,7 +391,7 @@ $10\text{ г}$ $\mathrm{NaOH}$-та $0{,}25\text{ моль}$ зат бар.
 
 ---
 
-## 8. [kk] Тұз қышқылы мен натрий гидроксидінің реакция теңдеуін жаз және түсіндір.
+## 11. [kk] Тұз қышқылы мен натрий гидроксидінің реакция теңдеуін жаз және түсіндір.
 
 - [ ] Мұғалім тексерді
 
@@ -296,7 +432,7 @@ $$\mathrm{HCl} + \mathrm{NaOH} \rightarrow \mathrm{NaCl} + \mathrm{H_2O}$$
 
 ---
 
-## 9. [kk] Фенолфталеин сілтілі ортада неге таңқурай түске боялады?
+## 12. [kk] Фенолфталеин сілтілі ортада неге таңқурай түске боялады?
 
 - [ ] Мұғалім тексерді
 
@@ -333,7 +469,7 @@ $$\mathrm{H_2Ind} + 2\mathrm{OH^-} \rightleftharpoons \mathrm{Ind^{2-}} + 2\math
 
 ---
 
-## 10. [kk] Изотоптар дегеніміз не? Хлордың изотоптарын мысалға ал.
+## 13. [kk] Изотоптар дегеніміз не? Хлордың изотоптарын мысалға ал.
 
 - [ ] Мұғалім тексерді
 
@@ -378,7 +514,7 @@ $$A_r(\mathrm{Cl}) \approx \frac{35 \cdot 75 + 37 \cdot 25}{100} = \frac{2625 + 
 
 ---
 
-## 11. [kk] Бензол молекуласының құрылысы қандай?
+## 14. [kk] Бензол молекуласының құрылысы қандай?
 
 - [ ] Мұғалім тексерді
 
@@ -426,7 +562,7 @@ $$A_r(\mathrm{Cl}) \approx \frac{35 \cdot 75 + 37 \cdot 25}{100} = \frac{2625 + 
 
 ---
 
-## 12. [kk] Катализатор реакция жылдамдығына қалай әсер етеді?
+## 15. [kk] Катализатор реакция жылдамдығына қалай әсер етеді?
 
 - [ ] Мұғалім тексерді
 
@@ -465,7 +601,7 @@ $$[AK] + B \rightarrow AB + K$$
 
 ---
 
-## 13. [kk] Глюкозаның молярлық массасын есепте.
+## 16. [kk] Глюкозаның молярлық массасын есепте.
 
 - [ ] Мұғалім тексерді
 
@@ -492,7 +628,7 @@ $$M(\mathrm{C_6H_{12}O_6}) = 6 \cdot 12 + 12 \cdot 1 + 6 \cdot 16 = 72 + 12 + 96
 
 ---
 
-## 14. [ru] Рассчитай молярную массу H₂SO₄ и объясни по шагам
+## 17. [ru] Рассчитай молярную массу H₂SO₄ и объясни по шагам
 
 - [ ] Мұғалім тексерді
 
@@ -532,7 +668,7 @@ $$M(\mathrm{H_2SO_4}) = 2{,}016 + 32{,}06 + 64{,}00 = 98{,}076\text{ г/моль
 
 ---
 
-## 15. [ru] Чем ионная связь отличается от ковалентной?
+## 18. [ru] Чем ионная связь отличается от ковалентной?
 
 - [ ] Мұғалім тексерді
 
@@ -577,5 +713,36 @@ $$M(\mathrm{H_2SO_4}) = 2{,}016 + 32{,}06 + 64{,}00 = 98{,}076\text{ г/моль
 ### Краткий итог:
 * **Ковалентная** = электроны *делятся поровну или частично смещаются* (неметалл + неметалл).
 * **Ионная** = электроны *полностью отдаются и принимаются* с образованием ионов (металл + неметалл).
+
+---
+
+## 19. [ru] Какова концентрация ионов H⁺ в растворе с pH = 3?
+
+- [ ] Мұғалім тексерді
+
+Рассчитаем концентрацию ионов водорода $[\mathrm{H}^+]$ по значению водородного показателя ($\mathrm{pH}$).
+
+### 1. Дано:
+* $\mathrm{pH} = 3$
+
+---
+
+### 2. Формула:
+Водородный показатель ($\mathrm{pH}$) определяется как отрицательный десятичный логарифм молярной концентрации ионов водорода $\mathrm{[H^+]}$ [2]:
+$$\mathrm{pH} = -\lg[\mathrm{H}^+]$$
+
+Отсюда концентрация ионов водорода вычисляется по формуле:
+$$[\mathrm{H}^+] = 10^{-\mathrm{pH}}$$
+
+---
+
+### 3. Расчёт:
+Подставим значение $\mathrm{pH} = 3$:
+$$[\mathrm{H}^+] = 10^{-3}\ \text{моль/л} = 0{,}001\ \text{моль/л}$$
+
+---
+
+### Ответ:
+Концентрация ионов $\mathrm{H^+}$ в растворе составляет **$10^{-3}\ \text{моль/л}$** (или **$0{,}001\ \text{моль/л}$**). Среда такого раствора является кислой ($\mathrm{pH} < 7$) [2].
 
 ---

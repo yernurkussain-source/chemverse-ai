@@ -26,12 +26,13 @@ const onest = Onest({
   variable: "--font-onest",
   display: "swap",
 });
-// Формулалар мен сандарға арналған — бірінші экранда маңызды емес, алдын ала жүктемейміз (телефонда жылдамырақ)
+// Формулалар, сандар, тегтер. Fallback-ы (Arial) тең енді емес: кеш ауысса, бірінші экрандағы тегтер мен
+// тақырыпша басқа жолға түсіп, бет «секіреді» (CLS 0,24). Сондықтан: алдын ала жүктеу + optional —
+// уақытында келсе қолданылады, кешіксе сол беттің соңына дейін fallback қалады (ауыспайды).
 const firaCode = Fira_Code({
   subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext"],
   variable: "--font-fira-code",
-  display: "swap",
-  preload: false,
+  display: "optional",
 });
 // Unbounded — тек логотип үшін («CHEMVERSE AI» — латын әріптері ғана)
 const unbounded = Unbounded({

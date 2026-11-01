@@ -1,12 +1,12 @@
 "use server";
 
-import { APICallError, generateText, Output, RetryError } from "ai";
+import { generateText, Output } from "ai";
 import { refresh } from "next/cache";
 import { hasLocale } from "next-intl";
 import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
-import { chatModel, fallbackChatModel, isAiConfigured } from "@/lib/ai/provider";
+import { chatModel, fallbackChatModel, isAiConfigured, isBusy } from "@/lib/ai/provider";
 import { searchKnowledge } from "@/lib/ai/rag";
 import { isRateLimited, logUsage, saveTokenUsage } from "@/lib/ai/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -32,12 +32,6 @@ const inputSchema = z.object({
   aiTools: z.string().max(150),
   notes: z.string().max(600),
 });
-
-/** 503 — модельге жүктеме көп, 429 — сұрау лимиті (тегін тарифте күніне бірнеше ондаған) бітті */
-const isBusy = (error: unknown) => {
-  const last = RetryError.isInstance(error) ? error.lastError : error;
-  return APICallError.isInstance(last) && (last.statusCode === 503 || last.statusCode === 429);
-};
 
 /** Негізгі модель қолжетімсіз болса (503/429) — резерв модельмен (лимиті бөлек) қайталау; басқа қате өзгеріссіз шығады */
 async function withFallback<T>(run: (model: ReturnType<typeof chatModel>) => Promise<T>): Promise<T> {

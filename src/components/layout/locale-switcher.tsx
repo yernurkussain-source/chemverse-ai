@@ -27,7 +27,8 @@ export function LocaleSwitcher() {
   return (
     <Menu.Root>
       <Menu.Trigger
-        aria-label={t("label")}
+        // Атауда батырмадағы көрінетін мәтін («ҚАЗ») болуы керек — дауыспен басқару «ҚАЗ» деп айтқанда табуы үшін (WCAG 2.5.3)
+        aria-label={`${t(current)} — ${t("label")}`}
         disabled={isPending}
         className="group flex h-10 items-center gap-1.5 rounded-xl border border-line bg-panel pr-2.5 pl-3 font-mono text-xs font-semibold tracking-wider text-foreground transition-colors hover:border-cyan focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan disabled:opacity-60 data-[popup-open]:border-cyan"
       >

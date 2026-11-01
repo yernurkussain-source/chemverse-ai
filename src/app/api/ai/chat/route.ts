@@ -4,7 +4,7 @@ import { routing } from "@/i18n/routing";
 import { findCachedAnswer, type CachedAnswer } from "@/lib/ai/cache";
 import { chatRequestSchema, MAX_QUESTION_LENGTH, textOf, toHistory } from "@/lib/ai/chat-request";
 import { tutorInstructions } from "@/lib/ai/prompt";
-import { chatModel, isAiConfigured } from "@/lib/ai/provider";
+import { chatModelWithFallback, isAiConfigured } from "@/lib/ai/provider";
 import { isRateLimited, logUsage, saveTokenUsage } from "@/lib/ai/rate-limit";
 import { searchKnowledge, sourceTitle } from "@/lib/ai/rag";
 import { tutorTools } from "@/lib/ai/tools";
@@ -87,7 +87,9 @@ export async function POST(request: Request) {
       });
 
       const result = streamText({
-        model: chatModel(),
+        // Лимит біткенде резерв модель; ол да бос болмаса — бірден қате (күтіп қайталау 60 с шекке сыймайды)
+        model: chatModelWithFallback(),
+        maxRetries: 0,
         instructions: tutorInstructions(locale, mode, knowledge),
         messages: await convertToModelMessages(history),
         maxOutputTokens: 2000,
