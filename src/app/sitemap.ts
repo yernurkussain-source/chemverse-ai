@@ -6,7 +6,7 @@ import { MOLECULES } from "@/lib/chemistry/molecules";
 import { SITE_URL } from "@/lib/site";
 
 // Іздеу жүйелеріне ашық беттер (кіруді талап ететін беттер — robots.ts-те жабық)
-const PAGES = ["", "/learn", "/exam/unt", "/exam/bbzhm", "/olympiad", "/virtual-lab", "/game", "/molecules", "/periodic-table", "/ai-tutor", "/install", "/demo", "/about", "/privacy", "/terms"];
+const PAGES = ["", "/learn", "/learn/formulas", "/exam/unt", "/exam/bbzhm", "/olympiad", "/virtual-lab", "/game", "/molecules", "/periodic-table", "/ai-tutor", "/install", "/demo", "/about", "/privacy", "/terms"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [

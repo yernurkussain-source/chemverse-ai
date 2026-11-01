@@ -1141,6 +1141,10 @@
       "bbzhm": {
         "title": "BBZhM practice",
         "text": "Grade 9: a 20-question test on grade 8–9 chemistry with a map of weak chapters."
+      },
+      "formulas": {
+        "title": "Formula reference",
+        "text": "23 key formulas for UNT problems: symbols, units and worked examples."
       }
     }
   },
@@ -5936,6 +5940,161 @@
     "xp_1000": {
       "title": "1000 XP",
       "hint": "Earn 1000 XP in total"
+    }
+  },
+  "Formulas": {
+    "eyebrow": "UNT preparation",
+    "title": "Formula reference",
+    "subtitle": "Key formulas for chemistry problems: what each symbol means, units and a worked example. Sections follow the topics of the UNT specification.",
+    "sectionsNav": "Sections",
+    "example": "Example",
+    "sections": {
+      "general": "Amount of substance and gases",
+      "solutions": "Solutions",
+      "reactions": "Calculations from equations. Energetics",
+      "kinetics": "Kinetics",
+      "ions": "pH and electrolysis",
+      "organic": "Organic chemistry"
+    },
+    "items": {
+      "amount": {
+        "name": "Amount of substance (from mass)",
+        "formula": "n = m / M",
+        "vars": "n — amount of substance, mol\nm — mass, g\nM — molar mass, g/mol (numerically equal to Mr)",
+        "example": "36 g of water: n = 36 / 18 = 2 mol."
+      },
+      "particles": {
+        "name": "Number of particles",
+        "formula": "N = n · N_A",
+        "vars": "N — number of particles (atoms, molecules, ions)\nN_A = 6.02 · 10²³ mol⁻¹ — Avogadro constant",
+        "example": "0.5 mol O₂: N = 0.5 · 6.02 · 10²³ = 3.01 · 10²³ molecules."
+      },
+      "gasVolume": {
+        "name": "Gas volume",
+        "formula": "V = n · Vₘ",
+        "vars": "V — gas volume, L\nVₘ = 22.4 L/mol — molar volume at STP (0 °C, 101.3 kPa)",
+        "example": "2 mol CO₂: V = 2 · 22.4 = 44.8 L (STP)."
+      },
+      "relDensity": {
+        "name": "Relative density of a gas",
+        "formula": "D = M₁ / M₂",
+        "vars": "D — density of the first gas relative to the second (dimensionless)\nM = 2 · D(H₂);  M = 29 · D(air)",
+        "example": "D(H₂) = 16: M = 2 · 16 = 32 g/mol (oxygen)."
+      },
+      "elementFraction": {
+        "name": "Mass fraction of an element",
+        "formula": "ω(E) = n · Ar(E) / Mr · 100 %",
+        "vars": "ω(E) — mass fraction of the element\nn — number of atoms of this element in the formula\nAr — relative atomic mass, Mr — relative molecular mass",
+        "example": "CO₂: ω(O) = 2 · 16 / 44 · 100 % = 72.7 %."
+      },
+      "avgMolar": {
+        "name": "Average molar mass of a gas mixture",
+        "formula": "M(avg) = φ₁ · M₁ + φ₂ · M₂ + …",
+        "vars": "M(avg) — average molar mass of the mixture, g/mol\nφ — volume (mole) fraction of a gas, as a decimal",
+        "example": "Air: 0.78 · 28 + 0.21 · 32 + 0.01 · 40 ≈ 29 g/mol."
+      },
+      "massFraction": {
+        "name": "Mass fraction of a solute",
+        "formula": "ω = m(solute) / m(solution) · 100 %",
+        "vars": "ω — mass fraction of the solute\nm(solution) = m(solute) + m(water), g",
+        "example": "20 g of salt in 200 g of solution: ω = 20 / 200 · 100 % = 10 %."
+      },
+      "density": {
+        "name": "Mass of a solution (from density)",
+        "formula": "m = ρ · V",
+        "vars": "m — mass of the solution, g\nρ — density, g/mL\nV — volume, mL",
+        "example": "100 mL of solution, ρ = 1.2 g/mL: m = 1.2 · 100 = 120 g."
+      },
+      "molarity": {
+        "name": "Molar concentration",
+        "formula": "c = n / V",
+        "vars": "c — molar concentration, mol/L (M)\nn — amount of solute, mol\nV — volume of solution, L",
+        "example": "0.2 mol NaOH in 0.5 L of solution: c = 0.2 / 0.5 = 0.4 mol/L."
+      },
+      "mixing": {
+        "name": "Mixing and diluting solutions",
+        "formula": "ω₃ = (m₁ · ω₁ + m₂ · ω₂) / (m₁ + m₂)",
+        "vars": "m₁, m₂ — masses of the solutions being mixed, g\nω₁, ω₂ — their mass fractions (for added water ω = 0)",
+        "example": "100 g of 10 % and 100 g of 30 % solution: ω₃ = (10 + 30) / 200 · 100 % = 20 %."
+      },
+      "solubility": {
+        "name": "Mass fraction in a saturated solution",
+        "formula": "ω = S / (100 + S) · 100 %",
+        "vars": "S — solubility: the largest mass of substance that dissolves in 100 g of water, g\nω — mass fraction in the saturated solution",
+        "example": "At 60 °C S(KNO₃) = 110 g: ω = 110 / 210 · 100 % = 52.4 %."
+      },
+      "yield": {
+        "name": "Product yield",
+        "formula": "η = m(actual) / m(theor) · 100 %",
+        "vars": "η — product yield\nm(actual) — mass (or volume) actually obtained\nm(theor) — mass (or volume) calculated from the equation",
+        "example": "224 L NH₃ in theory, 44.8 L obtained: η = 44.8 / 224 · 100 % = 20 %."
+      },
+      "impurity": {
+        "name": "Substance with impurities",
+        "formula": "m(pure) = m(tech) · (1 − ω(imp))",
+        "vars": "m(tech) — mass of the technical substance with impurities\nω(imp) — mass fraction of impurities, as a decimal",
+        "example": "200 g of limestone with 10 % impurities: m(CaCO₃) = 200 · 0.9 = 180 g."
+      },
+      "heat": {
+        "name": "Heat from a thermochemical equation",
+        "formula": "Q = Q(eq.) · n / ν",
+        "vars": "Q(eq.) — heat in the thermochemical equation, kJ\nν — coefficient of the substance in the equation\nn — amount of substance in the problem, mol",
+        "example": "C + O₂ → CO₂ + 394 kJ; 2 mol C burned: Q = 394 · 2 / 1 = 788 kJ."
+      },
+      "hess": {
+        "name": "Corollary of Hess's law",
+        "formula": "ΔH = ΣΔH(f, products) − ΣΔH(f, reactants)",
+        "vars": "ΔH(f) — enthalpy of formation, kJ/mol; multiplied by the coefficient, 0 for elements\nNegative ΔH — exothermic, positive — endothermic reaction",
+        "example": "CH₄ + 2O₂ → CO₂ + 2H₂O(l): ΔH = (−393.5 + 2 · (−285.8)) − (−74.8) = −890.3 kJ."
+      },
+      "rate": {
+        "name": "Average reaction rate",
+        "formula": "v = Δc / Δt",
+        "vars": "v — rate, mol/(L · s)\nΔc — change in concentration, mol/L\nΔt — time interval, s",
+        "example": "In 20 s c(A) fell from 1.0 to 0.4 mol/L: v = 0.6 / 20 = 0.03 mol/(L · s)."
+      },
+      "massAction": {
+        "name": "Law of mass action",
+        "formula": "v = k · [A]ᵃ · [B]ᵇ",
+        "vars": "k — rate constant\n[A], [B] — concentrations of gases and solutes, mol/L (solids are not included)\na, b — coefficients in the equation (for an elementary reaction)",
+        "example": "2NO + O₂ → 2NO₂: v = k · [NO]² · [O₂]; tripling [NO] increases v 3² = 9 times."
+      },
+      "vantHoff": {
+        "name": "Van 't Hoff rule",
+        "formula": "v₂ / v₁ = γ^(Δt / 10)",
+        "vars": "γ — temperature coefficient (usually 2–4)\nΔt — change in temperature, °C",
+        "example": "γ = 3, temperature raised by 20 °C: v₂ / v₁ = 3² = 9 times."
+      },
+      "ph": {
+        "name": "pH",
+        "formula": "pH = −lg[H⁺];  pH + pOH = 14",
+        "vars": "[H⁺] — concentration of hydrogen ions, mol/L\npH below 7 — acidic, 7 — neutral, above 7 — alkaline (25 °C)",
+        "example": "0.001 M NaOH: [OH⁻] = 10⁻³, pOH = 3, pH = 14 − 3 = 11."
+      },
+      "faraday": {
+        "name": "Faraday's law (electrolysis)",
+        "formula": "m = M · I · t / (z · F)",
+        "vars": "m — mass of substance deposited on the electrode, g\nI — current, A; t — time, s (I · t = Q, C)\nz — number of electrons per ion\nF = 96,500 C/mol — Faraday constant",
+        "example": "9650 C through molten NaCl: m(Na) = 23 · 9650 / (1 · 96,500) = 2.3 g."
+      },
+      "homologous": {
+        "name": "General formulas of hydrocarbons",
+        "formula": "CₙH₂ₙ₊₂ · CₙH₂ₙ · CₙH₂ₙ₋₂ · CₙH₂ₙ₋₆",
+        "vars": "CₙH₂ₙ₊₂ — alkanes\nCₙH₂ₙ — alkenes, cycloalkanes\nCₙH₂ₙ₋₂ — alkynes, alkadienes\nCₙH₂ₙ₋₆ — arenes (benzene homologues)",
+        "example": "Alkane with n = 4: C₄H₁₀ (butane), M = 58 g/mol."
+      },
+      "combustion": {
+        "name": "Formula from combustion products",
+        "formula": "n(C) = n(CO₂);  n(H) = 2 · n(H₂O)",
+        "vars": "If oxygen is present: m(O) = m(substance) − m(C) − m(H)\nAtom ratio gives the empirical formula; M (from density) gives the true formula",
+        "example": "4.4 g CO₂ and 2.7 g H₂O, D(H₂) = 15: n(C) = 0.1, n(H) = 0.3 → CH₃; M = 30 → C₂H₆."
+      },
+      "polymer": {
+        "name": "Degree of polymerization",
+        "formula": "n = M(polymer) / M(monomer)",
+        "vars": "n — degree of polymerization (number of monomer units)\nM — molar mass, g/mol",
+        "example": "M(polyethylene) = 28,000 g/mol, M(C₂H₄) = 28: n = 28,000 / 28 = 1000."
+      }
     }
   }
 }
