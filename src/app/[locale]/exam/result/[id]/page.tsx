@@ -10,7 +10,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ReviewList } from "@/components/exam/review-list";
 import { getResultView, type ResultView } from "@/features/exam/queries";
-import { EXAM_PAGE } from "@/features/exam/scoring";
+import { BACK_LABEL, EXAM_PAGE } from "@/features/exam/scoring";
 import { WEAK_TOPIC_THRESHOLD } from "@/features/exam/scoring";
 import { Link, redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
@@ -68,7 +68,7 @@ async function ResultContent({ params }: { params: Params }) {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <BackLink href={EXAM_PAGE[result.examType]}>{result.examType === "bbzhm" ? t("bbzhmShort") : t("untShort")}</BackLink>
+        <BackLink href={EXAM_PAGE[result.examType]}>{t(BACK_LABEL[result.examType])}</BackLink>
         <Eyebrow>{result.title}</Eyebrow>
         <h1 className="mt-2.5 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold">{t("resultTitle")}</h1>
         {session.status === "expired" && (

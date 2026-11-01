@@ -62,7 +62,7 @@ async function LiveContent() {
 
   const supabase = await createClient();
   const [{ data: exams }, { data: sessions }] = await Promise.all([
-    supabase.from("exams").select("id, title_kk, title_ru, title_en").order("created_at"),
+    supabase.from("exams").select("id, title_kk, title_ru, title_en").neq("exam_type", "practice").order("created_at"),
     supabase
       .from("live_sessions")
       .select("id, code, phase, created_at, question_ids")

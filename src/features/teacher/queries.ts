@@ -122,7 +122,7 @@ export async function getClassDetail(classId: string, teacherId: string, locale:
           }[]
         >(),
     ),
-    supabase.from("exams").select("id, title_kk, title_ru, title_en").order("created_at"),
+    supabase.from("exams").select("id, title_kk, title_ru, title_en").neq("exam_type", "practice").order("created_at"),
   ]);
 
   const studentIds = (members ?? []).map((m) => m.user_id);

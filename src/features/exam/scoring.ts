@@ -67,7 +67,9 @@ export function scoreExam(examType: ExamType, questions: GradedQuestion[]): { sc
 export const SESSION_SIZE: Record<ExamType, number> = { unt: 40, bbzhm: 20, practice: 10, olympiad: 20 };
 
 /** Тест түрінің беті (нәтиже және тест беттеріндегі «артқа» сілтемесі) */
-export const EXAM_PAGE: Record<ExamType, string> = { unt: "/exam/unt", bbzhm: "/exam/bbzhm", practice: "/exam/unt", olympiad: "/olympiad" };
+export const EXAM_PAGE: Record<ExamType, string> = { unt: "/exam/unt", bbzhm: "/exam/bbzhm", practice: "/learn", olympiad: "/olympiad" };
+/** Сол сілтеменің мәтіні (Exam аударма кілті) */
+export const BACK_LABEL = { unt: "untShort", bbzhm: "bbzhmShort", practice: "practiceShort", olympiad: "untShort" } as const satisfies Record<ExamType, string>;
 
 /** Тақырып «әлсіз» деп саналатын шек (дұрыс жауаптар үлесі) */
 export const WEAK_TOPIC_THRESHOLD = 0.6;

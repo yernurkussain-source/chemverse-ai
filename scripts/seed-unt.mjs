@@ -117,16 +117,18 @@ await upsert(
   "question_id,slot,label",
 );
 
-// 4. Тесттер: ҰБТ — нақты пішім (40 тапсырма, 80 мин; таңдау: src/features/exam/sampling.ts), ББЖМ — тек 8–9-сынып тараулары
+// 4. Тесттер: ҰБТ — нақты пішім (40 тапсырма, 80 мин; таңдау: src/features/exam/sampling.ts), ББЖМ мен жаттығу — тек 8–9-сынып тараулары
 await upsert(
   "exams",
   [
     { slug: "unt-demo", title_kk: "ҰБТ: химия (2026 пішімі)", title_ru: "ЕНТ: химия (формат 2026)", title_en: "UNT: chemistry (2026 format)", exam_type: "unt", duration_minutes: 80 },
     { slug: "bbzhm-9", title_kk: "ББЖМ-ге дайындық (9-сынып)", title_ru: "Подготовка к МОДО (9 класс)", title_en: "BBZhM practice (grade 9)", exam_type: "bbzhm", duration_minutes: 40 },
+    // Тарау бойынша жаттығу: конспект бетінен басталады, 10 сұрақ тек сол тараудан (startExam, topic)
+    { slug: "practice", title_kk: "Тарау бойынша жаттығу", title_ru: "Тренировка по главе", title_en: "Chapter practice", exam_type: "practice", duration_minutes: 15 },
   ],
   "slug",
 );
-const { data: exams, error: examError } = await db.from("exams").select("id, slug").in("slug", ["unt-demo", "bbzhm-9"]);
+const { data: exams, error: examError } = await db.from("exams").select("id, slug").in("slug", ["unt-demo", "bbzhm-9", "practice"]);
 if (examError) throw examError;
 // shortcut: JSON-нан өшірілген сұрақтың тестпен байланысы қолмен өшіріледі (банк әзірге тек өседі)
 // position: контекст сұрақтары осы ретпен шығады (pickUntFormat)

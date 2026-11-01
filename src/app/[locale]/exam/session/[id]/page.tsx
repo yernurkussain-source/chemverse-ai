@@ -6,7 +6,7 @@ import { hasLocale, useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { ExamRunner } from "@/components/exam/exam-runner";
 import { getSessionView } from "@/features/exam/queries";
-import { EXAM_PAGE } from "@/features/exam/scoring";
+import { BACK_LABEL, EXAM_PAGE } from "@/features/exam/scoring";
 import { redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { BackLink } from "@/components/layout/back-link";
@@ -48,7 +48,7 @@ async function SessionContent({ params }: { params: Params }) {
 
   return (
     <>
-      <BackLink href={EXAM_PAGE[view.examType]}>{view.examType === "bbzhm" ? t("bbzhmShort") : t("untShort")}</BackLink>
+      <BackLink href={EXAM_PAGE[view.examType]}>{t(BACK_LABEL[view.examType])}</BackLink>
       <ExamRunner
         sessionId={id}
         title={view.title}

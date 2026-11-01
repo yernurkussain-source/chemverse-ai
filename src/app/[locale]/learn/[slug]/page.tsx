@@ -8,6 +8,7 @@ import { Markdown } from "@/components/ai/markdown";
 import { BackLink } from "@/components/layout/back-link";
 import { Eyebrow } from "@/components/landing/section";
 import { buttonVariants } from "@/components/ui/button";
+import { startExam } from "@/features/exam/actions";
 import { getLesson, lessonText, listLessons } from "@/features/lessons/lessons";
 import { Link } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
@@ -68,9 +69,15 @@ async function LessonContent({ params }: { params: Params }) {
         <Link href={askAi} className={buttonVariants({ variant: "glow", size: "pill-sm" })}>
           {t("askAi")}
         </Link>
-        <Link href="/exam/unt" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
-          {t("test")}
-        </Link>
+        {/* Осы тараудан 10 сұрақтық жаттығу (кірмеген пайдаланушыны startExam кіру бетіне жібереді) */}
+        <form action={startExam}>
+          <input type="hidden" name="locale" value={locale} />
+          <input type="hidden" name="slug" value="practice" />
+          <input type="hidden" name="topic" value={lesson.slug} />
+          <button type="submit" className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
+            {t("test")}
+          </button>
+        </form>
       </div>
 
       <div className="rounded-3xl border border-line bg-panel p-5 sm:p-7" lang="kk">

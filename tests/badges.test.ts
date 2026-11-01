@@ -7,6 +7,7 @@ test("бейдж шарттары: тест, ҰБТ 80 %, күн қатарын�
   assert.deepEqual(examBadges("unt", 20, 25), ["first_test", "unt_80"]);
   assert.deepEqual(examBadges("bbzhm", 15, 20), ["first_test"]);
   assert.deepEqual(examBadges("olympiad", 30, 30), ["first_test"]);
+  assert.deepEqual(examBadges("practice", 10, 10), ["first_test"]);
   assert.deepEqual(progressBadges(1200, 7), ["streak_7", "xp_1000"]);
   assert.deepEqual(progressBadges(500, 3), []);
 });

@@ -24,6 +24,7 @@ async function currentUserId() {
 /**
  * Тестті бастау: сұрақтар тізімі мен уақыт шегі серверде бекітіледі.
  * Аяқталмаған сессия болса — соны жалғастырады.
+ * Жаттығу (exam_type «practice»): formData-дағы topic — тараудың slug-ы, сұрақтар тек сол тараудан.
  */
 export async function startExam(formData: FormData) {
   const locale = readLocale(formData);
@@ -41,15 +42,24 @@ export async function startExam(formData: FormData) {
     .single<{ id: string; duration_minutes: number; exam_type: ExamType }>();
   if (!exam) throw new Error(`Exam not found: ${slug}`);
 
+  const practice = exam.exam_type === "practice";
+  const topic = String(formData.get("topic") ?? "");
+  const { data: topicRow } = practice ? await admin.from("topics").select("id").eq("slug", topic).maybeSingle() : { data: null };
+  if (practice && !topicRow) throw new Error(`Topic not found: ${topic}`);
+
   // Бұрын басталған сессия: уақыты бітпесе — жалғастырамыз, бітсе — бағалап жабамыз
   const { data: open } = await admin
     .from("exam_sessions")
-    .select("id, deadline_at")
+    .select("id, deadline_at, question_ids")
     .eq("user_id", userId)
     .eq("exam_id", exam.id)
     .eq("status", "in_progress")
-    .returns<Pick<SessionRow, "id" | "deadline_at">[]>();
-  let sessionId = open?.find((s) => !isPastDeadline(s))?.id;
+    .returns<Pick<SessionRow, "id" | "deadline_at" | "question_ids">[]>();
+  // Жаттығуда тек осы тараудың сессиясы жалғасады (басқа тараудікі бағаланып жабылады)
+  const { data: firstQuestions } =
+    practice && open?.length ? await admin.from("questions").select("id, topic_id").in("id", open.map((s) => s.question_ids[0])) : { data: [] };
+  const sameTopic = new Set((firstQuestions ?? []).filter((q) => q.topic_id === topicRow?.id).map((q) => q.id as string));
+  let sessionId = open?.find((s) => !isPastDeadline(s) && (!practice || sameTopic.has(s.question_ids[0])))?.id;
   for (const stale of open ?? []) {
     if (stale.id !== sessionId) await finalizeSession(admin, stale.id);
   }
@@ -68,11 +78,10 @@ export async function startExam(formData: FormData) {
       contextId: l.questions?.context_id ?? null,
       position: l.position,
     }));
-    // ҰБТ — нақты пішіммен; басқа тесттер — тек бір жауапты сұрақтар
+    // ҰБТ — нақты пішіммен; басқа тесттер — тек бір жауапты сұрақтар (жаттығуда — бір тараудан)
+    const singles = pool.filter((q) => q.kind === "single" && !q.contextId && (!practice || q.topicId === topicRow?.id));
     const picked =
-      exam.exam_type === "unt"
-        ? pickUntFormat(pool, randomInt)
-        : pickQuestions(pool.filter((q) => q.kind === "single" && !q.contextId), SESSION_SIZE[exam.exam_type] ?? pool.length, randomInt);
+      exam.exam_type === "unt" ? pickUntFormat(pool, randomInt) : pickQuestions(singles, SESSION_SIZE[exam.exam_type] ?? pool.length, randomInt);
     const questionIds = picked.map((q) => q.id);
     // Сұрақсыз тест беті ашылмайды (бос сессия жасамаймыз)
     if (!questionIds.length) throw new Error(`Exam has no questions: ${slug}`);

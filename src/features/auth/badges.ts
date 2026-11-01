@@ -9,7 +9,7 @@ const LAB_MASTER_SCORE = 80;
 
 /** Тест аяқталғанда: алғашқы тест; ҰБТ/ББЖМ-да 80 % және одан жоғары */
 export const examBadges = (examType: string, score: number, maxScore: number): BadgeId[] =>
-  examType !== "olympiad" && maxScore > 0 && score / maxScore >= 0.8 ? ["first_test", "unt_80"] : ["first_test"];
+  ["unt", "bbzhm"].includes(examType) && maxScore > 0 && score / maxScore >= 0.8 ? ["first_test", "unt_80"] : ["first_test"];
 
 /** XP қосылғаннан кейін: 7 күн қатарынан, 1000 XP */
 export const progressBadges = (xp: number, streakDays: number): BadgeId[] => [
