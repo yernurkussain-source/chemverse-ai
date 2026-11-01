@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
   // ҚМЖ генераторы AI нұсқауын docs/kmzh/AI_SYSTEM_PROMPT.md-ден оқиды (src/features/lesson-studio/prompt.ts)
   outputFileTracingIncludes: {
     "/[locale]/learn/**": ["./docs/rag/*.md", "./docs/unt/questions/*.json"],
+    // Тақырыптар картасы мен ұсыныстар: қай тараудың конспект беті бар (listLessons)
+    "/[locale]/teacher/classes/**": ["./docs/unt/questions/*.json"],
+    "/[locale]/profile": ["./docs/unt/questions/*.json"],
     "/[locale]/teacher/lesson-studio": ["./docs/kmzh/AI_SYSTEM_PROMPT.md"],
     "/[locale]/teacher/lesson-studio/**": ["./docs/kmzh/AI_SYSTEM_PROMPT.md"],
   },

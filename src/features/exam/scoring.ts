@@ -74,5 +74,15 @@ export const BACK_LABEL = { unt: "untShort", bbzhm: "bbzhmShort", practice: "pra
 /** Тақырып «әлсіз» деп саналатын шек (дұрыс жауаптар үлесі) */
 export const WEAK_TOPIC_THRESHOLD = 0.6;
 
+type TopicTally = { answered: number; correct: number };
+const share = (t: TopicTally) => t.correct / t.answered;
+
+/** Тақырыптар ең әлсізінен бастап (student_progress бойынша); minAnswered-тан аз жауап — қорытындыға ерте */
+export function rankTopics<T extends TopicTally>(rows: T[], minAnswered = 3): T[] {
+  return rows.filter((r) => r.answered >= minAnswered).sort((a, b) => share(a) - share(b) || b.answered - a.answered);
+}
+
+export const isWeakTopic = (t: TopicTally) => share(t) < WEAK_TOPIC_THRESHOLD;
+
 /** Әр дұрыс жауапқа берілетін XP */
 export const XP_PER_CORRECT = 5;

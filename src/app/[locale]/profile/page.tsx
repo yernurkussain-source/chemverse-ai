@@ -13,6 +13,9 @@ import { DeleteAccount } from "@/components/auth/delete-account";
 import { signOut } from "@/features/auth/actions";
 import { BADGES, type BadgeId } from "@/features/auth/badges";
 import { getCurrentAccount } from "@/features/auth/queries";
+import { PracticeButton } from "@/components/exam/practice-button";
+import { isWeakTopic, rankTopics } from "@/features/exam/scoring";
+import { listLessons } from "@/features/lessons/lessons";
 import { createClient } from "@/lib/supabase/server";
 import { getClassLeaderboard, getStudentAssignments } from "@/features/teacher/queries";
 import { cn } from "@/lib/utils";
@@ -125,6 +128,7 @@ async function ProfileDetails() {
       </section>
 
       {profile?.role === "student" && <StudentAssignments userId={user.id} locale={locale} />}
+      {profile?.role === "student" && <ReviewTopics userId={user.id} locale={locale} />}
       {profile?.role === "student" && <MyWorks />}
       {profile?.role === "student" && <Badges userId={user.id} />}
       {profile?.role === "student" && <ClassRating userId={user.id} />}
@@ -216,6 +220,57 @@ async function ClassRating({ userId }: { userId: string }) {
           </li>
         ))}
       </ol>
+    </section>
+  );
+}
+
+/** Қайталауға ұсынылатын тақырыптар: ең әлсіз 3 тарау (student_progress) — конспект пен сол тараудан жаттығу */
+async function ReviewTopics({ userId, locale }: { userId: string; locale: Locale }) {
+  const t = await getTranslations("Profile");
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("student_progress")
+    .select("answered, correct, topics(slug)")
+    .eq("user_id", userId)
+    .returns<{ answered: number; correct: number; topics: { slug: string } | null }[]>();
+  // Тек конспект беті бар тараулар — ұсынылған әрекетті (оқу, жаттығу) орындауға болатындай
+  const lessons = new Map(listLessons().map((l) => [l.slug, l.title[locale]]));
+  const rows = (data ?? []).flatMap((p) => {
+    const slug = p.topics?.slug;
+    const title = slug && lessons.get(slug);
+    return slug && title ? [{ slug, title, answered: p.answered, correct: p.correct }] : [];
+  });
+  // ҰБТ тестінің 25 сұрағы 30-дан астам тақырыпқа таралады — тарауда 2 жауаптың өзі ұсынысқа жеткілікті (баға емес)
+  const ranked = rankTopics(rows, 2);
+  const weak = ranked.filter(isWeakTopic).slice(0, 3);
+
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="text-base font-semibold">{t("reviewTitle")}</h2>
+      {!ranked.length ? (
+        <p className="text-[0.9rem] text-muted-foreground">{t("reviewEmpty")}</p>
+      ) : !weak.length ? (
+        <p className="text-[0.9rem] text-good">{t("reviewAllGood")}</p>
+      ) : (
+        <ul className="grid gap-2">
+          {weak.map((topic) => (
+            <li key={topic.slug} className="flex flex-col gap-2.5 rounded-xl border border-line bg-panel-2 px-3.5 py-3">
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="min-w-0 font-semibold">{topic.title}</span>
+                <span className="shrink-0 font-mono text-[0.85rem] text-pink">
+                  {t("reviewScore", { correct: topic.correct, answered: topic.answered, pct: Math.round((topic.correct / topic.answered) * 100) })}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Link href={`/learn/${topic.slug}`} className={buttonVariants({ variant: "panel", size: "pill-sm" })}>
+                  {t("reviewNotes")}
+                </Link>
+                <PracticeButton topic={topic.slug} locale={locale} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

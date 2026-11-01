@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { isPastDeadline } from "@/features/exam/grading";
-import { scoreExam, twoPointScore } from "@/features/exam/scoring";
+import { isWeakTopic, rankTopics, scoreExam, twoPointScore } from "@/features/exam/scoring";
 
 const single = (difficulty: number, correct: boolean) => ({ difficulty, kind: "single" as const, total: 1, hits: correct ? 1 : 0, wrong: correct ? 0 : 1 });
 
@@ -75,5 +75,24 @@ describe("isPastDeadline", () => {
     assert.equal(isPastDeadline({ deadline_at: inSeconds(60) }), false);
     assert.equal(isPastDeadline({ deadline_at: inSeconds(-1) }), true);
     assert.equal(isPastDeadline({ deadline_at: inSeconds(-1) }, 5_000), false);
+  });
+});
+
+describe("тақырыптар картасы", () => {
+  const rows = [
+    { slug: "a", answered: 10, correct: 9 },
+    { slug: "b", answered: 10, correct: 3 },
+    { slug: "c", answered: 2, correct: 0 }, // тым аз жауап — қорытындыға ерте
+    { slug: "d", answered: 20, correct: 6 }, // b-мен бірдей үлес, бірақ дерегі көп — бірінші
+    { slug: "e", answered: 5, correct: 3 }, // 60 % — әлсіз емес (шек қатаң)
+  ];
+
+  test("ең әлсізінен бастап, аз жауап берілгендері шығады", () => {
+    assert.deepEqual(rankTopics(rows).map((r) => r.slug), ["d", "b", "e", "a"]);
+    assert.deepEqual(rankTopics(rows, 1).map((r) => r.slug), ["c", "d", "b", "e", "a"]);
+  });
+
+  test("әлсіз — 60 %-дан төмен", () => {
+    assert.deepEqual(rankTopics(rows).filter(isWeakTopic).map((r) => r.slug), ["d", "b"]);
   });
 });

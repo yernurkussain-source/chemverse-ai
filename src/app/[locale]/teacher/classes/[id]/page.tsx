@@ -7,8 +7,9 @@ import { getTranslations } from "next-intl/server";
 import { DeleteClassButton } from "@/components/teacher/delete-class-button";
 import { AssignmentForm } from "@/components/teacher/forms";
 import { Card } from "@/components/ui/card";
+import { isWeakTopic } from "@/features/exam/scoring";
 import { deleteAssignment, removeStudent } from "@/features/teacher/actions";
-import { getClassDetail, getTeacherId } from "@/features/teacher/queries";
+import { getClassDetail, getTeacherId, type ClassTopic } from "@/features/teacher/queries";
 import { Link, redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { formatDecimal } from "@/lib/format";
@@ -40,6 +41,48 @@ export default function ClassPage({ params }: PageProps<"/[locale]/teacher/class
 
 const pctColor = (pct: number | null) =>
   pct === null ? "text-muted-foreground" : pct >= 80 ? "text-good" : pct >= 60 ? "text-cyan" : pct >= 40 ? "text-amber" : "text-pink";
+
+/** Тақырыптар картасында бірден көрінетін (ең әлсіз) тақырыптар саны, қалғаны «Барлығы» ішінде */
+const TOPICS_SHOWN = 8;
+
+type TeacherT = Awaited<ReturnType<typeof getTranslations<"Teacher">>>;
+
+function TopicList({ topics, t }: { topics: ClassTopic[]; t: TeacherT }) {
+  return (
+    <ul className="grid grid-cols-1 gap-2 md:grid-cols-2">
+      {topics.map((topic) => {
+        const pct = Math.round((topic.correct / topic.answered) * 100);
+        const weak = isWeakTopic(topic);
+        return (
+          <li key={topic.slug} className={cn("rounded-2xl border bg-panel px-4 py-3", weak ? "border-pink/40" : "border-line")}>
+            <div className="flex items-baseline justify-between gap-3">
+              {topic.hasLesson ? (
+                <Link href={`/learn/${topic.slug}`} className="min-w-0 font-semibold hover:text-cyan">
+                  {topic.title}
+                </Link>
+              ) : (
+                <span className="min-w-0 font-semibold">{topic.title}</span>
+              )}
+              <span className={cn("shrink-0 font-mono font-semibold", pctColor(pct))}>{pct}%</span>
+            </div>
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-panel-2" aria-hidden>
+              <div className={cn("h-full rounded-full", weak ? "bg-pink" : "bg-cyan")} style={{ width: `${pct}%` }} />
+            </div>
+            <p className="mt-1.5 text-[0.78rem] text-muted-foreground">
+              {t("topicsMeta", { students: topic.students, correct: topic.correct, answered: topic.answered })}
+              {weak && (
+                <>
+                  {" · "}
+                  <b className="text-pink">{t("topicsWeak")}</b>
+                </>
+              )}
+            </p>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
 
 async function ClassContent({ params }: { params: Params }) {
   const { id } = await params;
@@ -132,6 +175,27 @@ async function ClassContent({ params }: { params: Params }) {
               </tbody>
             </table>
           </div>
+        )}
+      </section>
+
+      {/* Тақырыптар картасы: сыныптың әр тақырып бойынша нәтижесі, ең әлсізі бірінші */}
+      <section>
+        <h2 className="font-display text-lg font-semibold">{t("topicsTitle")}</h2>
+        <p className="mt-1 mb-3 text-[0.88rem] text-muted-foreground">{t("topicsHint")}</p>
+        {detail.topics.length === 0 ? (
+          <p className="rounded-2xl border border-dashed border-line p-6 text-center text-muted-foreground">{t("topicsEmpty")}</p>
+        ) : (
+          <>
+            <TopicList topics={detail.topics.slice(0, TOPICS_SHOWN)} t={t} />
+            {detail.topics.length > TOPICS_SHOWN && (
+              <details className="mt-3">
+                <summary className="cursor-pointer text-[0.9rem] font-semibold text-cyan">{t("topicsAll", { count: detail.topics.length })}</summary>
+                <div className="mt-3">
+                  <TopicList topics={detail.topics.slice(TOPICS_SHOWN)} t={t} />
+                </div>
+              </details>
+            )}
+          </>
         )}
       </section>
 

@@ -748,7 +748,12 @@
     "deleteDemo": "The demo account cannot be deleted.",
     "deleteFailed": "The account was not deleted. Try again a little later.",
     "ratingTitle": "Class {name} ranking",
-    "ratingMe": "{name} (you)"
+    "ratingMe": "{name} (you)",
+    "reviewTitle": "Topics to review",
+    "reviewEmpty": "Take a UNT test or chapter practice and the topics worth reviewing will appear here.",
+    "reviewAllGood": "Above 60 % in every chapter you have answered — well done!",
+    "reviewScore": "{correct}/{answered} · {pct} %",
+    "reviewNotes": "Notes"
   },
   "MoleculeViewer": {
     "label": "3D molecule viewer. Drag to rotate; tap an atom.",
@@ -1474,7 +1479,13 @@
     "deleteClassYes": "Yes, delete",
     "cancel": "Cancel",
     "csvExport": "Download results for Excel (CSV)",
-    "csvBestError": "Lab: best error, %"
+    "csvBestError": "Lab: best error, %",
+    "topicsTitle": "Class topic map",
+    "topicsHint": "The class's share of correct answers for each topic (UNT tests and chapter practice). Weakest first; below 60 % is a weak topic. Tap a chapter title to open its notes.",
+    "topicsEmpty": "No data yet: the map appears once students take a test or chapter practice.",
+    "topicsAll": "All topics ({count})",
+    "topicsMeta": "{students, plural, one {# student} other {# students}} · {correct}/{answered} correct",
+    "topicsWeak": "weak"
   },
   "LessonStudio": {
     "eyebrow": "AI Lesson Studio",

@@ -1,5 +1,7 @@
 import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
+import { rankTopics } from "@/features/exam/scoring";
+import { listLessons } from "@/features/lessons/lessons";
 import { isAssignmentDone, type OlympiadAssignment } from "@/features/olympiad/assignments";
 import { isShellLab } from "@/features/virtual-lab/catalog";
 import type { Locale } from "@/i18n/routing";
@@ -76,6 +78,18 @@ export type AssignmentRow = {
   done: number;
 };
 
+/** Сыныптың бір тақырып бойынша жиынтық нәтижесі (student_progress) */
+export type ClassTopic = {
+  slug: string;
+  title: string;
+  answered: number;
+  correct: number;
+  /** Осы тақырыпта жауап берген оқушылар саны */
+  students: number;
+  /** Конспект беті бар тарау ма (8–9-сынып) */
+  hasLesson: boolean;
+};
+
 export type ClassDetail = {
   id: string;
   name: string;
@@ -84,6 +98,8 @@ export type ClassDetail = {
   students: StudentRow[];
   assignments: AssignmentRow[];
   exams: { id: string; title: string }[];
+  /** Ең әлсізінен бастап (rankTopics) */
+  topics: ClassTopic[];
 };
 
 const percent = (score: number | null, max: number | null) => (max ? Math.round(((score ?? 0) / max) * 100) : 0);
@@ -126,7 +142,7 @@ export async function getClassDetail(classId: string, teacherId: string, locale:
   ]);
 
   const studentIds = (members ?? []).map((m) => m.user_id);
-  const [{ data: sessions }, { data: labs }] = studentIds.length
+  const [{ data: sessions }, { data: labs }, { data: progress }] = studentIds.length
     ? await Promise.all([
         supabase
           .from("exam_sessions")
@@ -135,8 +151,32 @@ export async function getClassDetail(classId: string, teacherId: string, locale:
           .neq("status", "in_progress")
           .order("finished_at", { ascending: false }),
         supabase.from("lab_attempts").select("user_id, experiment_id, created_at, result").in("user_id", studentIds),
+        supabase
+          .from("student_progress")
+          .select("answered, correct, topics(slug, title_kk, title_ru, title_en)")
+          .in("user_id", studentIds)
+          .returns<{ answered: number; correct: number; topics: (Localized & { slug: string }) | null }[]>(),
       ])
-    : [{ data: [] }, { data: [] }];
+    : [{ data: [] }, { data: [] }, { data: [] }];
+
+  // Тақырыптар картасы: сынып бойынша жиынтық (RLS: мұғалім тек өз оқушыларының прогресін көреді)
+  const lessons = new Set(listLessons().map((l) => l.slug));
+  const byTopic = new Map<string, ClassTopic>();
+  for (const p of progress ?? []) {
+    if (!p.topics) continue;
+    const topic = byTopic.get(p.topics.slug) ?? {
+      slug: p.topics.slug,
+      title: pick(p.topics, "title", locale),
+      answered: 0,
+      correct: 0,
+      students: 0,
+      hasLesson: lessons.has(p.topics.slug),
+    };
+    topic.answered += p.answered;
+    topic.correct += p.correct;
+    topic.students += 1;
+    byTopic.set(topic.slug, topic);
+  }
 
   const students: StudentRow[] = (members ?? []).map((m) => {
     const own = (sessions ?? []).filter((s) => s.user_id === m.user_id);
@@ -190,6 +230,7 @@ export async function getClassDetail(classId: string, teacherId: string, locale:
     students,
     assignments: assignmentRows,
     exams: (exams ?? []).map((e) => ({ id: e.id as string, title: pick(e, "title", locale) })),
+    topics: rankTopics([...byTopic.values()]),
   };
 }
 
