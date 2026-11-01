@@ -95,7 +95,9 @@ const single = (q, slug, extra = {}) => ({
 });
 
 const chapterQuestions = chapters.flatMap(({ topic, questions }) => questions.map((q) => single(q, topic.slug)));
-const formatQuestions = formats.flatMap(({ topic, context, matching, multiple }) => [
+const formatQuestions = formats.flatMap(({ topic, single: singles = [], context, matching, multiple }) => [
+  // 10–11-сыныптың бір жауапты сұрақтары (тесттің 1–25 бөлімі; тарау жаттығуы мен ББЖМ-ге кірмейді)
+  ...singles.map((q) => single(q, topic.slug)),
   ...context.questions.map((q) => single(q, topic.slug, { context_id: uuid(`unt-ctx:${context.id}`) })),
   // Сәйкестендіру: әр жолдың (slot) өз 4 нұсқасы, жолға бір дұрыс
   ...matching.map((q) => ({

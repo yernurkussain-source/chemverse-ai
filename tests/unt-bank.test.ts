@@ -54,6 +54,7 @@ type FormatLang = { q: string; options?: string[]; left?: string[]; explanation:
 type FormatQuestion<C> = { id: string; difficulty: number; correct: C; kk: FormatLang & { options: string[] }; ru: FormatLang };
 type FormatFile = {
   topic: Chapter["topic"];
+  single?: FormatQuestion<number>[];
   context: { id: string; kk: { title: string; text: string }; ru: { title: string; text: string }; questions: FormatQuestion<number>[] };
   matching: FormatQuestion<number[]>[];
   multiple: FormatQuestion<number[]>[];
@@ -89,6 +90,20 @@ describe("ҰБТ пішімінің тапсырмалары", () => {
         checkText(`${file} ${q.id}`, q, 4);
         assert.ok(Number.isInteger(q.correct) && q.correct >= 0 && q.correct <= 3, `${file} ${q.id}`);
       }
+    }
+  });
+
+  test("10–11-сыныптың бір жауапты сұрақтары: 4 нұсқа, бір дұрыс, қиындық үлесі ≈ 50/30/20 %", () => {
+    for (const { file, single = [] } of formats) {
+      assert.equal(single.length, 10, `${file}: 10 бір жауапты сұрақ`);
+      for (const q of single) {
+        checkText(`${file} ${q.id}`, q, 4);
+        assert.ok(Number.isInteger(q.correct) && q.correct >= 0 && q.correct <= 3, `${file} ${q.id}`);
+      }
+      // ҰТО спецификациясы: базалық 50 %, орташа 30 %, жоғары 20 %
+      const levels = [1, 2, 3].map((d) => single.filter((q) => q.difficulty === d).length);
+      assert.deepEqual(levels, [5, 3, 2], `${file}: қиындық үлесі`);
+      assert.ok(new Set(single.map((q) => q.correct)).size >= 3, `${file}: дұрыс жауаптар әртүрлі орында болсын`);
     }
   });
 

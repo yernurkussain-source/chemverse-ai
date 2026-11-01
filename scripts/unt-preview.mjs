@@ -26,8 +26,10 @@ for (const { file, topic, questions } of read(join("docs", "unt", "questions")))
 }
 
 lines.push("---", "", "# ҰБТ пішімінің тапсырмалары (`docs/unt/format/`)", "");
-for (const { file, topic, context, matching, multiple } of read(join("docs", "unt", "format"))) {
-  lines.push(`## ${topic.title.kk} (\`${file}\`)`, "", `### Контекст: ${context.kk.title}`, "");
+for (const { file, topic, single = [], context, matching, multiple } of read(join("docs", "unt", "format"))) {
+  lines.push(`## ${topic.title.kk} (\`${file}\`)`, "", "### Бір дұрыс жауап", "");
+  single.forEach(choice);
+  lines.push(`### Контекст: ${context.kk.title}`, "");
   lines.push(...context.kk.text.split("\n").map((p) => `> ${p}`), "");
   context.questions.forEach(choice);
   lines.push("### Сәйкестендіру", "");
