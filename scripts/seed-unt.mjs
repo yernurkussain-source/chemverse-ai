@@ -140,6 +140,20 @@ await upsert(
   "exam_id,question_id",
 );
 
+// 5. 1-күнгі демо сұрақтар (supabase/seed.sql: түсіндірмесіз, орысшасыз) ҰБТ тестінен ажыратылады.
+// Сұрақтардың өзі мен оқушылардың бұрынғы жауаптары өшпейді — тек тестпен байланысы.
+const LEGACY_TOPICS = ["atom-structure", "chemical-bonds", "solutions-ph", "stoichiometry", "organic-basics"];
+const { data: legacy, error: legacyError } = await db.from("questions").select("id, topics!inner(slug)").in("topics.slug", LEGACY_TOPICS);
+if (legacyError) throw legacyError;
+if (legacy.length) {
+  const { error } = await db
+    .from("exam_questions")
+    .delete()
+    .eq("exam_id", exams.find((e) => e.slug === "unt-demo").id)
+    .in("question_id", legacy.map((q) => q.id));
+  if (error) throw new Error(`exam_questions: ${error.message}`);
+}
+
 console.log(
   `✅ Дайын: ${chapters.length} тарау (${chapterQuestions.length} сұрақ) + ${formats.length} ҰБТ-пішім файлы (${formatQuestions.length} тапсырма) → ${exams.map((e) => e.slug).join(", ")}`,
 );

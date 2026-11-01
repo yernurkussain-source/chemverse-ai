@@ -6,7 +6,7 @@ import { redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { DEADLINE_GRACE_MS, finalizeSession, isPastDeadline, type SessionRow } from "./grading";
+import { DEADLINE_GRACE_MS, finalizeSession, isPastDeadline, isValidChoice, type SessionRow } from "./grading";
 import { pickQuestions, pickUntFormat } from "./sampling";
 import { SESSION_SIZE, type ExamType } from "./scoring";
 
@@ -133,12 +133,7 @@ export async function saveAnswer(sessionId: string, questionId: string, optionId
   ]);
   const kind = question?.kind ?? "single";
   const slots = (options ?? []).map((o) => (o.slot as number | null) ?? 0);
-  const unique = new Set(optionIds).size === optionIds.length;
-  const valid =
-    unique &&
-    slots.length === optionIds.length &&
-    (kind === "multiple" || (kind === "matching" ? new Set(slots).size === slots.length : optionIds.length === 1));
-  if (!question || !valid) return { ok: false, error: "invalid" };
+  if (!question || !isValidChoice(kind, optionIds, slots)) return { ok: false, error: "invalid" };
 
   const single = kind === "single";
   const { error } = await admin.from("student_answers").upsert(

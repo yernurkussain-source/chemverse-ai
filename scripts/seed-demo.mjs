@@ -11,6 +11,9 @@ import { pathToFileURL } from "node:url";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createClient } from "@supabase/supabase-js";
 import { generateText, Output } from "ai";
+// Тест құрамы мен бағалау — сайттағы кодтың өзі (Node 24 .ts файлдарды тікелей оқиды)
+import { pickUntFormat } from "../src/features/exam/sampling.ts";
+import { twoPointScore } from "../src/features/exam/scoring.ts";
 
 const { NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SECRET_KEY, GOOGLE_GENERATIVE_AI_API_KEY, AI_CHAT_MODEL } = process.env;
 if (!NEXT_PUBLIC_SUPABASE_URL || !SUPABASE_SECRET_KEY) {
@@ -33,8 +36,8 @@ const STUDENTS = [
   ["Мадина Р.", 0.67], ["Ислам Н.", 0.59], ["Жансая К.", 0.74], ["Арман Д.", 0.52],
 ].map(([name, skill], i) => ({ name, skill, email: `student${String(i + 1).padStart(2, "0")}@demo.chemverse.app` }));
 
-// Сыныптың «әлсіз» тақырыптары — мұғалім кабинетіндегі картада көрінеді
-const TOPIC_MODIFIER = { "atom-structure": 0.08, "chemical-bonds": 0, "solutions-ph": -0.05, stoichiometry: -0.2, "organic-basics": -0.1 };
+// Сыныптың «күшті» және «әлсіз» тақырыптары (тарау slug-ы → дұрыс жауап ықтималдығына қосымша)
+const TOPIC_MODIFIER = { "8-01-atom-electrons": 0.08, "8-05-stoichiometry": -0.2, "8-10-solutions": -0.05, "9-11-organic-intro": -0.1, "11-04-organic": -0.1 };
 
 const SEED_ASSIGNMENTS = [
   { title: "Атом құрылысы — қайталау тесті", createdDaysAgo: 12, dueDaysAgo: 7 },
@@ -127,23 +130,47 @@ if (RESET) {
 await cleanup({ removeStudents: false });
 
 // ---------- Тест сұрақтары ----------
+// Демо сессиялар нақты ҰБТ пішімімен (40 тапсырма, 50 балл): таңдау мен 2/1/0 бағалау — сайттың өз коды
 const exam = must(await db.from("exams").select("id, duration_minutes").eq("slug", "unt-demo").single(), "ҰБТ тесті");
-const links = must(await db.from("exam_questions").select("question_id").eq("exam_id", exam.id), "сұрақтар");
-// Демо нәтижелер тек бір жауапты сұрақтардан (контекст/сәйкестендіру/бірнеше жауап — басқа бағалау)
-const questions = must(
-  await db
-    .from("questions")
-    .select("id, difficulty, topics(slug)")
-    .in("id", links.map((l) => l.question_id))
-    .eq("kind", "single")
-    .is("context_id", null),
+const links = must(
+  await db.from("exam_questions").select("question_id, position, questions(difficulty, kind, context_id, topics(slug))").eq("exam_id", exam.id),
   "сұрақтар",
 );
-const questionIds = questions.map((q) => q.id);
-const options = must(await db.from("question_options").select("id, question_id, is_correct").in("question_id", questionIds), "нұсқалар");
-const correctOf = new Map(options.filter((o) => o.is_correct).map((o) => [o.question_id, o.id]));
-const wrongOf = new Map();
-for (const o of options.filter((o) => !o.is_correct)) wrongOf.set(o.question_id, [...(wrongOf.get(o.question_id) ?? []), o.id]);
+const pool = links.map((l) => ({
+  id: l.question_id,
+  position: l.position,
+  difficulty: l.questions.difficulty,
+  kind: l.questions.kind,
+  contextId: l.questions.context_id,
+  topicId: l.questions.topics?.slug, // pickUntFormat тақырып бойынша теңдей таңдайды
+}));
+// Нұсқалар бөліп оқылады: Supabase бір жауапта ең көбі 1000 жол қайтарады
+const optionsOf = new Map();
+for (let i = 0; i < pool.length; i += 100) {
+  const rows = must(
+    await db.from("question_options").select("id, question_id, slot, is_correct").in("question_id", pool.slice(i, i + 100).map((q) => q.id)),
+    "нұсқалар",
+  );
+  for (const o of rows) optionsOf.set(o.question_id, [...(optionsOf.get(o.question_id) ?? []), o]);
+}
+
+/** Бір тапсырмаға оқушы жауабы: p — дұрыс таңдау ықтималдығы. Қайтарады: жауап жолы, ұпай, ең жоғары ұпай */
+function simulate(q, p) {
+  const options = optionsOf.get(q.id) ?? [];
+  const correct = options.filter((o) => o.is_correct);
+  const wrong = options.filter((o) => !o.is_correct);
+  if (q.kind === "single") {
+    const ok = rand() < p;
+    return { row: { option_id: ok ? correct[0]?.id : pick(wrong).id, option_ids: null }, points: ok ? 1 : 0, max: 1 };
+  }
+  // Сәйкестендіру: әр жол бөлек; бірнеше жауап: әр дұрыс нұсқа p ықтималдықпен, қате нұсқа сирек
+  const chosen =
+    q.kind === "matching"
+      ? [0, 1].map((slot) => (rand() < p ? correct.find((o) => o.slot === slot) : pick(wrong.filter((o) => o.slot === slot))))
+      : [...correct.filter(() => rand() < p), ...wrong.filter(() => rand() < (1 - p) * 0.25)];
+  const hits = chosen.filter((o) => o.is_correct).length;
+  return { row: { option_id: null, option_ids: chosen.map((o) => o.id) }, points: twoPointScore(correct.length, hits, chosen.length - hits), max: 2 };
+}
 
 // ---------- 12 демо оқушы + негізгі демо оқушы (Айгерім) ----------
 // Айгерімнің бұрынғы (сынақ кезіндегі) тест/зертхана нәтижелері ауыстырылады, профилі өзгермейді
@@ -166,19 +193,23 @@ for (const student of [...STUDENTS, MAIN_STUDENT]) {
     const started = now - daysAgo * DAY - randomInt(6 * 3600_000);
     const finished = started + (25 + randomInt(30)) * 60_000;
     const growth = n * 0.05; // уақыт өте нәтиже сәл жақсарады
+    const questions = pickUntFormat(pool, randomInt);
     const answers = [];
     let score = 0;
+    let maxScore = 0;
     for (const q of questions) {
-      if (rand() < 0.04) continue; // жауапсыз қалған сұрақ
-      const p = Math.min(0.97, Math.max(0.1, student.skill + growth + (TOPIC_MODIFIER[q.topics?.slug] ?? 0) - (q.difficulty - 1) * 0.06));
-      const correct = rand() < p;
-      const optionId = correct ? correctOf.get(q.id) : pick(wrongOf.get(q.id) ?? [correctOf.get(q.id)]);
-      answers.push({ question_id: q.id, option_id: optionId, is_correct: correct, answered_at: iso(finished - randomInt(20) * 60_000) });
-      if (correct) score++;
-      const stat = progress.get(q.topics?.slug) ?? { topicId: null, answered: 0, correct: 0 };
+      const p = Math.min(0.97, Math.max(0.1, student.skill + growth + (TOPIC_MODIFIER[q.topicId] ?? 0) - (q.difficulty - 1) * 0.06));
+      const { row, points, max } = simulate(q, p);
+      maxScore += max;
+      if (rand() < 0.04 || !(row.option_id || row.option_ids?.length)) continue; // жауапсыз қалған тапсырма
+      const correct = points === max;
+      answers.push({ question_id: q.id, ...row, is_correct: correct, answered_at: iso(finished - randomInt(20) * 60_000) });
+      score += points;
+      if (correct) totalCorrect++;
+      const stat = progress.get(q.topicId) ?? { topicId: null, answered: 0, correct: 0 };
       stat.answered++;
       if (correct) stat.correct++;
-      progress.set(q.topics?.slug, stat);
+      progress.set(q.topicId, stat);
     }
     const session = must(
       await db
@@ -186,20 +217,19 @@ for (const student of [...STUDENTS, MAIN_STUDENT]) {
         .insert({
           user_id: id,
           exam_id: exam.id,
-          question_ids: questionIds,
+          question_ids: questions.map((q) => q.id),
           status: "finished",
           started_at: iso(started),
           deadline_at: iso(started + exam.duration_minutes * 60_000),
           finished_at: iso(finished),
           score,
-          max_score: questions.length,
+          max_score: maxScore,
         })
         .select("id")
         .single(),
       "сессия",
     );
     must(await db.from("student_answers").insert(answers.map((a) => ({ ...a, session_id: session.id }))), "жауаптар");
-    totalCorrect += score;
     sessionsCount++;
   }
 

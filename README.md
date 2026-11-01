@@ -53,8 +53,17 @@ npm run dev                         # http://localhost:3000
 ### Дерекқор (Supabase)
 Supabase → **SQL Editor**-де ретімен іске қосыңыз:
 
-1. `supabase/migrations/` ішіндегі файлдар — **күн ретімен** (`20261017…_init.sql` → `20261022…_ai_cache.sql`)
-2. `supabase/seed.sql` — 5 тақырып, 50 ҰБТ сұрағы, молекулалар, зертхана
+1. `supabase/migrations/` ішіндегі **барлық** файлдар — күн ретімен (`20261017…_init.sql` → … → соңғысы `20261104…_unt_formats.sql`)
+2. `supabase/seed.sql` — молекулалар, зертхана, бастапқы ҰБТ тесті
+
+Содан кейін PowerShell-де контент жүктеледі:
+
+```powershell
+npm run seed:unt        # ҰБТ/ББЖМ банкі (8–9-сынып тараулары + ҰБТ-2026 пішімінің тапсырмалары), тарау бойынша жаттығу
+npm run seed:olympiad   # олимпиада есептері
+npm run rag             # AI мұғалімнің білім қоры (docs/rag)
+npm run seed:demo       # демо сынып пен нәтижелер (демоның алдында)
+```
 
 ### Командалар
 

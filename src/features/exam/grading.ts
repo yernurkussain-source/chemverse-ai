@@ -126,6 +126,18 @@ export async function finalizeSession(admin: SupabaseClient, sessionId: string) 
   await grantBadges(admin, session.user_id, examBadges(examType, score, maxScore));
 }
 
+/**
+ * Оқушы жіберген таңдау дұрыс пішінде ме (saveAnswer, серверде).
+ * slots — дерекқордан табылған, осы сұраққа тиесілі нұсқалардың жолдары (бөтен id табылмайды → саны кемиді).
+ * Бір жауапты — тура бір нұсқа, сәйкестендіру — әр жолдан ең көбі біреу, бірнеше жауап — кез келген саны; id қайталанбайды.
+ */
+export function isValidChoice(kind: string, optionIds: string[], slots: number[]): boolean {
+  if (!optionIds.length || new Set(optionIds).size !== optionIds.length || slots.length !== optionIds.length) return false;
+  if (kind === "multiple") return true;
+  if (kind === "matching") return new Set(slots).size === slots.length;
+  return optionIds.length === 1;
+}
+
 /** Жауап жолындағы таңдалған нұсқалар: бір жауаптыда option_id, қалғандарында option_ids */
 export function chosenIds(row: { option_id?: unknown; option_ids?: unknown }): string[] {
   if (Array.isArray(row.option_ids)) return row.option_ids as string[];

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { finalizeSession } from "@/features/exam/grading";
+import { finalizeSession, isValidChoice } from "@/features/exam/grading";
 import { XP_PER_CORRECT } from "@/features/exam/scoring";
 import { fakeSupabase } from "./helpers/fake-supabase";
 
@@ -119,4 +119,20 @@ test("ҰБТ: сәйкестендіру және бірнеше жауап 2/1/
   assert.deepEqual(marks, { m1: false, k1: true, k2: false });
   assert.deepEqual(db.student_answers.find((a) => a.question_id === "m1")?.option_ids, ["m1a0", "m1b1"]);
   assert.equal(db.profiles[0].xp, XP_PER_CORRECT);
+});
+
+test("жауап пішінін тексеру: бір жауап, сәйкестендіру, бірнеше жауап, бөтен және қайталанған нұсқа", () => {
+  // бір жауапты: тура бір нұсқа
+  assert.equal(isValidChoice("single", ["a"], [0]), true);
+  assert.equal(isValidChoice("single", ["a", "b"], [0, 0]), false);
+  // сәйкестендіру: әр жолдан ең көбі біреу
+  assert.equal(isValidChoice("matching", ["a0", "b1"], [0, 1]), true);
+  assert.equal(isValidChoice("matching", ["a0"], [0]), true);
+  assert.equal(isValidChoice("matching", ["a0", "a1"], [0, 0]), false);
+  // бірнеше жауап: кез келген саны
+  assert.equal(isValidChoice("multiple", ["a", "b", "c"], [0, 0, 0]), true);
+  // бөтен нұсқа (дерекқордан табылмады) және қайталанған id, бос тізім
+  assert.equal(isValidChoice("multiple", ["a", "x"], [0]), false);
+  assert.equal(isValidChoice("multiple", ["a", "a"], [0, 0]), false);
+  assert.equal(isValidChoice("single", [], []), false);
 });
