@@ -52,6 +52,16 @@ export function ExamRunner({ sessionId, title, deadline, serverNow, questions, i
   const [, startTransition] = useTransition();
   const finishRef = useRef<HTMLFormElement>(null);
   const finishedRef = useRef(false);
+  const pendingSaves = useRef(0);
+
+  // Сақтаулар кезекпен жүреді: жауап сақталып жатқанда бетті жапса/жаңартса, браузер ескертеді (әйтпесе жауап жоғалады)
+  useEffect(() => {
+    const warn = (event: BeforeUnloadEvent) => {
+      if (pendingSaves.current > 0) event.preventDefault();
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, []);
 
   const finish = useCallback(() => {
     if (finishedRef.current) return;
@@ -91,8 +101,11 @@ export function ExamRunner({ sessionId, title, deadline, serverNow, questions, i
       else delete copy[questionId];
       return copy;
     });
+    pendingSaves.current += 1;
     startTransition(async () => {
-      const result = await saveAnswer(sessionId, questionId, next);
+      const result = await saveAnswer(sessionId, questionId, next).finally(() => {
+        pendingSaves.current -= 1;
+      });
       if (result.ok) {
         setSaveError(false);
         return;
