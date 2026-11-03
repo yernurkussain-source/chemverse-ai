@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { withLowThinking } from "@/features/virtual-lab/ai";
 import type { Locale } from "@/i18n/routing";
-import { chatModel, isAiConfigured } from "@/lib/ai/provider";
+import { chatModelWithFallback, isAiConfigured } from "@/lib/ai/provider";
 import { isRateLimited, logUsage, saveTokenUsage } from "@/lib/ai/rate-limit";
 
 const LANGUAGE: Record<Locale, string> = { kk: "қазақ", ru: "орыс", en: "ағылшын" };
@@ -28,7 +28,7 @@ export async function aiRubricScore(
   try {
     const result = await withLowThinking((providerOptions) =>
       generateText({
-        model: chatModel(),
+        model: chatModelWithFallback(),
         instructions: `Сен — химия олимпиадасының қазылар алқасының мүшесісің (9-сынып). Оқушының ашық жауабын РУБРИКА бойынша бағала.
 Әр критерийге ұпайды тек жауапта ол нақты және дұрыс орындалса ғана бер; ішінара орындалса — ішінара ұпай. Тақырыпқа қатысы жоқ жауап — 0.
 feedback: ${LANGUAGE[input.locale]} тілінде 2–3 нақты ескерту (не дұрыс, нені толықтыру керек). Толық дұрыс жауапты жазба.

@@ -6,7 +6,7 @@ import { hasLocale } from "next-intl";
 import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
-import { chatModel, fallbackChatModel, isAiConfigured, isBusy } from "@/lib/ai/provider";
+import { chatModel, fallbackChatModel, isAiConfigured, isBusy, withFallbackModel } from "@/lib/ai/provider";
 import { searchKnowledge } from "@/lib/ai/rag";
 import { isRateLimited, logUsage, saveTokenUsage } from "@/lib/ai/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -33,18 +33,13 @@ const inputSchema = z.object({
   notes: z.string().max(600),
 });
 
-/** Негізгі модель қолжетімсіз болса (503/429) — резерв модельмен (лимиті бөлек) қайталау; басқа қате өзгеріссіз шығады */
-async function withFallback<T>(run: (model: ReturnType<typeof chatModel>) => Promise<T>): Promise<T> {
-  try {
-    return await run(chatModel());
-  } catch (error) {
-    if (!isBusy(error)) throw error;
-    console.warn("ҚМЖ: негізгі модель қолжетімсіз (503/429), резерв модельге ауысамыз");
-    return run(fallbackChatModel());
-  }
-}
+/**
+ * Негізгі модель 503/429 қайтарса не 50 с ішінде жоспарды бітірмесе — резерв модель (provider.ts);
+ * 50 с + резерв (≈ 15–30 с) беттің 120 с шегіне сыяды
+ */
+const lessonModel = () => withFallbackModel(chatModel(), fallbackChatModel(), 50_000);
 
-/** Құрылымдық жауап AI-дан келгенше (сабақ ≈ 20–40 с); қайта түзету тек уақыт жетсе (бет maxDuration = 60 с) */
+/** Құрылымдық жауап AI-дан келгенше (сабақ ≈ 20–40 с); қайта түзету тек уақыт жетсе (бет maxDuration = 120 с) */
 const FIX_BUDGET_MS = 25_000;
 
 /**
@@ -97,7 +92,7 @@ export async function generateLessonPlan(_prev: StudioState, formData: FormData)
       (a, b) => Number(b.source.startsWith(`${input.grade}-`)) - Number(a.source.startsWith(`${input.grade}-`)),
     );
     const prompt = kmzhUserPrompt(input, value, chunks);
-    const request = { instructions: kmzhSystemPrompt(), output: Output.object({ schema: aiKmzhSchema, name: "kmzh" }), temperature: 0.4, maxOutputTokens: 16000, maxRetries: 1 };
+    const request = { instructions: kmzhSystemPrompt(), output: Output.object({ schema: aiKmzhSchema, name: "kmzh" }), temperature: 0.4, maxOutputTokens: 16000, maxRetries: 0 }; // қайталаудың орнына резерв модель (lessonModel)
     const meta = {
       section: input.section,
       teacher: "",
@@ -116,22 +111,20 @@ export async function generateLessonPlan(_prev: StudioState, formData: FormData)
       trailingEmptyRows: 2,
     };
 
-    let result = await withFallback((model) => generateText({ ...request, model, prompt }));
+    let result = await generateText({ ...request, model: lessonModel(), prompt });
     let plan = fixMinutes(toKmzhPlan(result.output, meta));
     let tokens = { input: result.totalUsage.inputTokens ?? 0, output: result.totalUsage.outputTokens ?? 0 };
     const check = validateKmzh(plan);
     if (!check.ok && Date.now() - started < FIX_BUDGET_MS) {
-      result = await withFallback((model) =>
-        generateText({
-          ...request,
-          model,
-          messages: [
-            { role: "user", content: prompt },
-            { role: "assistant", content: JSON.stringify(result.output) },
-            { role: "user", content: kmzhFixPrompt(check.errors) },
-          ],
-        }),
-      );
+      result = await generateText({
+        ...request,
+        model: lessonModel(),
+        messages: [
+          { role: "user", content: prompt },
+          { role: "assistant", content: JSON.stringify(result.output) },
+          { role: "user", content: kmzhFixPrompt(check.errors) },
+        ],
+      });
       plan = fixMinutes(toKmzhPlan(result.output, meta));
       tokens = { input: tokens.input + (result.totalUsage.inputTokens ?? 0), output: tokens.output + (result.totalUsage.outputTokens ?? 0) };
     }

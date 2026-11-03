@@ -11,7 +11,8 @@ import { tutorTools } from "@/lib/ai/tools";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
-export const maxDuration = 60;
+// 2026-11-03 тестінде резерв модельмен жауап 51 с жазылды — 60 с шекке тым жақын (Hobby шегі 300 с)
+export const maxDuration = 120;
 
 // Қате кодтары клиентте аударылады (AiTutor.errors)
 const fail = (code: string, status: number) => new Response(code, { status });
@@ -75,6 +76,8 @@ export async function POST(request: Request) {
 
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
+      // «start» дереккөздерден бұрын: әйтпесе клиент екі хабарлама жасайды (бос көпіршік + қайталанған дереккөздер)
+      writer.write({ type: "start" });
       // Дереккөздер жауаптан бұрын жіберіледі: [1], [2] сілтемелері осыларға сәйкес
       knowledge.forEach((k, i) => {
         writer.write({
@@ -87,7 +90,7 @@ export async function POST(request: Request) {
       });
 
       const result = streamText({
-        // Лимит біткенде резерв модель; ол да бос болмаса — бірден қате (күтіп қайталау 60 с шекке сыймайды)
+        // Лимит біткенде резерв модель; ол да бос болмаса — бірден қате (күтіп қайталау maxDuration шегіне сыймайды)
         model: chatModelWithFallback(),
         maxRetries: 0,
         instructions: tutorInstructions(locale, mode, knowledge),
@@ -101,7 +104,7 @@ export async function POST(request: Request) {
           void saveTokenUsage(admin, usageId, totalUsage.inputTokens, totalUsage.outputTokens);
         },
       });
-      writer.merge(result.toUIMessageStream());
+      writer.merge(result.toUIMessageStream({ sendStart: false }));
     },
     onError: (error) => {
       console.error("AI мұғалім қатесі:", error);

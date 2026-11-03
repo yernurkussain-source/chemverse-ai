@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 import type { Locale } from "@/i18n/routing";
-import { chatModel, isAiConfigured } from "@/lib/ai/provider";
+import { chatModelWithFallback, isAiConfigured } from "@/lib/ai/provider";
 import { isRateLimited, logUsage, saveTokenUsage } from "@/lib/ai/rate-limit";
 import { getLab, type ShellLabSlug } from "./catalog";
 
@@ -84,7 +84,7 @@ export async function aiHint(
   }[input.level];
   try {
     const result = await withLowThinking((providerOptions) => generateText({
-      model: chatModel(),
+      model: chatModelWithFallback(),
       instructions: `Сен — CHEMVERSE AI платформасындағы ChemLab виртуалды зертханасының көмекшісісің (${input.lab.grades.join("–")}-сынып).
 Оқушыға ДАЙЫН ЖАУАПТЫ ЕШҚАШАН АЙТПА: дұрыс нұсқаны, түпкі санды немесе толық қорытындыны жазба.
 ${level}
@@ -127,7 +127,7 @@ export async function aiConclusionScore(
   if (!access) return null;
   try {
     const result = await withLowThinking((providerOptions) => generateText({
-      model: chatModel(),
+      model: chatModelWithFallback(),
       instructions: `Сен — химия мұғалімісің. Оқушының виртуалды зертханадағы қорытындысын рубрика бойынша бағала (${input.lab.grades.join("–")}-сынып).
 РУБРИКА (барлығы 25):
 - Мақсат анық айтылған — 5;

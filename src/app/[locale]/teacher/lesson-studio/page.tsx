@@ -12,8 +12,9 @@ import { Link, redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
 
-// AI жоспар құруға 20–40 секунд кетуі мүмкін (server action осы беттің шегін қолданады)
-export const maxDuration = 60;
+// AI жоспар құруға 20–60 секунд кетеді (2026-11-03 тестінде 63 с), резерв модельге ауысса одан да көп;
+// server action осы беттің шегін қолданады. Hobby тарифінің шегі — 300 с
+export const maxDuration = 120;
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("LessonStudio");

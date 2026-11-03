@@ -30,29 +30,53 @@ export const isBusy = (error: unknown) => {
   return APICallError.isInstance(last) && (last.statusCode === 503 || last.statusCode === 429);
 };
 
-/** Негізгі модель 429/503 қайтарса — сол сұрауды бірден резерв модельге (лимиті бөлек) жібереді */
-export function withFallbackModel(primary: LanguageModelV4, fallback: LanguageModelV4) {
-  const retry = async <T>(run: () => PromiseLike<T>, again: () => PromiseLike<T>) => {
+/**
+ * Негізгі модель осы уақытта үлгермесе де резервке ауысамыз: Gemini кейде 429/503 орнына үнсіз
+ * қатып қалады (2026-11-03: flash модельдері 60 с жауапсыз, lite — 1–3 с).
+ * Стримде — жауап басталғанша, generate-те — толық жауапқа дейін.
+ */
+const PRIMARY_TIMEOUT_MS = 12_000;
+
+/**
+ * Негізгі модель үлгермесе — осы уақыт бойы оны күтпей, бірден резервке барамыз: әйтпесе әр сұрау
+ * (чатта құрал шақырса — әр қадам) 12 с-тан жоғалтады. Кілт — модель атауы; функция данасы ішінде сақталады.
+ */
+const PRIMARY_COOLDOWN_MS = 2 * 60_000;
+const primaryDownUntil = new Map<string, number>();
+
+/** Негізгі модель 429/503 қайтарса не primaryTimeoutMs ішінде үлгермесе — сол сұрауды резерв модельге (лимиті бөлек) жібереді */
+export function withFallbackModel(primary: LanguageModelV4, fallback: LanguageModelV4, primaryTimeoutMs = PRIMARY_TIMEOUT_MS) {
+  const key = `${primary.provider}:${primary.modelId}`;
+  const attempt = async <P extends { abortSignal?: AbortSignal }, T>(params: P, run: (p: P) => PromiseLike<T>, again: () => PromiseLike<T>) => {
+    if (Date.now() < (primaryDownUntil.get(key) ?? 0)) return again();
+    const slow = new AbortController();
+    const timer = setTimeout(() => slow.abort(), primaryTimeoutMs);
+    const abortSignal = params.abortSignal ? AbortSignal.any([params.abortSignal, slow.signal]) : slow.signal;
     try {
-      return await run();
+      return await run({ ...params, abortSignal });
     } catch (error) {
-      if (!isBusy(error)) throw error;
+      // Шақырушы өзі тоқтатса (оқушы «Тоқтату» басты не өз уақыты бітті) — резерв те керек емес
+      if (params.abortSignal?.aborted || !(slow.signal.aborted || isBusy(error))) throw error;
+      primaryDownUntil.set(key, Date.now() + PRIMARY_COOLDOWN_MS);
       return again();
+    } finally {
+      // Стрим басталды — енді таймер оны үзбеуі керек
+      clearTimeout(timer);
     }
   };
   return wrapLanguageModel({
     model: primary,
     middleware: {
       specificationVersion: "v4",
-      wrapGenerate: ({ doGenerate, params }) => retry(doGenerate, () => fallback.doGenerate(params)),
-      wrapStream: ({ doStream, params }) => retry(doStream, () => fallback.doStream(params)),
+      wrapGenerate: ({ params }) => attempt(params, (p) => primary.doGenerate(p), () => fallback.doGenerate(params)),
+      wrapStream: ({ params }) => attempt(params, (p) => primary.doStream(p), () => fallback.doStream(params)),
     },
   });
 }
 
 /**
  * AI мұғалімнің чат моделі резервімен. Онсыз лимит біткенде SDK күтіп қайталай береді,
- * Vercel функцияны 60 с-та үзеді де, оқушы қате хабарсыз бос жауап алады.
+ * Vercel функцияны maxDuration шегінде үзеді де, оқушы қате хабарсыз бос жауап алады.
  */
 export const chatModelWithFallback = () => withFallbackModel(chatModel(), fallbackChatModel());
 
