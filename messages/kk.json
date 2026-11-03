@@ -1621,6 +1621,8 @@
     "fullscreen": "Үлкен экран",
     "exitFullscreen": "Шағын экран",
     "finishNow": "Аяқтау",
+    "finishConfirm": "Иә, бәріне аяқтау",
+    "finishCancel": "Жалғастыру",
     "qrLabel": "Live сабаққа қосылу QR коды",
     "scanOrGo": "Телефон камерасымен QR-ды сканерлеңіз немесе сайтқа кіріп, кодты енгізіңіз:",
     "players": "Қатысушылар: {count}",

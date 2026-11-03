@@ -245,9 +245,8 @@ function OrbitalDiagram({ z }: { z: number }) {
 function Fact({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 rounded-xl bg-panel-2 px-3 py-2">
-      <dt className="truncate font-mono text-[0.68rem] text-muted-foreground" title={label}>
-        {label}
-      </dt>
+      {/* Қиылмайды: телефонда «Электртерістік (Полинг)» екі жолға ауысады */}
+      <dt className="font-mono text-[0.68rem] leading-snug break-words text-muted-foreground">{label}</dt>
       <dd className="m-0 font-semibold tabular-nums">{value}</dd>
     </div>
   );

@@ -1621,6 +1621,8 @@
     "fullscreen": "Big screen",
     "exitFullscreen": "Exit big screen",
     "finishNow": "Finish",
+    "finishConfirm": "Yes, finish for everyone",
+    "finishCancel": "Keep going",
     "qrLabel": "QR code to join the live lesson",
     "scanOrGo": "Scan the QR with your phone camera, or open the site and enter the code:",
     "players": "Players: {count}",

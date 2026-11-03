@@ -1621,6 +1621,8 @@
     "fullscreen": "Большой экран",
     "exitFullscreen": "Обычный экран",
     "finishNow": "Завершить",
+    "finishConfirm": "Да, завершить для всех",
+    "finishCancel": "Продолжить",
     "qrLabel": "QR-код для входа в Live-урок",
     "scanOrGo": "Отсканируйте QR камерой телефона или откройте сайт и введите код:",
     "players": "Участники: {count}",

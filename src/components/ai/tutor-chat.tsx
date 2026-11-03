@@ -139,7 +139,7 @@ export function TutorChat({ initialQuestion = "", initialMode = "explain" }: { i
         )}
       </div>
 
-      {/* Сұрақ жазу */}
+      {/* Сұрақ жазу. field-sizing-content: тар телефонда мәтін мен placeholder қиылмай, өріс биіктейді (rows — ескі браузерлерге) */}
       <form onSubmit={onSubmit} className="flex items-end gap-2 border-t border-line p-3">
         <label htmlFor="tutor-input" className="sr-only">
           {t("inputLabel")}
@@ -152,7 +152,7 @@ export function TutorChat({ initialQuestion = "", initialMode = "explain" }: { i
           rows={Math.min(5, Math.max(1, input.split("\n").length))}
           maxLength={2000}
           placeholder={t("placeholder")}
-          className="max-h-40 min-h-11 flex-1 resize-none rounded-2xl border border-line bg-panel-2 px-4 py-2.5 text-foreground placeholder:text-muted-foreground/70"
+          className="field-sizing-content max-h-40 min-h-11 min-w-0 flex-1 resize-none rounded-2xl border border-line bg-panel-2 px-4 py-2.5 text-foreground placeholder:text-muted-foreground/70"
         />
         {busy ? (
           <Button type="button" variant="panel" size="pill" onClick={() => stop()}>

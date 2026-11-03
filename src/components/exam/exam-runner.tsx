@@ -53,6 +53,18 @@ export function ExamRunner({ sessionId, title, deadline, serverNow, questions, i
   const finishRef = useRef<HTMLFormElement>(null);
   const finishedRef = useRef(false);
   const pendingSaves = useRef(0);
+  const questionRef = useRef<HTMLElement>(null);
+  const shownIndex = useRef(index);
+
+  // Телефонда тор сұрақтың астында: сұрақ ауысқанда оның басы экраннан (жабысқақ жолақтардың астынан) шықпасын
+  useEffect(() => {
+    if (shownIndex.current === index) return;
+    shownIndex.current = index;
+    const el = questionRef.current;
+    if (!el) return;
+    const top = el.getBoundingClientRect().top;
+    if (top < parseFloat(getComputedStyle(el).scrollMarginTop) || top > window.innerHeight) el.scrollIntoView({ block: "start" });
+  }, [index]);
 
   // Сақтаулар кезекпен жүреді: жауап сақталып жатқанда бетті жапса/жаңартса, браузер ескертеді (әйтпесе жауап жоғалады)
   useEffect(() => {
@@ -149,7 +161,11 @@ export function ExamRunner({ sessionId, title, deadline, serverNow, questions, i
 
       <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
         {/* Сұрақ */}
-        <section aria-labelledby="question-title" className="rounded-3xl border border-line bg-panel p-5 sm:p-7">
+        <section
+          ref={questionRef}
+          aria-labelledby="question-title"
+          className="scroll-mt-[calc(env(safe-area-inset-top)+9rem)] rounded-3xl border border-line bg-panel p-5 sm:p-7"
+        >
           <p className="mb-2 flex flex-wrap items-center gap-2 text-[0.8rem] text-muted-foreground">
             <span className="font-mono font-semibold text-cyan">
               {t("questionOf", { n: index + 1, total: questions.length })}

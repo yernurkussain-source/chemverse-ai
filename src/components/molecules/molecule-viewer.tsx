@@ -155,6 +155,8 @@ export function MoleculeViewer({
       cancelled = true;
       visibility?.disconnect();
       observer?.disconnect();
+      // spin тоқтатылмаса, бет жабылғаннан кейін де жасырын canvas-қа сурет сала береді (батарея, WebGL ескертулері)
+      viewerRef.current?.spin(false);
       viewerRef.current?.clear();
       viewerRef.current = null;
       container.innerHTML = "";

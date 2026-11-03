@@ -70,7 +70,7 @@ export function ProblemEditorForm({ topics }: { topics: { n: number; title: stri
   const [type, setType] = useState<(typeof TYPES)[number]>("numeric");
   return (
     <form action={action} className="flex flex-col gap-3 rounded-3xl border border-line bg-panel p-5">
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <label className="flex flex-col gap-1 text-[0.9rem] sm:col-span-3">
           <span className="font-semibold">{t("topic")}</span>
           <select name="topic" className={`${FIELD} h-11`}>
@@ -108,7 +108,7 @@ export function ProblemEditorForm({ topics }: { topics: { n: number; title: stri
       </label>
 
       {type === "numeric" && (
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <label className="flex flex-col gap-1 text-[0.9rem]">
             <span className="font-semibold">{t("value")}</span>
             <input name="value" required inputMode="decimal" className={`${FIELD} h-11 font-mono`} />

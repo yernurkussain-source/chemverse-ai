@@ -20,6 +20,7 @@ export function LiveHost({ sessionId, code, joinUrl, rounds = [] }: { sessionId:
   const { state, refetch, connected } = useLiveState<HostLiveState>(code, `/api/live/${code}/host?locale=${locale}`);
   const [pending, startTransition] = useTransition();
   const [fullscreen, setFullscreen] = useState(false);
+  const [confirmFinish, setConfirmFinish] = useState(false);
   const autoRevealed = useRef(-1);
 
   const remaining = useCountdown(
@@ -73,11 +74,22 @@ export function LiveHost({ sessionId, code, joinUrl, rounds = [] }: { sessionId:
           <span className={cn("ml-3 inline-block size-2 rounded-full", connected ? "bg-good" : "bg-amber")} title={connected ? t("online") : t("polling")} />
         </p>
         <div className="flex flex-wrap gap-2">
-          {state && state.phase !== "finished" && state.phase !== "lobby" && (
-            <Button type="button" variant="panel" size="pill-sm" disabled={pending} onClick={() => send("finish")}>
-              {t("finishNow")}
-            </Button>
-          )}
+          {/* Аяқтау бүкіл сыныпқа қайтарылмайды — абайсызда басып қалмас үшін екі қадам */}
+          {state && state.phase !== "finished" && state.phase !== "lobby" &&
+            (confirmFinish ? (
+              <>
+                <Button type="button" variant="glow" size="pill-sm" disabled={pending} onClick={() => send("finish")}>
+                  {t("finishConfirm")}
+                </Button>
+                <Button type="button" variant="panel" size="pill-sm" onClick={() => setConfirmFinish(false)}>
+                  {t("finishCancel")}
+                </Button>
+              </>
+            ) : (
+              <Button type="button" variant="panel" size="pill-sm" disabled={pending} onClick={() => setConfirmFinish(true)}>
+                {t("finishNow")}
+              </Button>
+            ))}
           <Button type="button" variant="panel" size="pill-sm" onClick={toggleFullscreen}>
             {fullscreen ? t("exitFullscreen") : t("fullscreen")}
           </Button>

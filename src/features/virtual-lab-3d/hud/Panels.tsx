@@ -80,7 +80,11 @@ export function Quests({
   }, [open]);
   if (!open) return null;
   return (
-    <div className="absolute inset-0 z-10 grid place-items-center bg-[rgba(5,9,20,.62)] px-[max(16px,env(safe-area-inset-left))]">
+    // Телефонда Escape жоқ: терезенің сыртын басу да жабады
+    <div
+      className="absolute inset-0 z-10 grid place-items-center bg-[rgba(5,9,20,.62)] px-[max(16px,env(safe-area-inset-left))]"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div
         ref={dialog}
         role="dialog"
@@ -89,8 +93,12 @@ export function Quests({
         tabIndex={-1}
         className="max-h-[88vh] w-full max-w-[600px] overflow-auto rounded-[20px] border border-[var(--hud-line)] bg-[#0f1631] p-[22px] outline-none select-text"
       >
-        <h2 id="vl3d-quests-title" className="mb-2 font-display text-[1.3rem] font-bold">
-          {t("questsPanel.title")}
+        {/* Жабу батырмасы жоғарыда да: 23 тапсырманы айналдырмай жабуға болады */}
+        <h2 className="mb-2 flex items-start justify-between gap-3 font-display text-[1.3rem] font-bold">
+          <span id="vl3d-quests-title">{t("questsPanel.title")}</span>
+          <button type="button" className={topButton} onClick={onClose}>
+            {t("questsPanel.close")}
+          </button>
         </h2>
         <p className={cn("mb-3", muted)}>{t("questsPanel.text")}</p>
         <ul className="my-2.5 mb-4 grid gap-2">
