@@ -26,6 +26,15 @@ export function MoleculeCatalog() {
       (!group || m.group === group) &&
       (!q || [m.formula, tm(`${m.id}.name`), tm(`${m.id}.description`)].some((text) => plain(text).includes(q))),
   );
+  // Іздегенде ең сәйкесі бірінші («су» → H₂O, «Сутек» емес): атауы/формуласы дәл → басталады → ішінде → тек сипаттамада.
+  // Топтар да ең жақсы нәтижесі бойынша; sort тұрақты, сондықтан іздеусіз рет өзгермейді
+  const rank = (m: (typeof MOLECULES)[number]) => {
+    const keys = [plain(m.formula), plain(tm(`${m.id}.name`))];
+    return keys.includes(q) ? 0 : keys.some((k) => k.startsWith(q)) ? 1 : keys.some((k) => k.includes(q)) ? 2 : 3;
+  };
+  const sections = MOLECULE_GROUPS.map((g) => found.filter((m) => m.group === g).sort((a, b) => (q ? rank(a) - rank(b) : 0)))
+    .filter((items) => items.length > 0)
+    .sort((a, b) => (q ? rank(a[0]) - rank(b[0]) : 0));
 
   return (
     <div className="flex flex-col gap-6">
@@ -61,9 +70,8 @@ export function MoleculeCatalog() {
 
       {!found.length && <p className="text-muted-foreground">{t("none")}</p>}
 
-      {MOLECULE_GROUPS.map((g) => {
-        const items = found.filter((m) => m.group === g);
-        if (!items.length) return null;
+      {sections.map((items) => {
+        const g = items[0].group;
         return (
           <section key={g}>
             <h2 className="mb-3 text-[1.05rem] font-semibold">
