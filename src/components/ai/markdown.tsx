@@ -4,6 +4,7 @@ import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 // \ce{H2SO4} — химиялық формулалар мен теңдеулер (mhchem)
 import "katex/contrib/mhchem";
+import { fixDecimalComma } from "./decimal-comma";
 
 /**
  * AI жауабы мен тақырып теориясы: Markdown + KaTeX формулалар ($...$ және $$...$$, \ce{...}).
@@ -24,7 +25,7 @@ export function Markdown({ children }: { children: string }) {
           ),
         }}
       >
-        {children}
+        {fixDecimalComma(children)}
       </ReactMarkdown>
     </div>
   );

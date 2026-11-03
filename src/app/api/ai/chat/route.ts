@@ -1,5 +1,6 @@
 import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, stepCountIs, streamText } from "ai";
 import { hasLocale } from "next-intl";
+import { listLessons } from "@/features/lessons/lessons";
 import { routing } from "@/i18n/routing";
 import { findCachedAnswer, type CachedAnswer } from "@/lib/ai/cache";
 import { chatRequestSchema, MAX_QUESTION_LENGTH, textOf, toHistory } from "@/lib/ai/chat-request";
@@ -78,13 +79,21 @@ export async function POST(request: Request) {
     execute: async ({ writer }) => {
       // «start» дереккөздерден бұрын: әйтпесе клиент екі хабарлама жасайды (бос көпіршік + қайталанған дереккөздер)
       writer.write({ type: "start" });
+      // Оқушыға `8-04-amount-of-substance` емес, тараудың аты; файлдар табылмаса — бұрынғыдай коды
+      let lessonTitles = new Map<string, string>();
+      try {
+        lessonTitles = new Map(listLessons().map((lesson) => [lesson.slug, lesson.title[locale]]));
+      } catch (error) {
+        console.error("Тарау атаулары оқылмады:", error);
+      }
       // Дереккөздер жауаптан бұрын жіберіледі: [1], [2] сілтемелері осыларға сәйкес
       knowledge.forEach((k, i) => {
+        const slug = sourceTitle(k.source);
         writer.write({
           type: "source-document",
           sourceId: `${i + 1}`,
           mediaType: "text/markdown",
-          title: sourceTitle(k.source),
+          title: lessonTitles.get(slug) ?? slug,
           filename: k.source,
         });
       });

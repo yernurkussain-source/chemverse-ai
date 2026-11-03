@@ -172,7 +172,11 @@ export function TutorChat({ initialQuestion = "", initialMode = "explain" }: { i
 function ChatMessage({ message }: { message: UIMessage }) {
   const t = useTranslations("AiTutor");
   const isUser = message.role === "user";
-  const sources = message.parts.filter((p) => p.type === "source-document");
+  // Бір тараудың бірнеше үзіндісі бір рет: «[1, 2] Зат мөлшері. Моль»
+  const sources = new Map<string, string[]>();
+  for (const part of message.parts) {
+    if (part.type === "source-document") sources.set(part.title, [...(sources.get(part.title) ?? []), part.sourceId]);
+  }
 
   if (isUser) {
     const text = message.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
@@ -199,12 +203,12 @@ function ChatMessage({ message }: { message: UIMessage }) {
           return null;
         })}
       </div>
-      {sources.length > 0 && (
+      {sources.size > 0 && (
         <div className="flex flex-wrap items-center gap-1.5 text-[0.76rem] text-muted-foreground">
           <span>{t("sources")}:</span>
-          {sources.map((s) => (
-            <span key={s.sourceId} className="rounded-full border border-line px-2 py-0.5 font-mono">
-              [{s.sourceId}] {s.title}
+          {[...sources].map(([title, ids]) => (
+            <span key={title} className="rounded-full border border-line px-2 py-0.5">
+              <span className="font-mono">[{ids.join(", ")}]</span> {title}
             </span>
           ))}
         </div>

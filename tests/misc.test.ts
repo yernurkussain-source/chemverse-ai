@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
+import { fixDecimalComma } from "@/components/ai/decimal-comma";
 import { mapAuthError } from "@/features/auth/errors";
 import { CODE_PATTERN, participantCookie, pointsFor } from "@/features/live/server";
 import { isQrType, normalizeTarget, qrDestination, TOKEN_PATTERN } from "@/features/qr/types";
@@ -90,5 +91,15 @@ describe("Auth қателері", () => {
     assert.equal(mapAuthError("invalid_credentials"), "invalid_credentials");
     assert.equal(mapAuthError("something_new"), "unknown");
     assert.equal(mapAuthError(undefined), "unknown");
+  });
+});
+
+describe("Формуладағы ондық үтір", () => {
+  test("формула ішінде «0,25» бір сан болып қалады, мәтінде өзгермейді", () => {
+    assert.equal(fixDecimalComma("$0,25$ моль"), "$0{,}25$ моль");
+    assert.equal(fixDecimalComma("$$n = \frac{10}{40} = 0,25$$"), "$$n = \frac{10}{40} = 0{,}25$$");
+    assert.equal(fixDecimalComma("Жауабы 0,25 моль, ал $M = 40$"), "Жауабы 0,25 моль, ал $M = 40$");
+    assert.equal(fixDecimalComma("$a, b$ және $1,5 \cdot 10^{23}$"), "$a, b$ және $1{,}5 \cdot 10^{23}$");
+    assert.equal(fixDecimalComma("$0,2"), "$0,2"); // стрим кезінде жабылмаған формула — тимейміз
   });
 });

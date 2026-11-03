@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
     // Тақырыптар картасы мен ұсыныстар: қай тараудың конспект беті бар (listLessons)
     "/[locale]/teacher/classes/**": ["./docs/unt/questions/*.json"],
     "/[locale]/profile": ["./docs/unt/questions/*.json"],
+    // AI мұғалімнің дереккөздері: тарау атаулары
+    "/api/ai/chat": ["./docs/unt/questions/*.json"],
     "/[locale]/teacher/lesson-studio": ["./docs/kmzh/AI_SYSTEM_PROMPT.md"],
     "/[locale]/teacher/lesson-studio/**": ["./docs/kmzh/AI_SYSTEM_PROMPT.md"],
   },
